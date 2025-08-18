@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Requests\Misc;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateIdentificationRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'folder'=>'required|string',
+            'reference'=>'required|string',
+            'token'=>'nullable|string',
+        ];
+    }
+}
