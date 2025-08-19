@@ -399,7 +399,7 @@ ViewsResponder {
         $disabled = "";
         $readonly = "";
         $cities  = City::select('id','code','name')->get();
-        $wheel_chairs  = WheelChair::select('id','code','name')->get();
+        $wheel_chairs  = WheelChair::select('id','code','name')->orderBy('name')->get();
 
      
 
@@ -480,7 +480,7 @@ ViewsResponder {
         $disabled = "";
         $readonly = "";
         $cities = City::get();
-        $wheel_chairs = WheelChair::get();
+        $wheel_chairs  = WheelChair::select('id','code','name')->orderBy('name')->get();
 
         return compact(
             "company",
@@ -516,7 +516,7 @@ ViewsResponder {
         ];
     }
     
-    public function createCompany(array $details ) 
+    public function createCompany(array $details , Request $request ) 
     {
 
                     
@@ -534,7 +534,7 @@ ViewsResponder {
                 }
                     
                         $company= new Company();    
-                        $columns = ['name','prefix','billing_address'
+                        $columns = ['name','prefix','billing_address','mensual_fee'
                         ];
                 
                         foreach ($columns as  $column) {
@@ -554,8 +554,28 @@ ViewsResponder {
                 $company->city_id = City::whereCode($details['city'])->first()->id;
                 $company->admin_id = Auth::guard('sanctum')->user()->id;
 
-                //$mission = Mission::select('id')->whereId($details['mission'])->first();
-                
+
+                if ($request->hasFile('file')) {
+                    $fileName = $request->token . '_' . time() . '.'. $request->file->extension();  
+        
+                    $type = $request->file->getClientMimeType();
+                    $size = $request->file->getSize();
+            
+                    $request->file->move(storage_path('app/public/company_images'), $fileName);
+                   // $request->file->store(storage_path('files'), $fileName);
+                   /*File::create([
+                        'user_id' => auth()->id(),
+                        'slug' => $fileName,
+                        'type' => $type,
+                        'size' => $size
+                    ]);*/
+                   
+                    $company->image_path= $fileName;
+                    $company->image_size = $size;
+                    $company->image_type = $type;
+                 
+            
+                }
 
 
                     $company->save();
@@ -585,7 +605,7 @@ ViewsResponder {
        
     }
 
-    public function updateCompany(array $details , Company $company ) 
+    public function updateCompany(array $details , Company $company , Request $request  ) 
     {
 
                     
@@ -618,11 +638,33 @@ ViewsResponder {
                 
                 $company->name = $details['name'];
                 $company->prefix = $details['prefix'];
+                $company->mensual_fee = $details['mensual_fee'];
                 $company->billing_address = $details['billing_address'];
                 $company->city_id = City::whereCode($details['city'])->first()->id;
 
                 //$mission = Mission::select('id')->whereId($details['mission'])->first();
                 
+                if ($request->hasFile('file')) {
+                    $fileName = $request->token . '_' . time() . '.'. $request->file->extension();  
+        
+                    $type = $request->file->getClientMimeType();
+                    $size = $request->file->getSize();
+            
+                    $request->file->move(storage_path('app/public/company_images'), $fileName);
+                   // $request->file->store(storage_path('files'), $fileName);
+                   /*File::create([
+                        'user_id' => auth()->id(),
+                        'slug' => $fileName,
+                        'type' => $type,
+                        'size' => $size
+                    ]);*/
+                   
+                    $company->image_path= $fileName;
+                    $company->image_size = $size;
+                    $company->image_type = $type;
+                 
+            
+                }
 
 
                     $company->save();

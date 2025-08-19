@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\AssistanceAgent;
 use App\Models\City;
 use App\Models\Company;
+use App\Models\GroundAgent;
 use App\Models\Misc\Bank;
 use App\Models\Misc\File;
 use App\Models\User\User;
@@ -106,12 +108,12 @@ class RouteServiceProvider extends ServiceProvider
         });
 
 
-        Route::bind('service', function ($value) {
-            return Service::where('code', $value)->first();
+        Route::bind('ground-agent', function ($value) {
+            return GroundAgent::where('code', $value)->first();
         });
 
-        Route::bind('product', function ($value) {
-            return Product::where('code', $value)->first();
+        Route::bind('assistance-agent', function ($value) {
+            return AssistanceAgent::where('code', $value)->first();
         });
 
 

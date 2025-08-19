@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
@@ -29,6 +30,20 @@ class Company extends Model
      */
     public function wheel_chairs(): BelongsToMany
     {
-        return $this->belongsToMany(WheelChair::class, 'company_wheel_chair', 'company_id', 'wheel_chair_id');
+        return $this->belongsToMany(WheelChair::class, 'company_wheel_chair', 'company_id', 'wheel_chair_id')->withPivot('price');
     }
+
+     /**
+     * Get all of the ground_agents for the Company
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ground_agents(): HasMany
+    {
+        return $this->hasMany(GroundAgent::class );
+    }
+   
 }
+
+
+

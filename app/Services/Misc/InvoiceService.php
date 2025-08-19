@@ -75,4 +75,8 @@ class InvoiceService
 
     } 
 
+    public function preview($data){
+
+    }
+
 }

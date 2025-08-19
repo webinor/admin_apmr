@@ -106,6 +106,8 @@
                       </thead>
                       <tbody>
                         @foreach ($cities as $city)
+
+                      
                         <tr>
                           
                          {{-- <td>

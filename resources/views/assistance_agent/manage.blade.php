@@ -12,16 +12,16 @@
       <div class="d-sm-flex align-items-center justify-content-between border-bottom">
         <ul class="nav nav-tabs" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Informations générales du prestataire</a>
+            <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Informations générales du servant CAS</a>
           </li>
        
                  
-          <li class="nav-item">
+         {{--  <li class="nav-item">
             <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#audiences" aria-controls="audiences" role="tab" aria-selected="false">Parametres d'etraction</a>
           </li>
 
         
-          {{--  --}
+          
          <li class="nav-item">
             <a class="nav-link" id="contact-tab" data-bs-toggle="tab" href="#demographics" role="tab" aria-selected="false">Historique documentaire</a>
           </li>
@@ -41,15 +41,15 @@
           <div class="btn-wrapper">
             {{--@if (Auth::user()->can('create', App\Models\Sales\company::class))--}
     <!-- The current user can update the post... -->
-    <a href="{{url('sales/company/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau prestataire / Prospect</a>
+    <a href="{{url('sales/company/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS / Prospect</a>
 
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
-           --}}
+           
            @if ($action == 'show')
-           <a href="{{url('company/'.$company->code.'/edit')}}" class="btn btn-info text-white"><i class="icon-printer"></i>Modifier les informations de ce prestataire</a>
-           @endif
-            <a href="{{url('company')}}" class="btn btn-primary text-white"><i class="icon-printer"></i>Liste des prestataires</a>
+           <a href="{{url('company/'.$company->code.'/edit')}}" class="btn btn-info text-white"><i class="icon-printer"></i>Modifier les informations de ce servant CAS</a>
+           @endif--}}
+            <a href="{{url('assistance-agent')}}" class="btn btn-primary text-white"><i class="icon-printer"></i>Liste des servants CAS</a>
           </div>
         </div>
       </div>
@@ -59,50 +59,38 @@
             <div class="col-md-8 grid-margin stretch-card">
               <div class="card"> 
                 <div class="card-body">
-                  @if ($company && $action=='update')
-                  <h4 class="card-title">Modifier le prestataire</h4>
+                  @if ($assistance_agent && $action=='update')
+                  <h4 class="card-title">Modifier le servant CAS</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">prestataire modifié avec succes</h6>
+                    <h6 class="alert-heading">servant CAS modifié avec succes</h6>
                   </div>
-                  @elseif(!$company && $action=='create')
-                  <h4 class="card-title">Ajouter un prestataire</h4>
+                  @elseif(!$assistance_agent && $action=='create')
+                  <h4 class="card-title">Ajouter un servant CAS</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">prestataire crée avec succes</h6>
+                    <h6 class="alert-heading">servant CAS crée avec succes</h6>
                   </div>
                   <span>Ici ce sont les informations de base. Apres avoir cliqué sur "Creer", naviguez sur les differents onglets pour indiquer les information complementaires.</span>
-                  @elseif($company && $action=='show')
+                  @elseif($assistance_agent && $action=='show')
 
-                  <h4 class="card-title">Visualiser le prestataire</h4>
+                  <h4 class="card-title">Visualiser le servant CAS</h4>
 
                   @endif
                   <form id="form-company" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
                     @csrf
                     <input id="token" type="hidden" class="form-control" value="{{Auth::user()->code}}" >
-                    <input id="action" type="hidden"  value="{{$company ? 'edit' : 'create'}}" >
-                    <input id="url" type="hidden"  value="{{"/api/company".($company ? "/".$company->code."?_method=PUT" : "")}}" >
+                    <input id="action" type="hidden"  value="{{$assistance_agent ? 'edit' : 'create'}}" >
+                    <input id="url" type="hidden"  value="{{"/api/assistance-agent".($assistance_agent ? "/".$assistance_agent->code."?_method=PUT" : "")}}" >
 
-                    @if ($company)
                     
-                    <input id="company" type="hidden" class="form-control" value="{{$company->code}}" >
+                    <input id="assistance_agent" type="hidden" class="form-control" value="{{$assistance_agent->code ?? ''}}" >
                         
-                    @endif
                   
-          
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="name">Nom de la compagnie</label>
-                        <input {{ $readonly }} type="text" value="{{ $company ? $company->name : '' }}" name="name" class=" form-control" id="name" placeholder="Raison sociale" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
+                      
 
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="name">Prefixe</label>
-                        <input {{ $readonly }} type="text" value="{{ $company ? $company->name : '' }}" name="name" class=" form-control" id="name" placeholder="Raison sociale" required>
+                        <label for="first_name">Nom</label>
+                        <input type="text" name="first_nameame" value="{{$assistance_agent ? $assistance_agent->first_name : ''}}" class=" form-control" id="first_name" placeholder="Ex : NANA" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -110,24 +98,45 @@
                       </div>
                     </div>
           
-        
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="last_name">Prenom</label>
+                        <input type="text" name="last_name" value="{{$assistance_agent ? $assistance_agent->last_name : ''}}" class=" form-control" id="last_name" placeholder="Ex : Olivier" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
 
-        
+                   
 
-          
+                  
+
+                  {{--   <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="signature">Signature</label>
+                    
+                        <input {{ $readonly }} type="file" name="signature" class=" form-control" id="signature" placeholder="signature" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>  --}}
 
 
           <div class="form-group">
-            <label for="city_id">Ville</label>
-            <select name="city_id" class="form-control" id="city_id" placeholder="">
+            <label for="city">Ville</label>
+            <select name="city" class="form-control" id="city" placeholder="">
           
               @forelse ($cities as $city)
           
               @if ($loop->first)
-              <option value="" >Selectionnez la ville </option>
+              <option value="" >Selectionnez la ville</option>
               @endif
                  
-              <option value="{{$city->id}}">{{$city->name}}</option>
+              <option value="{{$city->code}}" {{ $assistance_agent && $assistance_agent->city && $assistance_agent->city->code == $city->code ? 'selected' : '' }}>{{$city->name}}</option>
               
               @empty
           
@@ -141,64 +150,23 @@
             <div class="invalid-feedback">
             </div>
           </div> 
-
-      {{--     <div class="form-group row">
-            <div class="col-sm-12 mb-3 mb-sm-0">
-              <label for="unique_identification_number">Numero d'identifiant unique</label>
-              <input type="text" name="unique_identification_number" class=" form-control" id="unique_identification_number" placeholder="Numero d'identifiant unique" required>
-              <div class="valid-feedback">
-              </div>
-              <div class="invalid-feedback">
-              </div>
-            </div>
-          </div>
-          
-          --}}
-
-          <div class="form-group row">
-            <div claaudience_tabss="col-sm-12 mb-3 mb-sm-0">
-              <label for="email">Adresse email</label>
-          
-              <input {{ $readonly }} type="email" value="{{ $company ? $company->email : '' }}" name="email" class=" form-control" id="email" placeholder="Adresse email" required>
-              <div class="valid-feedback">
-              </div>
-              <div class="invalid-feedback">
-              </div>
-            </div>
-          </div>
-
-         
-
           <div class="form-group row">
             <div class="col-sm-12 mb-3 mb-sm-0">
-              <label for="logo">Selectionner un logo</label>
-          
-              <input {{ $readonly }} type="file" name="logo" class=" form-control" id="logo" placeholder="Logo" required>
+              <label for="email">email</label>
+              <input type="email" name="email" value="{{$assistance_agent ? $assistance_agent->email : ''}}" class=" form-control" id="email" placeholder="Ex : aaa@gmal.com" required>
               <div class="valid-feedback">
               </div>
               <div class="invalid-feedback">
               </div>
             </div>
           </div>
-
-          {{-- <div class="form-group row">
-            <div class="col-sm-12 mb-3 mb-sm-0">
-              <label for="begining_collaboration">Date de debut de collaboration</label>
-          
-              <input type="date" min="2010-01-01" max="{{date('Y-m-d')}}" name="begining_collaboration" class=" form-control" id="begining_collaboration" placeholder="Date de debut de collaboration" required>
-              <div class="valid-feedback">
-              </div>
-              <div class="invalid-feedback">
-              </div>
-            </div>
-          </div> --}}
                   
           @if (($action!='show'))
               
           
                     <div id="create_button" class="mt-3">
                       <button id="create" type="button"  class="text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                        {{ $company ? 'Modifier' : 'Creer' }}
+                        {{ $assistance_agent ? 'Modifier' : 'Ajouter' }}
                       </button>
                     </div> 
                     
@@ -219,7 +187,7 @@
           
         </div>
 
-        {{--  wheel_chairs  --}}
+        {{--  wheel_chairs  --}
 
         <div class="tab-pane fade" id="audiences" role="tabpanel" aria-labelledby="wheel_chair"> 
          
@@ -359,7 +327,7 @@
                               <div class="inner-loading dot-flashing"></div>
                               
                               </div> 
-                          </form> {{-- --}}
+                          </form> 
                           </td>
                         </tr>
                     @endforeach
@@ -458,7 +426,7 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Liste des documents administratifs du prestataire</h4>
+                  <h4 class="card-title">Liste des documents administratifs du servant CAS</h4>
                   
                   <div class="table-responsive">
                     <table id="documents_table" class="table table-striped instances_lines"  data-url="file" data-type="file">
@@ -646,7 +614,7 @@
             <div class="col-md-8 grid-margin stretch-card">
               <div class="card"> 
                 <div class="card-body">
-                  <h4 class="card-title">Ajouter une note sur ce prestataire</h4>
+                  <h4 class="card-title">Ajouter une note sur ce servant CAS</h4>
                   <div class="d-none alert alert-success" role="alert">
                     <h6 class="alert-heading"> Note cree avec succes</h6>
                   </div>

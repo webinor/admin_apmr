@@ -56,7 +56,9 @@ class AssistanceAgentController extends Controller
      */
     public function store(StoreAssistanceAgentRequest $request)
     {
-        //
+        $response =  $this->assistance_agent_service->create($request->validated());
+
+        return $response;
     }
 
     /**
@@ -78,7 +80,9 @@ class AssistanceAgentController extends Controller
      */
     public function edit(AssistanceAgent $assistanceAgent)
     {
-        //
+        $variables = $this->assistance_agent_service->getEditVariables($assistanceAgent);
+           
+        return  $this->assistance_agent_service->getView('assistance_agent.manage', $variables);
     }
 
     /**
@@ -90,7 +94,9 @@ class AssistanceAgentController extends Controller
      */
     public function update(UpdateAssistanceAgentRequest $request, AssistanceAgent $assistanceAgent)
     {
-        //
+        $response =  $this->assistance_agent_service->update($request->validated() , $assistanceAgent);
+
+        return $response;
     }
 
     /**

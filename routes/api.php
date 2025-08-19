@@ -1,10 +1,13 @@
 <?php
 
+use App\Http\Controllers\AssistanceAgentController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\CompanyWheelChairController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\ExtractionSettingController;
+use App\Http\Controllers\GroundAgentController;
 use App\Http\Controllers\HumanResource\EmployeeController;
 use App\Http\Controllers\Misc\FileController;
 use App\Http\Controllers\Misc\FreeSearchController;
@@ -69,6 +72,8 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
             "destroy",
         ]);
 
+        
+
 
         Route::apiResource("wheel-chair", WheelChairController::class)->only([
             "store",
@@ -76,7 +81,27 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
             "destroy",
         ]);
 
-        Route::post("fetch-invoice-data", [FolderController::class, "fetch_invoice_data"]);
+        Route::apiResource("ground-agent", GroundAgentController::class)->only([
+            "store",
+            "update",
+            "destroy",
+        ]);
+
+        Route::apiResource("assistance-agent", AssistanceAgentController::class)->only([
+            "store",
+            "update",
+            "destroy",
+        ]);
+
+        Route::apiResource("company-wheel-chair", CompanyWheelChairController::class)->only([
+            "store",
+            "update",
+            "destroy",
+        ]);
+
+        
+
+       
         //Route::post("save-invoices", [FolderController::class, "save_invoices"]);
         //Route::post("validate-invoices", [FolderController::class, "validate_invoices"]);
         Route::post("update-reference", [InvoiceController::class, "update_reference"]);

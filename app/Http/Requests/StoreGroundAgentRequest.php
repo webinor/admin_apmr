@@ -13,7 +13,7 @@ class StoreGroundAgentRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,12 @@ class StoreGroundAgentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "first_name"=>"required|string",
+            "last_name"=>"required|string",
+            "email"=>"required|string|email",
+            "company"=>"required|string",
+            "signature"=>"nullable|string",
+            
         ];
     }
 }

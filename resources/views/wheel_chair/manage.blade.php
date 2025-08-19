@@ -42,15 +42,26 @@
             <div class="col-md-8 grid-margin stretch-card">
               <div class="card"> 
                 <div class="card-body">
-                  <h4 class="card-title">Modifier la ville</h4>
+                  @if ($action == "create")
+
+                  <h4 class="card-title">Ajouter un type de chaise</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">ville modifiée avec succes</h6>
+                    <h6 class="alert-heading">type de chaise ajoutée avec succes</h6>
                   </div>
+                      
+                  @else
+                      
+                  <h4 class="card-title">Modifier le type de chaise</h4>
+                  <div class="d-none alert alert-success" role="alert">
+                    <h6 class="alert-heading">type de chaise modifiée avec succes</h6>
+                  </div>
+
+                  @endif
                   <form id="form" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
                     @csrf
                     <input id="token" type="hidden" class="form-control" value="{{session('user')->code}}" >
                     <input id="wheel_chair" type="hidden" class="form-control" value="{{$wheel_chair ? $wheel_chair->code : ''}}" >
-                  
+                    <input id="action" type="hidden" class="" value="{{ $action }}" >
           
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
@@ -77,7 +88,7 @@
                   
                     <div id="update_button" class="mt-3">
                       <button id="update" type="button"  class="text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       Modifier ce type
+                       {{ $action == "create" ? "Ajouter" : "Modifier" }}
                       </button>
                     </div> 
                     

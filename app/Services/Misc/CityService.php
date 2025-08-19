@@ -384,6 +384,7 @@ ViewsResponder {
        
 
         $cities = City::oldest()
+        ->with(['admin.employee'])
         ->paginate(10)
         ->withQueryString();
 

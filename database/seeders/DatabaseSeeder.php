@@ -53,6 +53,29 @@ class DatabaseSeeder extends Seeder
             ],
 
 
+            ['menu_name'=>'Gestion des villes', 
+            'menu_slug'=>Str::slug('Gestion des villes'),
+            'menu_description'=>'',
+            'menu_icon'=>'menu-icon mdi mdi-adjust',
+            'children'=>[
+            ['submenu_name'=>'Liste des villes','link'=>('city') ],
+          //  ['submenu_name'=>'Nouveau borderau','link'=>('extract/create') ],
+            ]
+            
+            ],
+
+
+            ['menu_name'=>"Gestion des Chaises", 
+            'menu_slug'=>Str::slug("Gestion des Chaises"),
+            'menu_description'=>'',
+            'menu_icon'=>'menu-icon mdi mdi-briefcase-download',
+            'children'=>[
+            ['submenu_name'=>"Liste des Chaises",'link'=>('wheel-chair') ],
+            //['submenu_name'=>"Nouveau produit",'link'=>url('/product/create') ],
+            ]
+            ],
+
+
             ['menu_name'=>'Gestion des compagnies', 
             'menu_slug'=>Str::slug('Gestion des compagnies'),
             'menu_description'=>'',
@@ -80,15 +103,7 @@ class DatabaseSeeder extends Seeder
  
             
  
-             ['menu_name'=>"Gestion des Chaises", 
-             'menu_slug'=>Str::slug("Gestion des Chaises"),
-             'menu_description'=>'',
-             'menu_icon'=>'menu-icon mdi mdi-briefcase-download',
-             'children'=>[
-             ['submenu_name'=>"Liste des Chaises",'link'=>('wheel-chair') ],
-             //['submenu_name'=>"Nouveau produit",'link'=>url('/product/create') ],
-             ]
-             ],
+            
  
              ['menu_name'=>"Gestion des agents CAS", 
              'menu_slug'=>Str::slug("Gestion des agents CAS"),
@@ -112,16 +127,7 @@ class DatabaseSeeder extends Seeder
  
           
  
-             ['menu_name'=>'Gestion des villes', 
-             'menu_slug'=>Str::slug('Gestion des villes'),
-             'menu_description'=>'',
-             'menu_icon'=>'menu-icon mdi mdi-adjust',
-             'children'=>[
-             ['submenu_name'=>'Liste des villes','link'=>('city') ],
-           //  ['submenu_name'=>'Nouveau borderau','link'=>('extract/create') ],
-             ]
-             
-             ],
+           
              
          ];
  

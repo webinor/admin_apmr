@@ -394,7 +394,8 @@ ViewsResponder {
     }
     function getCreateVariables()
     {
-        $city = null; 
+        $assistance_agent = null; 
+        $cities = City::get(); 
         $action = "create";
         $disabled = "";
         $readonly = "";
@@ -402,10 +403,11 @@ ViewsResponder {
      
 
         return compact(
-            "city",
+            "assistance_agent",
             "action",
             "disabled",
             "readonly",
+            "cities"
         );
     }
     function getShowVariables($folder)
@@ -469,19 +471,21 @@ ViewsResponder {
             "product_types"
         );
     }
-    function getEditVariables($supplier)
+    function getEditVariables($assistance_agent)
     {
-        $supplier->load(["logo", "documents"]);
+        $assistance_agent->load(["city"]);
+        $cities = City::get(); 
+
         $action = "update";
         $disabled = "";
         $readonly = "";
 
         return compact(
-            "supplier",
+            "assistance_agent",
             "action",
+            "cities",
             "disabled",
-            "readonly",
-            "areas"
+            "readonly"
         );
     }
     function getView($view_name, $vars = [])
@@ -509,7 +513,7 @@ ViewsResponder {
         ];
     }
     
-    public function createCity(array $company_details ) 
+    public function create(array $details ) 
     {
 
                     
@@ -517,45 +521,27 @@ ViewsResponder {
                         
                 //     DB::beginTransaction();
 
-                if (City::select('id')->where('name' ,  $company_details['name'])->count()) {
-                            
-                    return [
-                            'status'=>false,
-                            'errors'=> ["name" => ["Cette ville existe deja"]]
-                        ];
-
-                }
                     
-                        $city= new City();    
-                        $columns = ['name',
+                        $assistance_agent= new AssistanceAgent();    
+                        $columns = ['first_name','last_name','email',
                         ];
                 
                         foreach ($columns as  $column) {
-                            array_key_exists($column, $company_details ) ? $city->{$column} = $company_details[$column] : null ;
+                            array_key_exists($column, $details ) ? $assistance_agent->{$column} = $details[$column] : null ;
                         }
-                    
-            /* if (Reception::where('name', $company_details['name'])->first()) {
-                        
-                        return [
-                                'status'=>false,
-                                'errors'=> ["name" => ["Un fournisseur avec ce nom existe deja"]]
-                            ];
-
-                }*/
                 
-                $city->admin_id = $company_details['token'];
+                $assistance_agent->code = Str::random(10);
+                $assistance_agent->city_id = City::whereCode($details['city'])->first()->id;
+                $assistance_agent->admin_id = Auth::guard('sanctum')->user()->id;
 
-                //$mission = Mission::select('id')->whereId($company_details['mission'])->first();
+                //$mission = Mission::select('id')->whereId($city_details['mission'])->first();
                 
 
 
-                    $city->save();
+                    $assistance_agent->save();
+
             
-                
-                /*   return [
-                        'status'=>true,
-                        'data'=> [$city] 
-                    ];*/
+            
 
 
                     //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
@@ -564,7 +550,7 @@ ViewsResponder {
                     
                     return [
                         'status'=>true,
-                        'data'=> $city 
+                        'data'=> $assistance_agent 
                     ];
 
 
@@ -576,7 +562,7 @@ ViewsResponder {
        
     }
 
-    public function updateCity(array $company_details ) 
+    public function update(array $details , AssistanceAgent $assistance_agent ) 
     {
 
                     
@@ -584,36 +570,20 @@ ViewsResponder {
                         
                 //     DB::beginTransaction();
 
-                if (City::select('id')->where('name' ,  $company_details['name'])
-                ->where('id','!=',$company_details['city'])
-                ->count()) {
-                            
-                    return [
-                            'status'=>false,
-                            'errors'=> ["name" => ["Cette ville existe deja"]]
+               
+                    
+                    
+                $columns = ['first_name','last_name','email',
                         ];
-
-                }/**/
-                    
-                        $city= City::find($company_details['city']);    
-                    
-                    
-            /* if (Reception::where('name', $company_details['name'])->first()) {
-                        
-                        return [
-                                'status'=>false,
-                                'errors'=> ["name" => ["Un fournisseur avec ce nom existe deja"]]
-                            ];
-
-                }*/
                 
-                $city->name = $company_details['name'];
+                        foreach ($columns as  $column) {
+                            array_key_exists($column, $details ) ? $assistance_agent->{$column} = $details[$column] : null ;
+                        }
 
-                //$mission = Mission::select('id')->whereId($company_details['mission'])->first();
-                
 
+                        $assistance_agent->city_id = City::whereCode($details['city'])->first()->id;
 
-                    $city->save();
+                    $assistance_agent->save();
             
                 
                 /*   return [
@@ -628,7 +598,7 @@ ViewsResponder {
                     
                     return [
                         'status'=>true,
-                        'data'=> $city 
+                        'data'=> $assistance_agent 
                     ];
 
 

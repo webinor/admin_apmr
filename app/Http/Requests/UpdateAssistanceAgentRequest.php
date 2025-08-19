@@ -13,7 +13,7 @@ class UpdateAssistanceAgentRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,11 @@ class UpdateAssistanceAgentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'assistance_agent'=>'required|string',
+            'first_name'=>'required|string',
+            'last_name'=>'required|string',
+            'city'=>'required|string',
+            'email'=>'nullable|string',
         ];
     }
 }

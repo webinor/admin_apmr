@@ -25,9 +25,9 @@
         </ul>
         <div>
           <div class="btn-wrapper">
-            {{--@if (Auth::user()->can('create', App\Models\settings\city::class))--}
+            {{--@if (Auth::user()->can('create', App\Models\settings\company::class))--}
     <!-- The current user can update the post... -->
-    <a href="{{url('settings/city/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau client / Prospect</a>
+    <a href="{{url('settings/company/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau client / Prospect</a>
 
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
@@ -42,20 +42,110 @@
             <div class="col-md-8 grid-margin stretch-card">
               <div class="card"> 
                 <div class="card-body">
-                  <h4 class="card-title">Modifier la ville</h4>
+                 
+                  @if ($action == "create")
+
+                  <h4 class="card-title">Ajouter un responsable d'escale</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">ville modifiée avec succes</h6>
+                    <h6 class="alert-heading">responsable d'escale ajouté avec succes</h6>
                   </div>
+                      
+                  @else
+                      
+                  <h4 class="card-title">Modifier la responsable d'escale</h4>
+                  <div class="d-none alert alert-success" role="alert">
+                    <h6 class="alert-heading">responsable d'escale modifié avec succes</h6>
+                  </div>
+
+                  @endif
+
                   <form id="form" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
                     @csrf
                     <input id="token" type="hidden" class="form-control" value="{{session('user')->code}}" >
-                    <input id="ground_agent" type="hidden" class="form-control" value="{{$ground_agent ? $ground_agent->code : ''}}" >
+                    <input id="ground-agent" type="hidden" class="form-control" value="{{$ground_agent ? $ground_agent->code : ''}}" >
+                    <input id="action" type="hidden" class="" value="{{ $action }}" >
                   
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="first_name">Nom<span class="text-danger">*</span></label>
+                        <input type="text" name="first_nameame" value="{{$ground_agent ? $ground_agent->first_name : ''}}" class=" form-control" id="first_name" placeholder="Ex : NONO" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
           
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="name">Nom</label>
-                        <input type="text" name="name" value="{{$ground_agent ? $ground_agent->name : ''}}" class=" form-control" id="name" placeholder="Ex : Douala" required>
+                        <label for="last_name">Prenom <span class="text-danger">*</span></label>
+                        <input type="text" name="last_name" value="{{$ground_agent ? $ground_agent->last_name : ''}}" class=" form-control" id="last_name" placeholder="Ex : Albert" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
+
+                   
+
+                   {{--  <div class="form-group">
+                      <label for="company">Selectionnez la ville<span class="text-danger">*</span></label>
+                      <select name="company" class="form-control" id="company" placeholder="">
+                    
+                        @forelse ($cities as $company)
+                    
+                        @if ($loop->first)
+                        <option value="" >Selectionnez un type de piece</option>
+                        @endif
+                           
+                        <option value="{{$company->id}}">{{Str::upper(__($company->name))}}</option>
+                        
+                        @empty
+                    
+                        <option value="">Aucun type de piece disponible</option>
+                    
+                        @endforelse
+                    
+                      </select>
+                      <div class="valid-feedback">
+                      </div>
+                      <div class="invalid-feedback">
+                      </div>
+                    </div> --}}
+
+
+                    <div class="form-group">
+                      <label for="company">Selectionnez la compagnie<span class="text-danger">*</span></label>
+                      <select name="company" class="form-control" id="company" placeholder="">
+                    
+                        @forelse ($companies as $company)
+                    
+                        @if ($loop->first)
+                        <option value="" >Selectionnez sa compagnie</option>
+                        @endif
+                           
+                        <option value="{{$company->code}}" {{ $ground_agent && $ground_agent->company->code == $company->code ? 'selected' : '' }}>{{Str::upper(__($company->name))}}</option>
+                        
+                        @empty
+                    
+                        <option value="">Aucune compagnie disponible</option>
+                    
+                        @endforelse
+                    
+                      </select>
+                      <div class="valid-feedback">
+                      </div>
+                      <div class="invalid-feedback">
+                      </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="email">email</label>
+                        <input type="email" name="email" value="{{$ground_agent ? $ground_agent->email : ''}}" class=" form-control" id="email" placeholder="Ex : aaa@gmal.com" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -65,69 +155,19 @@
 
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="name">Prenom</label>
-                        <input type="text" name="name" value="{{$ground_agent ? $ground_agent->name : ''}}" class=" form-control" id="name" placeholder="Ex : Douala" required>
+                        <label for="signature">Signature</label>
+                    
+                        <input {{ $readonly }} type="file" name="signature" class=" form-control" id="signature" placeholder="signature" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
                         </div>
                       </div>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="city_id">Selectionnez la ville<span class="text-danger">*</span></label>
-                      <select name="city_id" class="form-control" id="city_id" placeholder="">
-                    
-                        @forelse ($cities as $city)
-                    
-                        @if ($loop->first)
-                        <option value="" >Selectionnez un type de piece</option>
-                        @endif
-                           
-                        <option value="{{$city->id}}">{{Str::upper(__($city->name))}}</option>
-                        
-                        @empty
-                    
-                        <option value="">Aucun type de piece disponible</option>
-                    
-                        @endforelse
-                    
-                      </select>
-                      <div class="valid-feedback">
-                      </div>
-                      <div class="invalid-feedback">
-                      </div>
-                    </div>
-
-
-                    <div class="form-group">
-                      <label for="city_id">Selectionnez la compagnie<span class="text-danger">*</span></label>
-                      <select name="city_id" class="form-control" id="city_id" placeholder="">
-                    
-                        @forelse ($cities as $city)
-                    
-                        @if ($loop->first)
-                        <option value="" >Selectionnez un type de piece</option>
-                        @endif
-                           
-                        <option value="{{$city->code}}">{{Str::upper(__($city->name))}}</option>
-                        
-                        @empty
-                    
-                        <option value="">Aucun type de piece disponible</option>
-                    
-                        @endforelse
-                    
-                      </select>
-                      <div class="valid-feedback">
-                      </div>
-                      <div class="invalid-feedback">
-                      </div>
-                    </div>
+                    </div> 
                   
                     <div id="update_button" class="mt-3">
                       <button id="update" type="button"  class="text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       Modifier ce responsable d'escale
+                       {{ $action == "create" ? "Ajouter" : "Modifier" }}
                       </button>
                     </div> 
                     
@@ -184,7 +224,7 @@ var host = location.host;// document.domain ;
 
       $.ajax({
         type: "post",
-        url: protocol+host+`/api/admin/settings/city/${data_send['city']}?_method=PUT`,
+        url: protocol+host+`/api/ground-agent/${data_send['ground-agent'] ? data_send['ground-agent']+'?_method=PUT' : ''}`,
         data: data_send,
       headers: {'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')},
 beforeSend: function (xhr) {
@@ -194,6 +234,10 @@ beforeSend: function (xhr) {
         success: function(data, textStatus, xhr) {
         if (data.status) {
 
+          if ($("#action").val()=="create") {
+
+            $("#form")[0].reset();
+          }
           $("#overview .alert-success").toggleClass("d-none");
         //  $('.customer').val(data.data.customer);
          // $("#form")[0].reset();

@@ -9,7 +9,7 @@
       <div class="d-sm-flex align-items-center justify-content-between border-bottom">
         <ul class="nav nav-tabs" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Vue d'ensemble des responsables d'escale</a>
+            <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Vue d'ensemble des factures</a>
           </li>
           {{--<li class="nav-item">
             <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#audiences" role="tab" aria-selected="false">Audiences</a>
@@ -25,7 +25,7 @@
           <div class="btn-wrapper">
             {{--@if (Auth::admin()->can('create', App\Models\Sales\Customer::class))--}}
     <!-- The current admin can update the post... -->
-    <a href="{{url('ground-agent/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau responsable d'escale</a>
+    <a href="{{url('invoice/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouvelle ville</a>
 
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
@@ -36,7 +36,6 @@
       </div>
       <div class="tab-content tab-content-basic">
         <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview"> 
-          
           {{--<div class="row">
             <div class="col-sm-12">
               <div class="statistics-details d-flex align-items-center justify-content-between">
@@ -80,7 +79,7 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Liste des responsables d'escales</h4>
+                  <h4 class="card-title">Liste des factures</h4>
                   {{--<p class="card-description">
                     Add class <code>.table-striped</code>
                   </p>--}}
@@ -92,62 +91,59 @@
                             Logo
                           </th>--}}
                           <th>
-                            Nom et prenom
-                          </th>
-                          <th>
-                            Email
-                          </th>
-                          <th>
                             Compagnie
                           </th>
+                          
                           <th>
-                            Ville
+                            generée par
                           </th>
                           <th>
-                            Ajoutee le
+                            generée le
                           </th>
-                         <th>Action</th> 
+                         <th>Action</th>
+                          
                         </tr>
                       </thead>
                       <tbody>
-                        @foreach ($ground_agents as $ground_agent)
+                        @foreach ($invoices as $invoice)
+
+                      
                         <tr>
                           
                          {{-- <td>
-                            {{$ground_agent->image_url}}
+                            {{$invoice->image_url}}
                           </td>--}}
                           <td>
-                            {{$ground_agent->fullName()}}
+                            {{$invoice->name}}
                           </td>
 
                           <td>
 
-                          </td>
+                            @if ($invoice->admin && $invoice->admin->employee)
+                           
+                            {{$invoice->admin->employee->first_name}}   {{$invoice->admin->employee->last_name}}
+                                
+                            @endif
 
-                          <td>
-                          {{ $ground_agent->company->name }}
-                          </td>
-
-                          <td>
-                            {{ $ground_agent->company->city->name }}
+                            
                           </td>
                           <td>
-                            {{$ground_agent->created_at}}
+                            {{$invoice->created_at}}
                             
                           </td>
                           
                           <td>
                             <form>
 
-                              <a id="print_{{$ground_agent->code}}" class="me-3 print" href="{{url('ground-agent/'.$ground_agent->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
+                              <a id="print_{{$invoice->code}}" class="me-3 print" href="{{url('invoice/'.$invoice->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
 
 
-                              {{-- <a id="edit_{{$ground_agent->code}}" class="me-3 edit" href="{{url('ground-agent/'.$ground_agent->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
+{{--                               <a id="edit_{{$invoice->code}}" class="me-3 edit" href="{{url('invoice/'.$invoice->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
  --}}
-                              @can('delete', $ground_agent)
+                              @can('delete', $invoice)
 
-                              <a id="delete_{{$ground_agent->code}}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{$ground_agent->code}}" type="hidden" value="{{$ground_agent->code}}">
+                              <a id="delete_{{$invoice->code}}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                              <input id="input_{{$invoice->code}}" type="hidden" value="{{$invoice->code}}">
                               <div id="loader" class="d-none d-flex justify-content-center mt-3">
             
                               <div class="inner-loading dot-flashing"></div>

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAssistanceRequest;
 use App\Http\Requests\UpdateAssistanceRequest;
-use App\Models\Assistance;
+use App\Models\Operations\Assistance;
 use App\Services\Misc\AssistanceService;
 use Illuminate\Http\Request;
 
@@ -62,7 +62,7 @@ class AssistanceController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Assistance  $assistance
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Http\Response
      */
     public function show(Assistance $assistance)
@@ -73,7 +73,7 @@ class AssistanceController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Assistance  $assistance
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Http\Response
      */
     public function edit(Assistance $assistance)
@@ -85,7 +85,7 @@ class AssistanceController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\UpdateAssistanceRequest  $request
-     * @param  \App\Models\Assistance  $assistance
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateAssistanceRequest $request, Assistance $assistance)
@@ -96,7 +96,7 @@ class AssistanceController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Assistance  $assistance
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Http\Response
      */
     public function destroy(Assistance $assistance)

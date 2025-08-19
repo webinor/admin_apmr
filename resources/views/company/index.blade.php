@@ -113,9 +113,9 @@
                       <thead>
                         <tr>
                           <th></th>
-                          {{-- <th>
+                           <th>
                             Logo
-                          </th> --}}
+                          </th> {{----}}
                           <th>
                             Nom
                           </th>
@@ -126,10 +126,10 @@
                           <th>
                             Prefixe
                           </th>
-                         {{--  <th>
-                            Email
+                         <th>
+                            Abonnement mensuel
                           </th>
-                          <th>
+                         {{--   <th>
                             Contact
                           </th> --}}
                           <th>
@@ -162,22 +162,26 @@
                           <td>
                             {{ $slip_index }}
                           </td>
-                         {{-- -}} <td>
+                         <td>
                             <div class="preview-thumbnail">
-                            @php
-                                if ($company->logo) {
-                                  $logo = asset("storage/company_images/".$company->logo->path);
+                            {{-- @php
+                                if ($company->image_path) {
+                                  $logo = asset("storage/company_images/".$company->image_path);
                                 } else {
                                   $logo = asset("storage/company_images/default.png");
                                 }
-                               @endphp
+                               @endphp --}}
+
+@if($company->image_path && Storage::disk('public')->exists('company_images/' . $company->image_path))
+<img class="lazy img-sm profile-pic" data-src="{{ asset('storage/company_images/' . $company->image_path) }}" alt="Logo de la compagnie">
+@else
+<img class="lazy img-sm profile-pic" data-src="{{ asset('images/default.png') }}" alt="Image par défaut">
+@endif
                             
-                                <img data-src="{{$logo}}" alt="image" class="lazy img-sm profile-pic">
-                            {{--<span  class=" logged-out user-login-status user-login-status-{->user->id}}">●</span>--}
  
                           </div>
                           
-                          </td>{{----}}
+                          </td>
                           <td>
                             {{$company->name}}
                           </td>
@@ -194,12 +198,12 @@
                             {{$company->prefix}}
                           </td>
 
-                         {{--  <td>
-                            {{$company->email}}
+                          <td>
+                            {{$company->mensual_fee}}
 
                           </td>
 
-                          <td>
+                        {{--   <td>
                             {{$company->main_phone_number}}
                           </td> 
                           

@@ -57,7 +57,7 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
-        $response =  $this->company_service->createCompany($request->validated());
+        $response =  $this->company_service->createCompany($request->validated() , $request);
 
         return $response;
     }
@@ -95,7 +95,7 @@ class CompanyController extends Controller
      */
     public function update(UpdateCompanyRequest $request, Company $company)
     {
-        $response =  $this->company_service->updateCompany($request->validated() , $company);
+        $response =  $this->company_service->updateCompany($request->validated() , $company , $request);
 
         return $response;
     }

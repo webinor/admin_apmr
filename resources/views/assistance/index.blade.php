@@ -31,6 +31,12 @@
 
     <a href="{{url('assistance/create')}}" class="d-none btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS</a>
 
+   <!-- Bouton -->
+<a href="#" class="btn btn-primary text-white me-0" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
+  <i class="bi bi-file-earmark-plus"></i> Nouvelle facture
+</a>
+
+
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
            
@@ -125,14 +131,17 @@
                           </th> --}}
                           
                           <th>
-                            numeor de vol
+                            numero de vol
+                          </th>
+                          
+                          <th>
+                            responsable d'escale
                           </th>
                           <th>
-                            respnsable d'escale
+                            personnes assistees
                           </th>
-                          <th>
-                            personnes assistee
-                          </th>
+
+                          <th>Fiche enregistrée par</th>
 
                           <th>
                             Date
@@ -152,11 +161,13 @@
            
                         
                  
+
                         
                         @endphp
 
                         @foreach ($assistances as $index => $assistance)
 
+                    
                         @php
                              $assistance_index = $start_index  + $index;
                         @endphp
@@ -181,7 +192,7 @@
                           
                           </td>{{----}}
                           <td>
-                            {{$assistance->fullName()}}
+                            {{$assistance->ground_agent ? $assistance->ground_agent->company->name : ''}}
                           </td>
  
                          {{--<td>
@@ -195,19 +206,26 @@
                        
 
                           <td>
-                            {{$assistance->email}}
+                            {{$assistance->flight_number}}
 
+                          </td>
+
+                         
+
+                          <td>
+                            {{$assistance->ground_agent ? $assistance->ground_agent->fullName() : ''}}
                           </td>
 
                           <td>
-                            {{$assistance->main_phone_number}}
+                            {{ $assistance->assistance_lines->count() }}
                           </td>
+                         
                           
                           <td>
 
-                            @if ($assistance->user)
+                            @if ($assistance->registrator)
                            
-                            {{$assistance->user->employee->full_name()}}
+                            {{$assistance->registrator->name." ".$assistance->registrator->last_name}}
                                 
                             @endif
 
@@ -219,6 +237,8 @@
                           </td> --}}
 
                           <td>
+
+                            {{ $assistance->flight_date }}
 
                           </td>
                           
@@ -287,11 +307,39 @@
 
 
 @section('custom_modal')
+
+@include('layouts.partials._modal_invoice')
         
 @endsection
 
 
 
 @section('custom_js')
+
+<script>
+  $(function () {
+    
+
+    document.getElementById('previewBtn').addEventListener('click', function() {
+    const company = document.getElementById('company').value;
+    const month = document.getElementById('month').value;
+
+    if (!company || !month) {
+        alert("Veuillez sélectionner la compagnie et le mois !");
+        return;
+    }
+
+    // Construire l'URL avec query string
+    const url = `{{ route('invoices.preview') }}?company=${encodeURIComponent(company)}&month=${encodeURIComponent(month)}`;
+
+    // Ouvrir dans un nouvel onglet
+    window.open(url, '_blank');
+});
+
+    
+
+    
+  });
+</script>
 
 @endsection

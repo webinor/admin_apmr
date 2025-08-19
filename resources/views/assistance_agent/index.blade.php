@@ -29,7 +29,7 @@
     data-bs-target="#balance-modal"><i class="icon-check"></i>Solde prestataire</a>
 
 
-    <a href="{{url('assistance/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS</a>
+    <a href="{{url('assistance-agent/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS</a>
 
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
@@ -220,13 +220,13 @@
                               
                                   
                               
-                              <a    id="print_{{$assistance_agent->code}}" class="assistance_agent_{{$assistance_agent->code }} me-3 print" href="{{url('assistance_agent/'.$assistance_agent->code)}}" ><i class="menu-icon mdi mdi-eye"></i></a>
+                              <a    id="print_{{$assistance_agent->code}}" class="assistance_agent_{{$assistance_agent->code }} me-3 print" href="{{url('assistance-agent/'.$assistance_agent->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
 
                              
 
                              
-                              <a    id="edit_{{$assistance_agent->code}}" class="assistance_agent_{{$assistance_agent->code }} me-3 edit" href="{{url('assistance_agent/'.$assistance_agent->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
-                              
+                             {{--  <a    id="edit_{{$assistance_agent->code}}" class="assistance_agent_{{$assistance_agent->code }} me-3 edit" href="{{url('assistance-agent/'.$assistance_agent->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
+                               --}}
 
                               @can('delete', $assistance_agent)
                             

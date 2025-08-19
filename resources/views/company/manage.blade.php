@@ -60,19 +60,19 @@
               <div class="card"> 
                 <div class="card-body">
                   @if ($company && $action=='update')
-                  <h4 class="card-title">Modifier le compagnie</h4>
+                  <h4 class="card-title">Modifier la compagnie</h4>
                   <div class="d-none alert alert-success" role="alert">
                     <h6 class="alert-heading">compagnie modifié avec succes</h6>
                   </div>
                   @elseif(!$company && $action=='create')
-                  <h4 class="card-title">Ajouter un compagnie</h4>
+                  <h4 class="card-title">Ajouter une compagnie</h4>
                   <div class="d-none alert alert-success" role="alert">
                     <h6 class="alert-heading">compagnie crée avec succes</h6>
                   </div>
                   <span>Ici ce sont les informations de base. Apres avoir cliqué sur "Creer", naviguez sur les differents onglets pour indiquer les information complementaires.</span>
                   @elseif($company && $action=='show')
 
-                  <h4 class="card-title">Visualiser le compagnie</h4>
+                  <h4 class="card-title">Visualiser la compagnie</h4>
 
                   @endif
                   <form id="form-company" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
@@ -80,6 +80,7 @@
                     <input id="token" type="hidden" class="form-control" value="{{Auth::user()->code}}" >
                     <input id="action" type="hidden"  value="{{$company ? 'edit' : 'create'}}" >
                     <input id="url" type="hidden"  value="{{"/api/company".($company ? "/".$company->code."?_method=PUT" : "")}}" >
+                    <input id="action" type="hidden" class="" value="{{ $action }}" >
 
                     @if ($company)
                     
@@ -91,7 +92,7 @@
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="name">Nom de la compagnie</label>
-                        <input {{ $readonly }} type="text" value="{{ $company ? $company->name : '' }}" name="name" class=" form-control" id="name" placeholder="Raison sociale" required>
+                        <input {{ $readonly }} type="text" value="{{ $company ? $company->name : '' }}" name="name" class=" form-control" id="name" placeholder="Raison sociaa" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -103,6 +104,18 @@
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="prefix">Prefixe</label>
                         <input {{ $readonly }} type="text" value="{{ $company ? $company->prefix : '' }}" name="prefix" class=" form-control" id="prefix" placeholder="prefixe" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="mensual_fee">Abonement mensual</label>
+                        <input {{ $readonly }} type="number" value="{{ $company ? $company->mensual_fee : '' }}" name="mensual_fee" class=" form-control" id="mensual_fee" placeholder="150000" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -126,8 +139,7 @@
 
         
 
-          
-
+      
 
           <div class="form-group">
             <label for="city">Ville</label>
@@ -136,7 +148,7 @@
               @forelse ($cities as $city)
           
               @if ($loop->first)
-              <option value="" >Selectionnez la ville </option>
+              <option value="" >Seactionnez la ville </option>
               @endif
                  
               <option value="{{$city->code}}" {{ $company && $company->city->code == $city->code ? 'selected' : '' }}>{{$city->name}}</option>
@@ -181,17 +193,17 @@
 
          
 
-          {{-- <div class="form-group row">
+          <div class="form-group row">
             <div class="col-sm-12 mb-3 mb-sm-0">
               <label for="logo">Selectionner un logo</label>
           
-              <input {{ $readonly }} type="file" name="logo" class=" form-control" id="logo" placeholder="Logo" required>
+              <input {{ $readonly }} type="file" name="file" class=" form-control" id="file" placeholder="file" required>
               <div class="valid-feedback">
               </div>
               <div class="invalid-feedback">
               </div>
             </div>
-          </div> --}}
+          </div> 
 
           {{-- <div class="form-group row">
             <div class="col-sm-12 mb-3 mb-sm-0">
@@ -239,39 +251,39 @@
             <div class="col-md-8 grid-margin stretch-card">
               <div class="card"> 
                 <div class="card-body">
-                  <h4 class="card-title">Ajouter les differents types de pieces</h4>
-                  <span>Ces pieces sont les pieces principale, par exemple les chamber, les salles de bains...</span>
+                  <h4 class="card-title">Ajouter les differentes facturations</h4>
+                  {{-- <span>Ces chaises sont par exemple : C,S...</span> --}}
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading"> piece ajoutee avec succes</h6>
+                    <h6 class="alert-heading">facturation ajoutée avec succes</h6>
                   </div>
-                  <form id="form_wheel_chair" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
+                  <form id="form_company_wheel_chair" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
                     @csrf
                     <input id="token" class="form-control" type="hidden" value="{{session('user')->code}}" >
-                    <input readonly class="ad_id form-control" id="ad_id" type="hidden" value="{{ $company != null ? $company->code : '' }}" >
+                    <input readonly class="company form-control" id="company" type="hidden" value="{{ $company != null ? $company->code : '' }}" >
                     
-                    <input readonly class="tab"  type="hidden" value="wheel_chair" >
+                    <input readonly class="tab"  type="hidden" value="audiences" >
                     <input readonly class="list"  type="hidden" value="wheel_chairs_table" >
-                    <input readonly class="url"  type="hidden" value="wheel_chair_ad" >
-                    <input readonly class="instance"  type="hidden" value="wheel_chair" >
+                    <input readonly class="url"  type="hidden" value="company-wheel-chair" >
+                    <input readonly class="instance"  type="hidden" value="company_wheel_chair" >
                     
           
                    
 
                     <div class="form-group">
-                      <label for="wheel_chair_id">Selectionnez un type de piece <span class="text-danger">*</span></label>
-                      <select name="wheel_chair_id" class="form-control" id="wheel_chair_id" placeholder="">
+                      <label for="wheel_chair">Selectionnez un type de chaise <span class="text-danger">*</span></label>
+                      <select name="wheel_chair" class="form-control" id="wheel_chair" placeholder="">
                     
                         @forelse ($wheel_chairs as $wheel_chair)
                     
                         @if ($loop->first)
-                        <option value="" >Selectionnez un type de piece</option>
+                        <option value="" >Selectionnez un type de chaise</option>
                         @endif
                            
-                        <option value="{{$wheel_chair->id}}">{{Str::upper(__($wheel_chair->name))}}</option>
+                        <option value="{{$wheel_chair->code}}">{{Str::upper(__($wheel_chair->name))}}</option>
                         
                         @empty
                     
-                        <option value="">Aucun type de piece disponible</option>
+                        <option value="">Aucun type de chaise disponible</option>
                     
                         @endforelse
                     
@@ -284,8 +296,8 @@
 
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="number">Prix unitaire </label>
-                        <input type="number" name="number" value="{{$company ? $company ->title : ''}}" class=" form-control" id="number" placeholder="par exemple 2 chambres">
+                        <label for="price">Prix unitaire </label>
+                        <input type="number" name="price" value="{{$company ? $company ->title : ''}}" class=" form-control" id="price" placeholder="par exemple 5000">
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -318,7 +330,7 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Liste des differentes pieces</h4>
+                  <h4 class="card-title">Facturation des types de chaises</h4>
                   
                   <div class="table-responsive">
                     <table id="wheel_chairs_table" class="table table-striped">
@@ -350,17 +362,18 @@
                       <tbody>
                         @if ($company)
                         @foreach ($company->wheel_chairs as $wheel_chair)
+
                         <tr>
                           <td>
                             <div>
-                              <i class="{{ $wheel_chair->icon }} fa-xl"></i>
+                              {{-- <i class="{{ $wheel_chair->icon }} fa-xl"></i> --}}
                             </div>
                           </td>
                           <td>
                             {{ Str::upper(__($wheel_chair->name)) }}
                           </td>
                           <td>
-                            {{ $wheel_chair->pivot->number }}
+                            {{ $wheel_chair->pivot->price }}
                           </td>
                           <td>
                              <form>
@@ -753,7 +766,7 @@
 
 
 @section('custom_js')
-<script src="{{asset('js/enm10F5SaHMUKV.js')}}"></script>
+<script src="{{asset('js/gyte45tghjMUKV.js')}}"></script>
 
 
 

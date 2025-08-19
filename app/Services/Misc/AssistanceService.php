@@ -27,7 +27,8 @@ use App\Addons\Misc\EditVariablesResponder;
 use App\Addons\Misc\IndexVariablesResponder;
 use App\Addons\Misc\ShowVariablesResponder;
 use App\Addons\Misc\ViewsResponder;
-use App\Models\Assistance;
+use App\Models\Company as ModelsCompany;
+use App\Models\Operations\Assistance;
 
 class AssistanceService  implements
 //IndexVariablesResponder,
@@ -385,10 +386,21 @@ ViewsResponder {
        
 
         $assistances = Assistance::oldest()
+        ->has('signature')
+        ->with([
+       // 'signature',
+        'registrator',
+        //'assistance_lines.assistance_agent',
+       // 'assistance_lines.wheel_chair',
+        'ground_agent.company.ground_agents'])
         ->paginate(10)
         ->withQueryString();
 
-        $vars = compact("assistances");
+        $companies = ModelsCompany::get();
+
+      //  dd($assistances);
+
+        $vars = compact("assistances" , "companies");
 
         return $vars;
     }

@@ -28,6 +28,8 @@ use App\Addons\Misc\ShowVariablesResponder;
 use App\Addons\Misc\ViewsResponder;
 use App\Models\Company;
 use App\Models\GroundAgent;
+use App\Models\Misc\KeySign;
+use Illuminate\Support\Facades\Hash;
 
 class GroundAgentService  implements
 //IndexVariablesResponder,
@@ -395,7 +397,7 @@ ViewsResponder {
     function getCreateVariables()
     {
         $cities = City::get();
-        $compagnies = Company::get();
+        $companies = Company::get();
         $ground_agent = null;
         $action = "create";
         $disabled = "";
@@ -406,7 +408,7 @@ ViewsResponder {
         return compact(
             "cities",
             "ground_agent",
-            "compagnies",
+            "companies",
             "action",
             "disabled",
             "readonly",
@@ -473,20 +475,22 @@ ViewsResponder {
             "product_types"
         );
     }
-    function getEditVariables($supplier)
+    function getEditVariables($ground_agent)
     {
-        $supplier->load(["logo", "documents"]);
+        $ground_agent->load(["company"]);
+        $companies = Company::get();
+
         $action = "update";
         $disabled = "";
         $readonly = "";
 
         return compact(
-            "supplier",
+            "ground_agent",
             "action",
             "disabled",
-            "readonly",
-            "areas"
-        );
+            "readonly",  
+            "companies"
+          );
     }
     function getView($view_name, $vars = [])
     {
@@ -513,32 +517,32 @@ ViewsResponder {
         ];
     }
     
-    public function createCity(array $company_details ) 
+    public function create(array $details ) 
     {
 
                     
                     try {
                         
-                //     DB::beginTransaction();
+                     DB::beginTransaction();
 
-                if (City::select('id')->where('name' ,  $company_details['name'])->count()) {
+                /*if (GroundAgent::select('id')->where('name' ,  $details['name'])->count()) {
                             
                     return [
                             'status'=>false,
                             'errors'=> ["name" => ["Cette ville existe deja"]]
                         ];
 
-                }
+                }*/
                     
-                        $city= new City();    
-                        $columns = ['name',
+                        $ground_agent= new GroundAgent();    
+                        $columns = ['first_name','last_name','email',
                         ];
                 
                         foreach ($columns as  $column) {
-                            array_key_exists($column, $company_details ) ? $city->{$column} = $company_details[$column] : null ;
+                            array_key_exists($column, $details ) ? $ground_agent->{$column} = $details[$column] : null ;
                         }
                     
-            /* if (Reception::where('name', $company_details['name'])->first()) {
+            /* if (Reception::where('name', $details['name'])->first()) {
                         
                         return [
                                 'status'=>false,
@@ -547,13 +551,32 @@ ViewsResponder {
 
                 }*/
                 
-                $city->admin_id = $company_details['token'];
-
-                //$mission = Mission::select('id')->whereId($company_details['mission'])->first();
+                $ground_agent->code = Str::random(10);
+                $ground_agent->company_id = Company::whereCode($details['company'])->first()->id;
+                $ground_agent->admin_id = Auth::guard('sanctum')->user()->id;
+                //$mission = Mission::select('id')->whereId($details['mission'])->first();
                 
 
 
-                    $city->save();
+                    $ground_agent->save();
+
+
+                    $id = 4;//Hash::make(6);
+    $key = Hash::make("123456");
+
+    $ground_agents = GroundAgent::whereId(4)->get();
+
+        
+        $sign = KeySign::create([
+            'code'=>Str::random(20),
+          //  'model_type'=>(GroundAgent::class),
+            'model_type'=>("App\Models\Operations\GroundAgent"),
+            'model_id'=>$ground_agent->id,
+            'key'=>$key,
+            'hash'=>Hash::make($ground_agent->id.$key)
+        ]);
+        
+    
             
                 
                 /*   return [
@@ -564,23 +587,23 @@ ViewsResponder {
 
                     //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
                     
-                //   DB::commit();
+                   DB::commit();
                     
                     return [
                         'status'=>true,
-                        'data'=> $city 
+                        'data'=> $ground_agent 
                     ];
 
 
                 } catch (\Throwable $th) {
-                // DB::rollback();
+                 DB::rollback();
                     throw $th;
                 }
                     
        
     }
 
-    public function updateCity(array $company_details ) 
+    public function update(array $details , GroundAgent $ground_agent ) 
     {
 
                     
@@ -588,41 +611,25 @@ ViewsResponder {
                         
                 //     DB::beginTransaction();
 
-                if (City::select('id')->where('name' ,  $company_details['name'])
-                ->where('id','!=',$company_details['city'])
-                ->count()) {
-                            
-                    return [
-                            'status'=>false,
-                            'errors'=> ["name" => ["Cette ville existe deja"]]
-                        ];
-
-                }/**/
-                    
-                        $city= City::find($company_details['city']);    
-                    
-                    
-            /* if (Reception::where('name', $company_details['name'])->first()) {
-                        
-                        return [
-                                'status'=>false,
-                                'errors'=> ["name" => ["Un fournisseur avec ce nom existe deja"]]
-                            ];
-
-                }*/
                 
-                $city->name = $company_details['name'];
-
-                //$mission = Mission::select('id')->whereId($company_details['mission'])->first();
+                $columns = ['first_name','last_name','email',
+                ];
+        
+                foreach ($columns as  $column) {
+                    array_key_exists($column, $details ) ? $ground_agent->{$column} = $details[$column] : null ;
+                }
+            
+                //$mission = Mission::select('id')->whereId($details['mission'])->first();
                 
+                $ground_agent->company_id = Company::whereCode($details['company'])->first()->id;
 
 
-                    $city->save();
+                    $ground_agent   ->save();
             
                 
                 /*   return [
                         'status'=>true,
-                        'data'=> [$city] 
+                        'data'=> [$ground_agent ] 
                     ];*/
 
 
@@ -632,7 +639,7 @@ ViewsResponder {
                     
                     return [
                         'status'=>true,
-                        'data'=> $city 
+                        'data'=> $ground_agent   
                     ];
 
 

@@ -56,7 +56,9 @@ class GroundAgentController extends Controller
      */
     public function store(StoreGroundAgentRequest $request)
     {
-        //
+        $response =  $this->groundAgentService->create($request->validated());
+
+        return $response;
     }
 
     /**
@@ -78,7 +80,9 @@ class GroundAgentController extends Controller
      */
     public function edit(GroundAgent $groundAgent)
     {
-        //
+        $variables = $this->groundAgentService->getEditVariables($groundAgent);
+           
+        return  $this->groundAgentService->getView('ground_agent.manage', $variables);
     }
 
     /**
@@ -90,7 +94,9 @@ class GroundAgentController extends Controller
      */
     public function update(UpdateGroundAgentRequest $request, GroundAgent $groundAgent)
     {
-        //
+        $response =  $this->groundAgentService->update($request->validated() , $groundAgent);
+
+        return $response;
     }
 
     /**

@@ -26,6 +26,7 @@ use App\Http\Controllers\User\ResetPasswordController;
 use App\Http\Controllers\Prestations\ProductController;
 use App\Http\Controllers\Prestations\ProviderController;
 use App\Http\Controllers\HumanResource\EmployeeController;
+use App\Http\Controllers\Misc\InvoiceController;
 use App\Http\Controllers\Misc\TherapeuticClassController;
 use App\Http\Controllers\Operations\FolderController;
 use App\Http\Controllers\Operations\ServiceCostController;
@@ -183,6 +184,7 @@ Route::middleware(["auth"])->group(function () {
     Route::post("validate-invoices", [FolderController::class, "validate_invoices"]);
     
 
+    Route::get("invoce", [InvoiceController::class, "preview"])->name('invoices.preview');
    
 
     Route::get("/filter", [HomeController::class, "filter"]);
@@ -228,6 +230,18 @@ Route::middleware(["auth", "device_is_verify"])->group(function () {
 
 Route::get("/host", function (Faker $fakerpp) {
 
+
+    $fullPath = storage_path('public/company_images/dZUKgDEKOBZz0Hsi3es7_1755619057.jpg');
+
+    if (file_exists($fullPath)) {
+        echo "Fichier trouvé !";
+    } else {
+        echo "Fichier introuvable.";
+    }
+    
+
+
+    return null;
 
   //  dd(Hash::make("Test"));
    // $invoice = Invoice::whereReference
