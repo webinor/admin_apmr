@@ -89,7 +89,7 @@
                   </div>
                 </div>
               </div> 
-              <div class="row">
+              <div class="d-none row">
                 <div class="col-lg-8 d-flex flex-column">
                   <div class="row flex-grow">
 
@@ -395,7 +395,7 @@
 
 
 
-              <div class="row">
+              <div class="d-none row">
                 <div class="col-lg-8 d-flex flex-column">
                   <div class="row flex-grow">
                     <div class="col-12 grid-margin stretch-card">

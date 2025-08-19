@@ -121,7 +121,7 @@
                           </td>
 
                           <td>
-
+                            {{ $ground_agent->email }}
                           </td>
 
                           <td>

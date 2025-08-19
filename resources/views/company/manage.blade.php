@@ -92,7 +92,7 @@
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="name">Nom de la compagnie</label>
-                        <input {{ $readonly }} type="text" value="{{ $company ? $company->name : '' }}" name="name" class=" form-control" id="name" placeholder="Raison sociaa" required>
+                        <input {{ $readonly }} type="text" value="{{ $company ? $company->name : '' }}" name="name" class=" form-control" id="name" placeholder="Ex : Air France" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
