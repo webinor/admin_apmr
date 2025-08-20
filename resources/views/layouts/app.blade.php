@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="{{ asset('zen/vendors/simple-line-icons/css/simple-line-icons.css') }}">
 
 
-  <link rel="shortcut icon" href="{{asset('wordpress/2022/06/logo.png')}}" />
+  <link rel="shortcut icon" href="{{asset('wordpress/2022/06/LOGO_CAMEROUN_ASSIST.png')}}" />
 
 
  <link rel="stylesheet" href="{{asset('zen/')}}/vendors/typicons/typicons.css">
@@ -32,7 +32,7 @@
 <noscript><link media="all"  rel="stylesheet" href="{{asset('zen2')}}/css/vertical-layout-light/style.min.css"></noscript>
   <!-- endinject -->
 
-  <link rel="shortcut icon" href="{{asset('logo.png')}}"  />
+  <link rel="shortcut icon" href="{{asset('LOGO_CAMEROUN_ASSIST.png')}}"  />
   
   @yield('custom_css')
 
@@ -93,10 +93,10 @@ select.form-control{
         </div>
         <div>
           <a class="navbar-brand brand-logo" href="{{url('/')}}">
-            <img style="width: 200px;"  src="{{asset('wordpress/2022/06/logo.png')}}" alt="logo" />
+            <img style="width: 100px; height: 100px;"  src="{{asset('wordpress/2022/06/LOGO_CAMEROUN_ASSIST.png')}}" alt="logo" />
           </a>
           <a class="navbar-brand brand-logo-mini" href="{{url('/')}}">
-            <img style="width: 200px;" src="{{asset('wordpress/2022/06/logo.png')}}" alt="logo" />
+            <img style="width: 100px; height: 100px;" src="{{asset('wordpress/2022/06/LOGO_CAMEROUN_ASSIST.png')}}" alt="logo" />
           </a>
         </div>
       </div>

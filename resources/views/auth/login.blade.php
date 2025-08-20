@@ -93,8 +93,8 @@
           
             <div class="h-100 d-lg-block d-none me-n8 " style="background: #c7c7c738;" >
                 
-              <div class="h-100 ms-auto  z-index-10 " style="object-fit: fill; ;background-image:url({{ asset('/wrdpress/2022/06/accpass24_.png') }})">
-                <img class="w-100 h-100" style="object-fit: contain;" src="{{ asset('/wordpress/2022/06/accpass24_.png') }}" alt="" srcset="">
+              <div class="h-100 ms-auto  z-index-10 " style="object-fit: fill; ;background-image:url({{ asset('/wrdpress/2022/06/LOGO_CAMEROUN_ASSIST.png') }})">
+                <img class="w-100 h-100" style="object-fit: contain;" src="{{ asset('/wordpress/2022/06/LOGO_CAMEROUN_ASSIST.png') }}" alt="" srcset="">
                 {{--  --} class="w-100 h-100" style="object-fit: cover;" src="{{ asset('/wordpress/2022/06/rm373batch5-blogbanner-08.jpg') }}" alt="" srcset="">{{--  --}}
                 
               
