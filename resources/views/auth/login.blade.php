@@ -10,7 +10,7 @@
           <div class="col-lg-4 h-100 px-0 align-items-center">
             <div class="d-flex flex-column justify-content-center  h-100 auth-form-light text-left py-5 px-4 px-sm-5">
               <div class="brand-logo text-center d-block d-sm-block d-lg-none">
-                <img style="width: 200px" src="{{asset('wordpress/2022/06/logo.png')}}" alt="logo">
+                <img style="width: 200px" src="{{asset('wordpress/2022/06/LOGO_CAMEROUN_ASSIST.png')}}" alt="logo">
               </div>
               @php 
                   if ($admin) {
