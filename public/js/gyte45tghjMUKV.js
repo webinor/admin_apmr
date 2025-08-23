@@ -53,6 +53,12 @@ if(files.length > 0){
 			  //$('.line').remove();
 			  
 			}
+
+			if (data.data.image_path) {
+
+				$("#company_signature").attr("src", "/storage/company_images/" + data.data.image_path);
+				
+			}
   
 			$('.additionnal_details').removeAttr('disabled');
 		  } 

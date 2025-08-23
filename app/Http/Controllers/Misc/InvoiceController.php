@@ -163,10 +163,11 @@ $str_ttc = $formatter->format($totaux["ttc"]);
 
 //return $totaux;
 
+//dd($company);
         $invoice = (object)[
             'logo_provider' => asset("images/LOGO_CAMEROUN_ASSIST.png"),
             'logo_customer' => $company->image_path ? asset('storage/company_images/' . $company->image_path) : "",
-            'number' => '25-0629',
+            'number' => $company->prefix."-".Carbon::now()->format('d/m/Y'),
             'date' => Carbon::now()->format('d/m/Y'),//'19/08/2025',
             'reference' => Str::upper($company->billing_address),
             'airport' => Str::upper($company->city->name),
@@ -177,9 +178,9 @@ $str_ttc = $formatter->format($totaux["ttc"]);
             'ttc' => $totaux["ttc"],
 
                // 🔹 Nouvelles infos société
-                'po_box' => $company->po_box ?? 'N/A',
+                'po_box' => $company->post_box ?? 'N/A',
                 'city_name' => $company->city->name ?? 'N/A',
-                'unique_id' => $company->unique_id ?? 'N/A',
+                'unique_id' => $company->uni ?? 'N/A',
                 'rc' => $company->rc ?? 'N/A',
 
 

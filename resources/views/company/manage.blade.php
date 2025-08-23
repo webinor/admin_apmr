@@ -237,6 +237,16 @@
               <label for="logo">Selectionner un logo</label>
           
               <input {{ $readonly }} type="file" name="file" class=" form-control" id="file" placeholder="file" required>
+
+               {{-- Affichage d'une miniature si image déjà existante --}}
+    @if(!empty($company->image_path))
+    <div class="mt-2">
+      <img id="company_signature" src="{{ asset('storage/company_images/' . $company->image_path) }}" 
+           alt="Signature actuelle" 
+           class="img-thumbnail" 
+           style="max-height: 80px;">
+    </div>
+  @endif
               <div class="valid-feedback">
               </div>
               <div class="invalid-feedback">
