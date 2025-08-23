@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
             'menu_icon'=>'menu-icon mdi mdi-account-multiple',
             'children'=>[
             ['submenu_name'=>'Liste des opérateurs APMR','link'=> ('registrator') ],
-            ['submenu_name'=>'Nouvelle compagnie','link'=>('apmr/create')],
+            ['submenu_name'=>'Nouvel operateur','link'=>('registrator/create')],
             ]
             ],
 
