@@ -99,12 +99,12 @@ class DatabaseSeeder extends Seeder
             ],
  
  
-             ['menu_name'=>'Gestion des chefs d escale', 
-             'menu_slug'=>Str::slug('Gestion des chefs d escale'),
+             ['menu_name'=>'Gestion des chefs de vol', 
+             'menu_slug'=>Str::slug('Gestion des chefs de vol'),
              'menu_description'=>'',
              'menu_icon'=>'menu-icon mdi mdi-account-switch',
              'children'=>[
-             ['submenu_name'=>'Liste des chefs d escale','link'=>('ground-agent') ],
+             ['submenu_name'=>'Liste des chefs de vol','link'=>('ground-agent') ],
            //  ['submenu_name'=>'Nouveau borderau','link'=>('extract/create') ],
              ]
              
