@@ -197,15 +197,17 @@ Route::middleware(["auth", "device_is_verify"])->group(function () {
         Route::post("/updateProfile", "updateProfile");
     });
 
-    Route::match(["get", "post"], "logout", [
-        LoginUserController::class,
-        "logout",
-    ])->name("user_logout");
-
-
-
+ 
 
 }); 
+
+Route::match(["get", "post"], "logout", [
+    LoginUserController::class,
+    "logout",
+])->name("user_logout");
+
+
+
 
 
 Route::get("/host", function (Faker $fakerpp) {
