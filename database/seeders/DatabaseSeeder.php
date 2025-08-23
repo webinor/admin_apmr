@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
             ['menu_name'=>'Gestion des opérateurs APMR', 
             'menu_slug'=>Str::slug('Gestion des opérateurs APMR'),
             'menu_description'=>'',
-            'menu_icon'=>'menu-icon mdi mdi-database-plus',
+            'menu_icon'=>'menu-icon mdi mdi-account-multiple',
             'children'=>[
             ['submenu_name'=>'Liste des opérateurs APMR','link'=> ('registrator') ],
             ['submenu_name'=>'Nouvelle compagnie','link'=>('apmr/create')],
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
             ['menu_name'=>'Gestion des APMR signées', 
             'menu_slug'=>Str::slug('Gestion des APMR signees'),
             'menu_description'=>'',
-            'menu_icon'=>'menu-icon mdi mdi-database-plus',
+            'menu_icon'=>'menu-icon mdi mdi-account-card-details',
             'children'=>[
             ['submenu_name'=>'Liste des APMR signées','link'=> ('registrator') ],
             ['submenu_name'=>'Nouvelle compagnie','link'=>('registrator/create')],
@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
             ['menu_name'=>'Gestion des villes', 
             'menu_slug'=>Str::slug('Gestion des villes'),
             'menu_description'=>'',
-            'menu_icon'=>'menu-icon mdi mdi-adjust',
+            'menu_icon'=>'menu-icon mdi mdi-map-marker',
             'children'=>[
             ['submenu_name'=>'Liste des villes','link'=>('city') ],
           //  ['submenu_name'=>'Nouveau borderau','link'=>('extract/create') ],
@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
             ['menu_name'=>"Gestion des Chaises", 
             'menu_slug'=>Str::slug("Gestion des Chaises"),
             'menu_description'=>'',
-            'menu_icon'=>'menu-icon mdi mdi-briefcase-download',
+            'menu_icon'=>'menu-icon mdi mdi-wheelchair-accessibility',
             'children'=>[
             ['submenu_name'=>"Liste des Chaises",'link'=>('wheel-chair') ],
             //['submenu_name'=>"Nouveau produit",'link'=>url('/product/create') ],
@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
             ['menu_name'=>'Gestion des compagnies', 
             'menu_slug'=>Str::slug('Gestion des compagnies'),
             'menu_description'=>'',
-            'menu_icon'=>'menu-icon mdi mdi-database-plus',
+            'menu_icon'=>'menu-icon mdi mdi-airplane',
             'children'=>[
             ['submenu_name'=>'Liste des compagnies','link'=> ('company') ],
             ['submenu_name'=>'Nouvelle compagnie','link'=>('company/create')],
@@ -100,7 +100,7 @@ class DatabaseSeeder extends Seeder
              ['menu_name'=>'Gestion des chefs d escale', 
              'menu_slug'=>Str::slug('Gestion des chefs d escale'),
              'menu_description'=>'',
-             'menu_icon'=>'menu-icon mdi mdi-clipboard-check',
+             'menu_icon'=>'menu-icon mdi mdi-account-switch',
              'children'=>[
              ['submenu_name'=>'Liste des chefs d escale','link'=>('ground-agent') ],
            //  ['submenu_name'=>'Nouveau borderau','link'=>('extract/create') ],
@@ -118,7 +118,7 @@ class DatabaseSeeder extends Seeder
              ['menu_name'=>"Gestion des agents CAS", 
              'menu_slug'=>Str::slug("Gestion des agents CAS"),
              'menu_description'=>'',
-             'menu_icon'=>'menu-icon mdi mdi-certificate',
+             'menu_icon'=>'menu-icon mdi mdi-account-box-outline',
              'children'=>[
              ['submenu_name'=>"Liste des agents CAS",'link'=>('assistance-agent') ],
              //['submenu_name'=>"Liste des agents CAS",'link'=>url('/service') ],
