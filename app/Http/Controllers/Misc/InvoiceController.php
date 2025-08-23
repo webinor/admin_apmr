@@ -71,7 +71,11 @@ class InvoiceController extends Controller
     $startDate = Carbon::createFromFormat('Y-m', $month)->startOfMonth();
     $endDate   = Carbon::createFromFormat('Y-m', $month)->endOfMonth();
 
-    $assistances = Assistance::has('signature')->whereBetween('flight_date', [$startDate, $endDate])->get();
+    $assistances = Assistance::has('signature')
+    ->whereHas('ground_agent.company',function ($query) use ( $company ) {
+        $query->whereCompanyId($company->id);
+    })
+    ->whereBetween('flight_date', [$startDate, $endDate])->get();
 
     // Récupérer les lignes
     $lines = AssistanceLine::whereIn('assistance_id', $assistances->pluck('id'))
