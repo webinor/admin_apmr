@@ -25,7 +25,7 @@
           <div class="btn-wrapper">
             {{--@if (Auth::admin()->can('create', App\Models\Sales\Customer::class))--}}
     <!-- The current admin can update the post... -->
-    <a href="{{url('ground-agent/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau responsable d'escale</a>
+    <a href="{{url('ground-agent/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau chef de vol</a>
 
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>

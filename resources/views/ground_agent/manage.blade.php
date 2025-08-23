@@ -32,7 +32,7 @@
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
            --}}
-            <a href="{{url('ground-agent')}}" class="btn btn-primary text-white"><i class="icon-printer"></i>Liste des responsables d'escale</a>
+            <a href="{{url('ground-agent')}}" class="btn btn-primary text-white"><i class="icon-printer"></i>Liste des chefs de vols</a>
           </div>
         </div>
       </div>
@@ -45,16 +45,16 @@
                  
                   @if ($action == "create")
 
-                  <h4 class="card-title">Ajouter un responsable d'escale</h4>
+                  <h4 class="card-title">Ajouter un chef de vol</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">responsable d'escale ajouté avec succes</h6>
+                    <h6 class="alert-heading">chef de vol ajouté avec succes</h6>
                   </div>
                       
                   @else
                       
-                  <h4 class="card-title">Modifier la responsable d'escale</h4>
+                  <h4 class="card-title">Modifier la chef de vol</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">responsable d'escale modifié avec succes</h6>
+                    <h6 class="alert-heading">chef de vol modifié avec succes</h6>
                   </div>
 
                   @endif

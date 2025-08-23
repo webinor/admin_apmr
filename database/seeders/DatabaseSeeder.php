@@ -42,23 +42,14 @@ class DatabaseSeeder extends Seeder
          [
              
             
-            ['menu_name'=>'Gestion des opérateurs APMR', 
-            'menu_slug'=>Str::slug('Gestion des opérateurs APMR'),
-            'menu_description'=>'',
-            'menu_icon'=>'menu-icon mdi mdi-account-multiple',
-            'children'=>[
-            ['submenu_name'=>'Liste des opérateurs APMR','link'=> ('registrator') ],
-            ['submenu_name'=>'Nouvel operateur','link'=>('registrator/create')],
-            ]
-            ],
+          
 
             ['menu_name'=>'Gestion des APMR signées', 
             'menu_slug'=>Str::slug('Gestion des APMR signees'),
             'menu_description'=>'',
             'menu_icon'=>'menu-icon mdi mdi-account-card-details',
             'children'=>[
-            ['submenu_name'=>'Liste des APMR signées','link'=> ('registrator') ],
-            ['submenu_name'=>'Nouvelle compagnie','link'=>('registrator/create')],
+            ['submenu_name'=>'Liste des APMR signées','link'=> ('assistance') ],
             ]
             ],
 
@@ -72,6 +63,17 @@ class DatabaseSeeder extends Seeder
           //  ['submenu_name'=>'Nouveau borderau','link'=>('extract/create') ],
             ]
             
+            ],
+
+
+            ['menu_name'=>'Gestion des opérateurs APMR', 
+            'menu_slug'=>Str::slug('Gestion des opérateurs APMR'),
+            'menu_description'=>'',
+            'menu_icon'=>'menu-icon mdi mdi-account-multiple',
+            'children'=>[
+            ['submenu_name'=>'Liste des opérateurs APMR','link'=> ('registrator') ],
+            ['submenu_name'=>'Nouvel operateur','link'=>('registrator/create')],
+            ]
             ],
 
 
