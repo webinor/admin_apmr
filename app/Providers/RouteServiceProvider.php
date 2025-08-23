@@ -23,6 +23,7 @@ use App\Models\Operations\Provider;
 use App\Models\Operations\Slip;
 use App\Models\Prestations\Product;
 use App\Models\Prestations\Service;
+use App\Models\Registrator;
 use App\Models\Settings\Area;
 use App\Models\Settings\AreaDuration;
 use App\Models\Supplier\OrderLine;
@@ -111,6 +112,11 @@ class RouteServiceProvider extends ServiceProvider
         Route::bind('ground-agent', function ($value) {
             return GroundAgent::where('code', $value)->first();
         });
+
+        Route::bind('registrator', function ($value) {
+            return Registrator::where('code', $value)->first();
+        });
+
 
         Route::bind('assistance-agent', function ($value) {
             return AssistanceAgent::where('code', $value)->first();

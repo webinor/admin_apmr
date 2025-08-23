@@ -249,7 +249,7 @@ const addRow = (instance, table, data , company_wheel_chair) =>{
   
 	let columns =``,cols = [] ;
   
-  console.log(instance);
+ // console.log(instance);
   
 	switch (instance) {
 	  case 'company_wheel_chair':

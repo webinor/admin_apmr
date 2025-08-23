@@ -95,14 +95,10 @@
         </tr>
         <tr>
             <td><strong>Boîte Postale :</strong> {{ $invoice->po_box }}</td>
-        </tr>
-        <tr>
             <td><strong>Ville :</strong> {{ $invoice->city_name }}</td>
         </tr>
         <tr>
             <td><strong>Identifiant Unique :</strong> {{ $invoice->unique_id }}</td>
-        </tr>
-        <tr>
             <td><strong>RC :</strong> {{ $invoice->rc }}</td>
         </tr>
         <tr>

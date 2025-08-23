@@ -112,35 +112,6 @@
                     </div>
 
 
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="mensual_fee">Abonement mensual</label>
-                        <input {{ $readonly }} type="number" value="{{ $company ? $company->mensual_fee : '' }}" name="mensual_fee" class=" form-control" id="mensual_fee" placeholder="150000" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="billing_address">Adresse de facturation</label>
-                        <input {{ $readonly }} type="text" value="{{ $company ? $company->billing_address : '' }}" name="billing_address" class=" form-control" id="billing_address" placeholder="Adresse de facturation" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-          
-        
-
-        
-
-      
-
           <div class="form-group">
             <label for="city">Ville</label>
             <select name="city" class="form-control" id="city" placeholder="">
@@ -165,6 +136,74 @@
             <div class="invalid-feedback">
             </div>
           </div> 
+
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="mensual_fee">Abonement mensual</label>
+                        <input {{ $readonly }} type="number" value="{{ $company ? $company->mensual_fee : '' }}" name="mensual_fee" class=" form-control" id="mensual_fee" placeholder="150000" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="billing_address">Adresse de facturation</label>
+                        <input {{ $readonly }} type="text" value="{{ $company ? $company->billing_address : '' }}" name="billing_address" class=" form-control" id="billing_address" placeholder="Adresse de facturation" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
+
+
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="post_box">Adresse postale</label>
+                        <input {{ $readonly }} type="text" value="{{ $company ? $company->post_box : '' }}" name="post_box" class=" form-control" id="post_box" placeholder="Adresse postale" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="uni">Numero d'dentifiant unique</label>
+                        <input {{ $readonly }} type="text" value="{{ $company ? $company->uni : '' }}" name="uni" class=" form-control" id="uni" placeholder="NIU" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-group row">
+                      <div class="col-sm-12 mb-3 mb-sm-0">
+                        <label for="rc">Registre de commerce</label>
+                        <input {{ $readonly }} type="text" value="{{ $company ? $company->rc : '' }}" name="rc" class=" form-control" id="rc" placeholder="Registre de commerce" required>
+                        <div class="valid-feedback">
+                        </div>
+                        <div class="invalid-feedback">
+                        </div>
+                      </div>
+                    </div>
+
+                    
+          
+        
+
+        
+
+      
+
 
       {{--     <div class="form-group row">
             <div class="col-sm-12 mb-3 mb-sm-0">

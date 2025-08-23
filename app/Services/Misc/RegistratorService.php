@@ -29,11 +29,12 @@ use App\Addons\Misc\ViewsResponder;
 use App\Models\Company;
 use App\Models\GroundAgent;
 use App\Models\Misc\KeySign;
+use App\Models\Registrator;
 use App\Notifications\InviteUserToSetPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
-class GroundAgentService  implements
+class RegistratorService  implements
 //IndexVariablesResponder,
 CreateVariablesResponder,
 ShowVariablesResponder,
@@ -388,11 +389,11 @@ ViewsResponder {
     {
        
 
-        $ground_agents = GroundAgent::oldest()
-        ->paginate(10)
+        $registrators = Registrator::oldest()
+        ->paginate(20)
         ->withQueryString();
 
-        $vars = compact("ground_agents");
+        $vars = compact("registrators");
 
         return $vars;
     }
@@ -400,7 +401,7 @@ ViewsResponder {
     {
         $cities = City::get();
         $companies = Company::get();
-        $ground_agent = null;
+        $registrator = null;
         $action = "create";
         $disabled = "";
         $readonly = "";
@@ -409,7 +410,7 @@ ViewsResponder {
 
         return compact(
             "cities",
-            "ground_agent",
+            "registrator",
             "companies",
             "action",
             "disabled",
@@ -477,21 +478,21 @@ ViewsResponder {
             "product_types"
         );
     }
-    function getEditVariables($ground_agent)
+    function getEditVariables($registrator)
     {
-        $ground_agent->load(["company"]);
-        $companies = Company::get();
+        $registrator->load(["city"]);
+        $cities = City::get();
 
         $action = "update";
         $disabled = "";
         $readonly = "";
 
         return compact(
-            "ground_agent",
+            "registrator",
             "action",
             "disabled",
             "readonly",  
-            "companies"
+            "cities"
           );
     }
     function getView($view_name, $vars = [])
@@ -536,12 +537,12 @@ ViewsResponder {
 
                 }*/
                     
-                        $ground_agent= new GroundAgent();    
-                        $columns = ['first_name','last_name','email',
-                        ];
+                        $registrator= new Registrator();    
+                        
+                        $columns = ['name','last_name','email', ];
                 
                         foreach ($columns as  $column) {
-                            array_key_exists($column, $details ) ? $ground_agent->{$column} = $details[$column] : null ;
+                            array_key_exists($column, $details ) ? $registrator->{$column} = $details[$column] : null ;
                         }
                     
             /* if (Reception::where('name', $details['name'])->first()) {
@@ -553,9 +554,10 @@ ViewsResponder {
 
                 }*/
                 
-                $ground_agent->code = Str::random(10);
-                $ground_agent->company_id = Company::whereCode($details['company'])->first()->id;
-                $ground_agent->admin_id = Auth::guard('sanctum')->user()->id;
+                $registrator->code = Str::random(10);
+                $registrator->city_id = City::whereCode($details['city'])->first()->id;
+                $registrator->password = Str::random(10);
+               // $registrator->admin_id = Auth::guard('sanctum')->user()->id;
                 //$mission = Mission::select('id')->whereId($details['mission'])->first();
 
 
@@ -565,7 +567,7 @@ ViewsResponder {
                     $type = $request->file->getClientMimeType();
                     $size = $request->file->getSize();
             
-                    $request->file->move(storage_path('app/public/ground_agents_images'), $fileName);
+                    $request->file->move(storage_path('app/public/registrators_images'), $fileName);
                    // $request->file->store(storage_path('files'), $fileName);
                    /*File::create([
                         'user_id' => auth()->id(),
@@ -574,36 +576,36 @@ ViewsResponder {
                         'size' => $size
                     ]);*/
                    
-                    $ground_agent->image_path= $fileName;
-                    $ground_agent->image_size = $size;
-                    $ground_agent->image_type = $type;
+                    $registrator->image_path= $fileName;
+                    $registrator->image_size = $size;
+                    $registrator->image_type = $type;
                  
             
                 }
                 
 
 
-                    $ground_agent->save();
+                    $registrator->save();
 
 
     $key = Hash::make("123456");
 
 
         
-        $sign = KeySign::create([
+       /* $sign = KeySign::create([
             'code'=>Str::random(20),
           //  'model_type'=>(GroundAgent::class),
             'model_type'=>("App\Models\Operations\GroundAgent"),
-            'model_id'=>$ground_agent->id,
+            'model_id'=>$registrator->id,
             'key'=>$key,
-            'hash'=>Hash::make($ground_agent->id.$key)
-        ]);
+            'hash'=>Hash::make($registrator->id.$key)
+        ]);*/
         
     
-        $token = Str::random(30);// Password::broker()->createToken($ground_agent);
-        $link = env('APMR_URL').'/ground-agent-reset-password?token=' . $token . '&ground-agent=' . urlencode($ground_agent->code);
+        $token = Str::random(30);// Password::broker()->createToken($registrator);
+        $link = env('APMR_URL').'/registrator-reset-password?token=' . $token . '&registrator=' . urlencode($registrator->code);
         
-        $ground_agent->notify(new InviteUserToSetPassword($link));
+        $registrator->notify(new InviteUserToSetPassword($link));
             
                 
                 /*   return [
@@ -618,7 +620,7 @@ ViewsResponder {
                     
                     return [
                         'status'=>true,
-                        'data'=> $ground_agent 
+                        'data'=> $registrator 
                     ];
 
 
@@ -630,7 +632,7 @@ ViewsResponder {
        
     }
 
-    public function update(array $details , GroundAgent $ground_agent , Request $request ) 
+    public function update(array $details , Registrator $registrator , Request $request ) 
     {
 
                     
@@ -639,16 +641,16 @@ ViewsResponder {
                 //     DB::beginTransaction();
 
                 
-                $columns = ['first_name','last_name','email',
-                ];
+                $columns = ['name','last_name','email', ];
         
                 foreach ($columns as  $column) {
-                    array_key_exists($column, $details ) ? $ground_agent->{$column} = $details[$column] : null ;
+                    array_key_exists($column, $details ) ? $registrator->{$column} = $details[$column] : null ;
                 }
             
                 //$mission = Mission::select('id')->whereId($details['mission'])->first();
                 
-                $ground_agent->company_id = Company::whereCode($details['company'])->first()->id;
+                $registrator->city_id = City::whereCode($details['city'])->first()->id;
+               // $registrator->city_id = City::whereCode($details['city'])->first()->id;
 
 
                 if ($request->hasFile('file')) {
@@ -657,7 +659,7 @@ ViewsResponder {
                     $type = $request->file->getClientMimeType();
                     $size = $request->file->getSize();
             
-                    $request->file->move(storage_path('app/public/ground_agents_images'), $fileName);
+                    $request->file->move(storage_path('app/public/registrators_images'), $fileName);
                    // $request->file->store(storage_path('files'), $fileName);
                    /*File::create([
                         'user_id' => auth()->id(),
@@ -666,14 +668,14 @@ ViewsResponder {
                         'size' => $size
                     ]);*/
                    
-                    $ground_agent->image_path= $fileName;
-                    $ground_agent->image_size = $size;
-                    $ground_agent->image_type = $type;
+                    $registrator->image_path= $fileName;
+                    $registrator->image_size = $size;
+                    $registrator->image_type = $type;
                  
             
                 }
 
-                    $ground_agent   ->save();
+                    $registrator   ->save();
 
 
 
@@ -682,7 +684,7 @@ ViewsResponder {
                 
                 /*   return [
                         'status'=>true,
-                        'data'=> [$ground_agent ] 
+                        'data'=> [$registrator ] 
                     ];*/
 
 
@@ -692,7 +694,7 @@ ViewsResponder {
                     
                     return [
                         'status'=>true,
-                        'data'=> $ground_agent   ,
+                        'data'=> $registrator   ,
                       //  'link'=>$link
                     ];
 

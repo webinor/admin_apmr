@@ -29,6 +29,7 @@ class StoreGroundAgentRequest extends FormRequest
             "email"=>"required|string|email",
             "company"=>"required|string",
             "signature"=>"nullable|string",
+            'file' => 'required|file|mimes:jpg,jpeg,png|max:10240,dimensions:min_width=80,min_height=80',
             
         ];
     }

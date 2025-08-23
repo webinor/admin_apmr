@@ -25,14 +25,14 @@
         </ul>
         <div>
           <div class="btn-wrapper">
-            {{--@if (Auth::user()->can('create', App\Models\settings\company::class))--}
+            {{--@if (Auth::user()->can('create', App\Models\settings\registrator::class))--}
     <!-- The current user can update the post... -->
-    <a href="{{url('settings/company/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau client / Prospect</a>
+    <a href="{{url('settings/registrator/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau client / Prospect</a>
 
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
            --}}
-            <a href="{{url('ground-agent')}}" class="btn btn-primary text-white"><i class="icon-printer"></i>Liste des responsables d'escale</a>
+            <a href="{{url('registrator')}}" class="btn btn-primary text-white"><i class="icon-printer"></i>Liste des operateurs APMR</a>
           </div>
         </div>
       </div>
@@ -45,32 +45,32 @@
                  
                   @if ($action == "create")
 
-                  <h4 class="card-title">Ajouter un responsable d'escale</h4>
+                  <h4 class="card-title">Ajouter un opérateur APMR</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">responsable d'escale ajouté avec succes</h6>
+                    <h6 class="alert-heading">opérateur APMR ajouté avec succes</h6>
                   </div>
                       
                   @else
                       
-                  <h4 class="card-title">Modifier la responsable d'escale</h4>
+                  <h4 class="card-title">Modifier l'opérateur APMR</h4>
                   <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">responsable d'escale modifié avec succes</h6>
+                    <h6 class="alert-heading">opérateur APMR modifié avec succes</h6>
                   </div>
 
                   @endif
 
-                  <form id="form" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
+                  <form id="form" class="pt-3 " novalidate method="post" action="{{url('registrator/create')}}">
                     @csrf
                     <input id="token" type="hidden" class="form-control" value="{{session('user')->code}}" >
-                    <input id="ground-agent" type="hidden" class="form-control" value="{{$ground_agent ? $ground_agent->code : ''}}" >
+                    <input id="ground-agent" type="hidden" class="form-control" value="{{$registrator ? $registrator->code : ''}}" >
                     <input id="action" type="hidden" class="" value="{{ $action }}" >
-                    <input id="url" type="hidden"  value="{{"/api/ground-agent".($ground_agent ? "/".$ground_agent->code."?_method=PUT" : "")}}" >
+                    <input id="url" type="hidden"  value="{{"/api/registrator".($registrator ? "/".$registrator->code."?_method=PUT" : "")}}" >
                   
 
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="first_name">Nom<span class="text-danger">*</span></label>
-                        <input type="text" name="first_nameame" value="{{$ground_agent ? $ground_agent->first_name : ''}}" class=" form-control" id="first_name" placeholder="Ex : NONO" required>
+                        <label for="name">Nom<span class="text-danger">*</span></label>
+                        <input type="text" name="nameame" value="{{$registrator ? $registrator->name : ''}}" class=" form-control" id="name" placeholder="Ex : NONO" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -80,8 +80,8 @@
           
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="last_name">Prenom <span class="text-danger">*</span></label>
-                        <input type="text" name="last_name" value="{{$ground_agent ? $ground_agent->last_name : ''}}" class=" form-control" id="last_name" placeholder="Ex : Albert" required>
+                        <label for="last_name">Prénom <span class="text-danger">*</span></label>
+                        <input type="text" name="last_name" value="{{$registrator ? $registrator->last_name : ''}}" class=" form-control" id="last_name" placeholder="Ex : Albert" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -92,16 +92,16 @@
                    
 
                    {{--  <div class="form-group">
-                      <label for="company">Selectionnez la ville<span class="text-danger">*</span></label>
-                      <select name="company" class="form-control" id="company" placeholder="">
+                      <label for="registrator">Selectionnez la ville<span class="text-danger">*</span></label>
+                      <select name="registrator" class="form-control" id="registrator" placeholder="">
                     
-                        @forelse ($cities as $company)
+                        @forelse ($cities as $registrator)
                     
                         @if ($loop->first)
                         <option value="" >Selectionnez un type de piece</option>
                         @endif
                            
-                        <option value="{{$company->id}}">{{Str::upper(__($company->name))}}</option>
+                        <option value="{{$registrator->id}}">{{Str::upper(__($registrator->name))}}</option>
                         
                         @empty
                     
@@ -118,20 +118,20 @@
 
 
                     <div class="form-group">
-                      <label for="company">Selectionnez la compagnie<span class="text-danger">*</span></label>
-                      <select name="company" class="form-control" id="company" placeholder="">
+                      <label for="city">Ville</label>
+                      <select name="city" class="form-control" id="city" placeholder="">
                     
-                        @forelse ($companies as $company)
+                        @forelse ($cities as $city)
                     
                         @if ($loop->first)
-                        <option value="" >Selectionnez sa compagnie</option>
+                        <option value="" >Seactionnez la ville </option>
                         @endif
                            
-                        <option value="{{$company->code}}" {{ $ground_agent && $ground_agent->company->code == $company->code ? 'selected' : '' }}>{{Str::upper(__($company->name))}}</option>
+                        <option value="{{$city->code}}" {{ $registrator && $registrator->city->code == $city->code ? 'selected' : '' }}>{{$city->name}}</option>
                         
                         @empty
                     
-                        <option value="">Aucune compagnie disponible</option>
+                        <option value="">Aucune ville disponible</option>
                     
                         @endforelse
                     
@@ -140,13 +140,13 @@
                       </div>
                       <div class="invalid-feedback">
                       </div>
-                    </div>
+                    </div> 
 
 
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="email">email</label>
-                        <input type="email" name="email" value="{{$ground_agent ? $ground_agent->email : ''}}" class=" form-control" id="email" placeholder="Ex : aaa@gmal.com" required>
+                        <input type="email" name="email" value="{{$registrator ? $registrator->email : ''}}" class=" form-control" id="email" placeholder="Ex : aaa@gmal.com" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -162,9 +162,9 @@
 
 
     {{-- Affichage d'une miniature si image déjà existante --}}
-    @if(!empty($ground_agent->image_path))
+    @if(!empty($registrator->image_path))
     <div class="mt-2">
-      <img id="ground_agent_signature" src="{{ asset('storage/ground_agents_images/' . $ground_agent->image_path) }}" 
+      <img id="registrator_signature" src="{{ asset('storage/registrators_images/' . $registrator->image_path) }}" 
            alt="Signature actuelle" 
            class="img-thumbnail" 
            style="max-height: 80px;">
@@ -284,7 +284,7 @@ beforeSend: function (xhr) {
               // Mise à jour de l'image si on a une nouvelle image_path
     if (data.data.image_path) {
 
-        $("#ground_agent_signature").attr("src", "/storage/ground_agents_images/" + data.data.image_path);
+        $("#registrator_signature").attr("src", "/storage/registrators_images/" + data.data.image_path);
         
     }
           

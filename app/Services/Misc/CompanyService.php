@@ -534,8 +534,7 @@ ViewsResponder {
                 }
                     
                         $company= new Company();    
-                        $columns = ['name','prefix','billing_address','mensual_fee'
-                        ];
+                        $columns = ['name','prefix','billing_address','mensual_fee','post_box','uni','rc'];
                 
                         foreach ($columns as  $column) {
                             array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : null ;
@@ -636,10 +635,14 @@ ViewsResponder {
 
                 }*/
                 
-                $company->name = $details['name'];
-                $company->prefix = $details['prefix'];
-                $company->mensual_fee = $details['mensual_fee'];
-                $company->billing_address = $details['billing_address'];
+                $columns = ['name','prefix','billing_address','mensual_fee','post_box','uni','rc'];
+    
+            foreach ($columns as  $column) {
+                array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : null ;
+            }
+        
+
+
                 $company->city_id = City::whereCode($details['city'])->first()->id;
 
                 //$mission = Mission::select('id')->whereId($details['mission'])->first();

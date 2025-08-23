@@ -23,7 +23,12 @@ use App\Http\Controllers\Prestations\ProductController;
 use App\Http\Controllers\Prestations\MedicineController;
 use App\Http\Controllers\Prestations\PrestationController;
 use App\Http\Controllers\Prestations\ProviderController;
+use App\Http\Controllers\RegistratorController;
 use App\Http\Controllers\WheelChairController;
+use App\Models\GroundAgent;
+use App\Models\Operations\Signature;
+use App\Models\Registrator;
+use Illuminate\Support\Facades\Storage;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +54,39 @@ Route::get("getProducts", [ProductController::class, "getProducts"]);
 Route::get("getServices", [ServiceController::class, "getServices"]);
 Route::get("getPrestations", [PrestationController::class, "getPrestations"]);
 
+Route::get('/ground-agent-signature/{ground_agent_code}', function ($ground_agent_code) {
+   
+    //  return $ground_agent_code;
+      $ground_agent = GroundAgent::whereCode($ground_agent_code)->first(); 
+  
+      // chemin complet du fichier
+      $path = 'ground_agents_images/' . $ground_agent->image_path;
+  
+      if (!$ground_agent->image_path || !Storage::disk('public')->exists($path)) {
+          abort(404, 'Signature introuvable');
+      }
+  
+     
+  
+      return response()->file(storage_path('app/public/' . $path));
+  });
+
+  Route::get('/registrator-signature/{registrator_code}', function ($registrator_code) {
+   
+    //  return $registrator_code;
+      $registrator = Registrator::whereCode($registrator_code)->first(); 
+  
+      // chemin complet du fichier
+      $path = 'registrators_images/' . $registrator->image_path;
+  
+      if (!$registrator->image_path || !Storage::disk('public')->exists($path)) {
+          abort(404, 'Signature introuvable');
+      }
+  
+     
+  
+      return response()->file(storage_path('app/public/' . $path));
+  });
 
 Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function () {
         Route::prefix("human_resource")->group(function () {
@@ -94,6 +132,13 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
         ]);
 
         Route::apiResource("company-wheel-chair", CompanyWheelChairController::class)->only([
+            "store",
+            "update",
+            "destroy",
+        ]);
+
+
+        Route::apiResource("registrator", RegistratorController::class)->only([
             "store",
             "update",
             "destroy",

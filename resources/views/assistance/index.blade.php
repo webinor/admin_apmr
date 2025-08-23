@@ -9,7 +9,7 @@
       <div class="d-sm-flex align-items-center justify-content-between border-bottom">
         <ul class="nav nav-tabs" role="tablist">
           <li class="nav-item">
-            <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Vue d'ensemble des APMR</a>
+            <a class="nav-link active ps-0" id="home-tab" data-bs-toggle="tab" href="#overview" role="tab" aria-controls="overview" aria-selected="true">Vue d'ensemble des APMR signées</a>
           </li>
           {{--<li class="nav-item">
             <a class="nav-link" id="profile-tab" data-bs-toggle="tab" href="#audiences" role="tab" aria-selected="false">Audiences</a>
@@ -29,12 +29,19 @@
     data-bs-target="#balance-modal"><i class="icon-check"></i>Solde prestataire</a>
 
 
+   {{--  <a href="#" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn btn-info text-white"><i class="mdi mdi-filter"></i>Filter la recherche</a> --}}
+
+
     <a href="{{url('assistance/create')}}" class="d-none btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS</a>
 
    <!-- Bouton -->
-<a href="#" class="btn btn-primary text-white me-0" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
-  <i class="bi bi-file-earmark-plus"></i> Nouvelle facture
-</a>
+{{--    <a href="#" class="btn btn-success text-white me-0" data-bs-toggle="modal" data-bs-target="#invoiceModal">
+    <i class="bi bi-file-earmark-plus"></i> Nouvelle facture
+  </a> --}}
+
+  <a href="#" class="btn btn-primary text-white me-0" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
+    <i class="bi bi-file-earmark-plus"></i> Nouvelle facture
+  </a>
 
 
             {{--@endif--}}
@@ -309,6 +316,11 @@
 @section('custom_modal')
 
 @include('layouts.partials._modal_invoice')
+
+@include('layouts.partials._new_modal_invoice')
+
+@include('layouts.partials._modal_new_filter') 
+
         
 @endsection
 

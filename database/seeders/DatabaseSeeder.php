@@ -42,13 +42,23 @@ class DatabaseSeeder extends Seeder
          [
              
             
-            ['menu_name'=>'Gestion des APMR', 
-            'menu_slug'=>Str::slug('Gestion des APMR'),
+            ['menu_name'=>'Gestion des opérateurs APMR', 
+            'menu_slug'=>Str::slug('Gestion des opérateurs APMR'),
             'menu_description'=>'',
             'menu_icon'=>'menu-icon mdi mdi-database-plus',
             'children'=>[
-            ['submenu_name'=>'Liste des APMR','link'=> ('assistance') ],
-        //    ['submenu_name'=>'Nouvelle compagnie','link'=>('apmr/create')],
+            ['submenu_name'=>'Liste des opérateurs APMR','link'=> ('registrator') ],
+            ['submenu_name'=>'Nouvelle compagnie','link'=>('apmr/create')],
+            ]
+            ],
+
+            ['menu_name'=>'Gestion des APMR signées', 
+            'menu_slug'=>Str::slug('Gestion des APMR signees'),
+            'menu_description'=>'',
+            'menu_icon'=>'menu-icon mdi mdi-database-plus',
+            'children'=>[
+            ['submenu_name'=>'Liste des APMR signées','link'=> ('registrator') ],
+            ['submenu_name'=>'Nouvelle compagnie','link'=>('registrator/create')],
             ]
             ],
 

@@ -5,17 +5,37 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRegistratorRequest;
 use App\Http\Requests\UpdateRegistratorRequest;
 use App\Models\Registrator;
+use App\Services\Misc\RegistratorService;
+use Illuminate\Http\Request;
 
 class RegistratorController extends Controller
 {
+
+    protected $registratorService;
+
+    public function __construct(RegistratorService $registratorService) {
+          
+      $this->registratorService = $registratorService;
+        
+     // $this->authorizeResource(Company::class, "employee");
+  
+      }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function index(Request $request)  
+        {
+       
+        $results = $request->results ? (int)$request->results : 20;
+    
+    
+        $variables = $this->registratorService->getIndexVariables($results);
+       
+        return  $this->registratorService->getView('registrator.index', $variables);
+
+    
     }
 
     /**
@@ -23,10 +43,14 @@ class RegistratorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    
     public function create()
     {
-        //
+        $variables = $this->registratorService->getCreateVariables();
+           
+        return  $this->registratorService->getView('registrator.manage', $variables);
     }
+   
 
     /**
      * Store a newly created resource in storage.
@@ -36,7 +60,9 @@ class RegistratorController extends Controller
      */
     public function store(StoreRegistratorRequest $request)
     {
-        //
+        $response =  $this->registratorService->create($request->validated() , $request);
+
+        return $response;
     }
 
     /**
@@ -58,7 +84,9 @@ class RegistratorController extends Controller
      */
     public function edit(Registrator $registrator)
     {
-        //
+        $variables = $this->registratorService->getEditVariables($registrator);
+           
+        return  $this->registratorService->getView('registrator.manage', $variables);
     }
 
     /**
@@ -70,7 +98,9 @@ class RegistratorController extends Controller
      */
     public function update(UpdateRegistratorRequest $request, Registrator $registrator)
     {
-        //
+        $response =  $this->registratorService->update($request->validated() , $registrator , $request );
+
+        return $response;
     }
 
     /**

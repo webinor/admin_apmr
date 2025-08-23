@@ -7,10 +7,10 @@
          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
        </div>
        <div class="modal-body pt-0">
-         <form id="form_filter" class="pt-0" novalidate method="GET" action="{{$slip ? url('slip/'. ($slip->code)) : url('check/sdvs') }}">
+         <form id="form_filter" class="pt-0" novalidate method="GET" action="">
            @csrf
            <input id="filter_url" type="hidden" value="{{ ('/api/count-filtered-results') }}">
-           <input  id="slip" name="slip" class="form-control" type="hidden" value="{{ ($slip ? $slip->code : 'aaa') }}">
+           <input  id="slip" name="slip" class="form-control" type="hidden" value="">
            <input  id="results" name="results" class="form-control" type="hidden" value="{{ Request::get('results') }}">
            <input  id="page" name="page" class="form-control" type="hidden" value="{{ Request::get('results') }}">
            {{-- <input id="resource_code" class="form-control" type="hidden" value="{{ $resource_code }}"

@@ -7,6 +7,7 @@ use App\Models\Misc\Bank;
 use App\Addons\Misc\Responder;
 use App\Addons\Misc\ViewsResponder;
 use App\Addons\ValidatorData;
+use App\Models\AssistanceAgent;
 use App\Models\AssistanceLine;
 use App\Models\Company;
 use App\Models\GroundAgent;
@@ -42,8 +43,14 @@ class HomeService implements IndexVariablesResponder, ViewsResponder
       $beneficiairesCount = AssistanceLine::count(); // $fiches->assistance_lines->count();
       $compagniesCount = Company::count();
       $agentsCount = GroundAgent::count();
+      $assistanceAgentsCount = AssistanceAgent::count();
+
+
+$fichesAvantMoisEnCours = Assistance::whereDate('flight_date', '<', Carbon::now()->startOfMonth())->count();
+$nouvelles_fiches = $fichesCount - $fichesAvantMoisEnCours;
+
   
-     return $vars =  compact('fichesCount','beneficiairesCount','compagniesCount','agentsCount');
+     return $vars =  compact('fichesCount','beneficiairesCount','compagniesCount','agentsCount' , 'nouvelles_fiches' , 'assistanceAgentsCount');
 
       //dd($vars);
 

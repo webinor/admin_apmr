@@ -162,6 +162,7 @@ $amount_ttc = (int)($amount_ht*(1+$tva));
 $str_ttc = $formatter->format($totaux["ttc"]);
 
 //return $totaux;
+
         $invoice = (object)[
             'logo_provider' => asset("images/LOGO_CAMEROUN_ASSIST.png"),
             'logo_customer' => $company->image_path ? asset('storage/company_images/' . $company->image_path) : "",
@@ -174,15 +175,83 @@ $str_ttc = $formatter->format($totaux["ttc"]);
             'total_ht' => $totaux["total_ht"],
             'tva' => $totaux["tva"],
             'ttc' => $totaux["ttc"],
+
+               // 🔹 Nouvelles infos société
+                'po_box' => $company->po_box ?? 'N/A',
+                'city_name' => $company->city->name ?? 'N/A',
+                'unique_id' => $company->unique_id ?? 'N/A',
+                'rc' => $company->rc ?? 'N/A',
+
+
             'amount_letters' => $str_ttc,
-            'bank_name' => 'ASSISTANCE SANITAIRE SA',
+            'bank_name' => 'CAMEROUN ASSISTANCE SANITAIRE SA',
             'bank' => 'SOCIETE GENERALE CAMEROUN Douala - Joss',
             'code_banque' => '10003',
             'guichet' => '00100',
             'compte' => '05 01 0224449-19',
             'iban' => 'CM21 10003 00100 05010224449-19',
             'bic' => 'SGCMCMCX',
+        ]; 
+        
+
+        /*
+        $invoice = (object)[
+            // --- Logos ---
+            'logo_provider' => asset("images/LOGO_CAMEROUN_ASSIST.png"),
+            'logo_customer' => $company->image_path ? asset('storage/company_images/' . $company->image_path) : "",
+        
+            // --- Infos facture ---
+            'number' => '25-0629',
+            'date' => Carbon::now()->format('d/m/Y'),
+            'reference' => Str::upper($company->billing_address ?? 'N/A'),
+            'airport' => Str::upper($company->city->name ?? 'N/A'),
+            'month' => $formatted,
+        
+            // --- Client (compagnie) ---
+            'customer' => [
+                'name' => $company->name ?? 'N/A',
+                'address' => $company->billing_address ?? 'N/A',
+                'po_box' => $company->po_box ?? 'N/A',
+                'city' => $company->city->name ?? 'N/A',
+                'unique_id' => $company->unique_id ?? 'N/A',
+                'rc' => $company->rc ?? 'N/A',
+                'contact' => $company->contact ?? 'N/A',
+                'phone' => $company->phone ?? 'N/A',
+                'email' => $company->email ?? 'N/A',
+            ],
+        
+            // --- Prestataire (infos fixes) ---
+            'provider' => [
+                'name' => 'ASSISTANCE SANITAIRE SA',
+                'address' => 'Douala - Bonapriso, Rue Koloko',
+                'po_box' => 'BP 12345 Douala - Cameroun',
+                'phone' => '+237 6 99 99 99 99',
+                'email' => 'contact@assistancesanitaire.cm',
+                'website' => 'www.assistancesanitaire.cm',
+            ],
+        
+            // --- Articles ---
+            'items' => $items,
+        
+            // --- Totaux ---
+            'total_ht' => $totaux["total_ht"],
+            'tva' => $totaux["tva"],
+            'ttc' => $totaux["ttc"],
+            'amount_letters' => $str_ttc,
+        
+            // --- Coordonnées bancaires ---
+            'bank' => [
+                'bank_name' => 'ASSISTANCE SANITAIRE SA',
+                'bank_full' => 'SOCIETE GENERALE CAMEROUN Douala - Joss',
+                'code_banque' => '10003',
+                'guichet' => '00100',
+                'compte' => '05 01 0224449-19',
+                'iban' => 'CM21 10003 00100 05010224449-19',
+                'bic' => 'SGCMCMCX',
+            ],
         ];
+        
+     */   
 
         $pdf = Pdf::loadView('invoice.template', compact('invoice'))
         ->setPaper('A4', 'portrait');

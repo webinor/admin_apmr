@@ -56,35 +56,39 @@
               <div class="row">
                 <div class="col-sm-12">
                   <div class="statistics-details d-flex align-items-center justify-content-between">
-                    <div>
-                      <p class="statistics-title">Taux de reussite</p>
-                      <h3 class="rate-percentage">95.53%</h3>
-                      <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.5%</span></p>
-                    </div>
+
                     <div>
                       <p class="statistics-title">Toutes les fiches APMR</p>
                       <h3 class="rate-percentage">{{ $fichesCount ?? '1882' }}</h3>
-                      <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+4.1%</span></p>
+                      <p class="d-none text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+4.1%</span></p>
                     </div>
+
                     <div>
-                      <p class="statistics-title">Total Dossiers traités</p>
-                      <h3 class="rate-percentage">{{ $fichesCount ?? '37,682' }}</h3>
-                      <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+1.2%</span></p>
+                      <p class="statistics-title">Nouvelles fiches</p>
+                      <h3 class="rate-percentage">{{ $nouvelles_fiches }}</h3>
+                      <p class="d-none text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.5%</span></p>
+                    </div>
+                    {{-- return $vars =  compact('fichesCount','beneficiairesCount','compagniesCount','agentsCount' , 'nouvelles_fiches'); --}}
+                   
+                    <div>
+                      <p class="statistics-title">Tous les beneficiaires</p>
+                      <h3 class="rate-percentage">{{ $beneficiairesCount ?? '37,682' }}</h3>
+                      <p class="d-none text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+1.2%</span></p>
                     </div>
                     <div class="d-none d-md-block">
-                      <p class="statistics-title">Temps de traitement moyen</p>
-                      <h3 class="rate-percentage">{{ $fichesCount }} s</h3>
-                      <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>-2.8%</span></p>
+                      <p class="statistics-title">Toutes les compagnies</p>
+                      <h3 class="rate-percentage">{{ $compagniesCount }} s</h3>
+                      <p class="d-none text-success d-flex"><i class="mdi mdi-menu-down"></i><span>-2.8%</span></p>
                     </div>
                     <div class="d-none d-md-block">
-                      <p class="statistics-title">Temps de traitement moyen general</p>
-                      <h3 class="rate-percentage">{{ $fichesCount }} s</h3>
-                      <p class="text-danger d-flex"><i class="mdi mdi-menu-up"></i><span>+0.8%</span></p>
+                      <p class="statistics-title">Chefs d'escales</p>
+                      <h3 class="rate-percentage">{{ $agentsCount }} s</h3>
+                      <p class="d-none text-danger d-flex"><i class="mdi mdi-menu-up"></i><span>+0.8%</span></p>
                     </div>
                     <div class="d-none d-md-block">
-                      <p class="statistics-title">Avg. Batches</p>
-                      <h3 class="rate-percentage">12m:18s</h3>
-                      <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>-3.8%</span></p>
+                      <p class="statistics-title">Servants CAS</p>
+                      <h3 class="rate-percentage">{{ $assistanceAgentsCount }}</h3>
+                      <p class="d-none text-success d-flex"><i class="mdi mdi-menu-down"></i><span>-3.8%</span></p>
                     </div>
                   </div>
                 </div>

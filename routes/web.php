@@ -33,6 +33,7 @@ use App\Http\Controllers\Operations\ServiceCostController;
 use App\Http\Controllers\Prestations\MedicineController;
 use App\Http\Controllers\Prestations\PrestationController;
 use App\Http\Controllers\Prestations\ProductCostController;
+use App\Http\Controllers\RegistratorController;
 use App\Http\Controllers\WheelChairController;
 use App\Models\Misc\Search;
 use App\Models\Operatrions\Schedule;
@@ -151,28 +152,7 @@ Route::middleware(["auth"])->group(function () {
         "show",
     ]);
 
-
-    Route::resource("service_cost", ServiceCostController::class)->only([
-        "index",
-        "create",
-        "edit",
-        "show",
-    ]);
-
-
-    Route::post("/import-therapeutic-class", [TherapeuticClassController::class, "import"])->name(
-        "import"
-    );
-    
-    Route::resource("therapeutic-class", TherapeuticClassController::class)->only([
-        "index",
-        "create",
-        "edit",
-        "show",
-    ]);
-
-
-    Route::resource("active-ingredient", MedicineController::class)->only([
+    Route::resource("registrator", RegistratorController::class)->only([
         "index",
         "create",
         "edit",

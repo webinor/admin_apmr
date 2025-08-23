@@ -13,7 +13,7 @@ class UpdateRegistratorRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,12 @@ class UpdateRegistratorRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "name"=>"required|string",
+            "last_name"=>"required|string",
+            "email"=>"nullable|string|email",
+            "city"=>"required|string",
+            "signature"=>"nullable|string",
+            'file' => 'nullable|file|mimes:jpg,jpeg,png|max:10240,dimensions:min_width=80,min_height=80',
         ];
     }
 }
