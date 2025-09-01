@@ -29,6 +29,15 @@ class InvoiceController extends Controller
           //$this->authorizeResource(Folder::class, "folder");
 
         }
+
+
+        public function index(Request $request)
+        {
+            $invoices = [];
+        $companies = Company::get();
+
+            return view("invoice.index" , compact('invoices','companies'));
+        }
     
     /**
      * Update the specified resource in storage.

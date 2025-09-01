@@ -77,12 +77,12 @@
                     </div>
                     <div class="d-none d-md-block">
                       <p class="statistics-title">Toutes les compagnies</p>
-                      <h3 class="rate-percentage">{{ $compagniesCount }} s</h3>
+                      <h3 class="rate-percentage">{{ $compagniesCount }}</h3>
                       <p class="d-none text-success d-flex"><i class="mdi mdi-menu-down"></i><span>-2.8%</span></p>
                     </div>
                     <div class="d-none d-md-block">
                       <p class="statistics-title">Chefs d'escales</p>
-                      <h3 class="rate-percentage">{{ $agentsCount }} s</h3>
+                      <h3 class="rate-percentage">{{ $agentsCount }}</h3>
                       <p class="d-none text-danger d-flex"><i class="mdi mdi-menu-up"></i><span>+0.8%</span></p>
                     </div>
                     <div class="d-none d-md-block">

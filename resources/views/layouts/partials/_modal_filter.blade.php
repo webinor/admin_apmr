@@ -3,7 +3,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-center" id="modalFilterLabel">{{ 'Affiner la recherche' }}</h5>
+        <h5 class="modal-title text-center" id="modalFilterLabel">{{ 'Exporter les données' }}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body pt-0">
@@ -122,7 +122,7 @@
       <div class="modal-footer">
         <div class="menu_button">
           <button id="filter-button" type="button" class="text-white w-100 btn btn-block btn-primary font-weight-medium auth-form-btn">
-            <span id="filter-button-text">Filtrer</span>
+            <span id="filter-button-text">Exporter</span>
             <div id="filter-loader" class="d-none d-flex justify-content-start">
               <div class="inner-loading dot-flashing"></div>
             </div>

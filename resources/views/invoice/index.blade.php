@@ -25,7 +25,11 @@
           <div class="btn-wrapper">
             {{--@if (Auth::admin()->can('create', App\Models\Sales\Customer::class))--}}
     <!-- The current admin can update the post... -->
-    <a href="{{url('invoice/create')}}" class="btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouvelle ville</a>
+  
+
+  <a href="#" class="btn btn-primary text-white me-0" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
+    <i class="bi bi-file-earmark-plus"></i> Nouvelle facture
+  </a>
 
             {{--@endif--}}
             {{--<a href="#" class="btn btn-otline-dark align-items-center"><i class="icon-share"></i> Share</a>
@@ -171,7 +175,46 @@
 @endsection
 
 
+@section('custom_modal')
+
+@include('layouts.partials._modal_invoice')
+
+
+
+        
+@endsection
+
+
 
 @section('custom_js')
+
+
+<script>
+  $(function () {
+     
+
+    document.getElementById('previewBtn').addEventListener('click', function() {
+    const company = document.getElementById('company').value;
+    const month = document.getElementById('month').value;
+
+    if (!company || !month) {
+        alert("Veuillez sélectionner la compagnie et le mois !");
+        return;
+    }
+
+    // Construire l'URL avec query string
+    const url = `{{ route('invoices.preview') }}?company=${encodeURIComponent(company)}&month=${encodeURIComponent(month)}`;
+
+    // Ouvrir dans un nouvel onglet
+    window.open(url, '_blank');
+});
+
+    
+
+    
+  });
+</script>
+
+
 
 @endsection

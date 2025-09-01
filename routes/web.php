@@ -160,6 +160,14 @@ Route::middleware(["auth"])->group(function () {
     ]);
 
 
+    Route::resource("invoice", InvoiceController::class)->only([
+        "index",
+        "create",
+        "edit",
+        "show",
+    ]);
+
+
     Route::post("save-invoices", [FolderController::class, "save_invoices"]);
     Route::post("validate-invoices", [FolderController::class, "validate_invoices"]);
     

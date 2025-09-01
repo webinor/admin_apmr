@@ -29,7 +29,7 @@
     data-bs-target="#balance-modal"><i class="icon-check"></i>Solde prestataire</a>
 
 
-   {{-- --}} <a href="#" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn btn-info text-white"><i class="mdi mdi-filter"></i>Filter la recherche</a> 
+   {{-- --}} <a href="#" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn btn-info text-white"><i class="mdi mdi-export"></i>Exporter les données</a> 
 
 
     <a href="{{url('assistance/create')}}" class="d-none btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS</a>
@@ -39,9 +39,6 @@
     <i class="bi bi-file-earmark-plus"></i> Nouvelle facture
   </a> --}}
 
-  <a href="#" class="btn btn-primary text-white me-0" data-bs-toggle="modal" data-bs-target="#newInvoiceModal">
-    <i class="bi bi-file-earmark-plus"></i> Nouvelle facture
-  </a>
 
 
             {{--@endif--}}
@@ -329,33 +326,6 @@
 @section('custom_js')
 
 <script>
-  $(function () {
-     
-
-    document.getElementById('previewBtn').addEventListener('click', function() {
-    const company = document.getElementById('company').value;
-    const month = document.getElementById('month').value;
-
-    if (!company || !month) {
-        alert("Veuillez sélectionner la compagnie et le mois !");
-        return;
-    }
-
-    // Construire l'URL avec query string
-    const url = `{{ route('invoices.preview') }}?company=${encodeURIComponent(company)}&month=${encodeURIComponent(month)}`;
-
-    // Ouvrir dans un nouvel onglet
-    window.open(url, '_blank');
-});
-
-    
-
-    
-  });
-</script>
-
-
-<script>
 
 document.addEventListener('DOMContentLoaded', function () {
 
@@ -395,7 +365,7 @@ async function updateCount() {
     const data = await response.json();
 
     // Affiche le nombre de résultats sur le bouton
-    filterButton.querySelector('#filter-button-text').textContent = `Filtrer (${data.count})`;
+    filterButton.querySelector('#filter-button-text').textContent = `Exporter (${data?.count})`;
 
   } catch (error) {
     console.error(error);
