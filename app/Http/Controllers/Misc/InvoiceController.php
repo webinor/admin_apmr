@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Misc;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Misc\UpdateReferenceRequest;
-use App\Models\AssistanceLine;
+use App\Models\Adjustment;
 use App\Models\Company;
 use App\Models\Misc\Invoice;
+use App\Models\Misc\InvoiceLine;
 use App\Models\Operations\Assistance;
+use App\Models\Operations\AssistanceLine;
 use App\Services\Misc\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use NumberFormatter;
 
@@ -41,9 +44,14 @@ class InvoiceController extends Controller
 
     public function preview(Request $request)
     {
+
+        try {
+            //code...
+      
        // Récupérer les données depuis la query string
     $companyCode = $request->query('company');
     $month       = $request->query('month');
+    $should_generate_invoice = $request->query('invoice');
 
     // Validation manuelle
     $errors = [];
@@ -81,6 +89,8 @@ class InvoiceController extends Controller
     $lines = AssistanceLine::whereIn('assistance_id', $assistances->pluck('id'))
         //->whereBetween('date', [$startDate, $endDate])
         ->get();
+
+    //    dd($lines);
     
         if ($lines->isEmpty()) {
             return back()->withErrors(['msg' => 'Aucune donnée trouvée pour ce mois.']);
@@ -90,11 +100,45 @@ class InvoiceController extends Controller
         // return view('invoices.preview', compact('lines'));
         // ou générer directement un PDF
 
+        ///////////////////on ajuste selon les ajustements
+
+        $lineAdjustments = Adjustment::where('adjustable_type', "App\Models\Operations\AssistanceLine")
+    ->whereIn('adjustable_id', $lines->pluck('id'))
+    ->orderBy('created_at') // important
+    ->get()
+    ->groupBy(fn($a) => $a->adjustable_id . '_' . $a->field)
+    ->map(fn($group) => $group->last()); // garder le dernier ajustement
+
+
+  //  dd($lineAdjustments);
+
+   $linesCorrected = $lines->map(function($line) use ($lineAdjustments) {
+    // Cherche si ajustement existe pour ce champ
+    foreach (['wheel_chair_id', 'beneficiary_name', 'assistance_agent_id', 'comment'] as $field) {
+        $adjust = $lineAdjustments->get($line->id . '_' . $field);
+        if ($adjust) {
+            if ($adjust->action === 'update') {
+                $line->{$adjust->field} = $adjust->new_value;
+            }
+            if ($adjust->action === 'delete') {
+                $line->deleted_by_adjustment = true;
+            }
+        }
+    }
+    return $line;
+})->filter(fn($line) => empty($line->deleted_by_adjustment));
+
+
+
+   // dd($linesCorrected);
+
+        //////////////////
+
 
 // Construire le tableau
-  $items = $company->wheel_chairs->map(function($wc) use ($lines, $company) {
+  $items = $company->wheel_chairs->map(function($wc) use ($linesCorrected, $company) {
     // Quantité = nombre de lignes d’assistance pour ce type de chaise
-    $qty = $lines->where('wheel_chair_id', $wc->id)->count();
+    $qty = $linesCorrected->where('wheel_chair_id', $wc->id)->count();
 
     // Prix unitaire depuis la table pivot
     $pu = $wc->pivot->price;
@@ -105,7 +149,8 @@ class InvoiceController extends Controller
         'pu'     => $pu,                       // ex: 20000
         'amount' => $qty * $pu,                // ex: 80000
     ];
-});
+})   ->filter(fn($item) => $item['qty'] > 0) // garde seulement si qty > 0
+->values(); // réindexe proprement
 
 $items[] = [
     'label'  => 'Abonnement Mensuel',
@@ -113,6 +158,50 @@ $items[] = [
     'pu'     => 1,
     'amount' => $company->mensual_fee,
 ];
+
+////////////////////facturation begin
+
+
+if ($should_generate_invoice = true) {
+
+    DB::beginTransaction();
+
+ 
+    
+    $invoice = new Invoice();
+    $invoice->code = Str::random(10);
+    $invoice->invoice_number = Str::random(10);
+    $invoice->created_by = session('user')->id;
+    $invoice->save();
+
+    Assistance::whereIn('id', $assistances->pluck('id'))
+    ->update([
+        'invoice_id' => $invoice->id
+    ]);
+
+
+    $invoice_lines = [];
+
+    
+foreach ($items as $content) {
+    $content = (object)$content;
+  //  dd($content);
+    $invoice_lines[] = new InvoiceLine([
+        'designation'  => $content->label,                 // ex: "Chaises C"
+        'quantity'    => $content->qty,                      // ex: 4
+        'unit_price'     => $content->pu,                       // ex: 20000
+        'amount' => $content-> qty * $content->pu,                // ex: 80000
+    ]);
+}
+
+// Ensuite tu sauvegardes tous les commentaires liés au post
+$invoice->invoice_lines()->saveMany($invoice_lines);
+   
+//DB::commit();
+    
+}
+
+////////////////////facturation end
 
 
 // 1️⃣ Somme HT
@@ -165,7 +254,9 @@ $amount_ttc = (int)($amount_ht*(1+$tva));
 
 $str_ttc = $formatter->format($totaux["ttc"]);
 
-//return $totaux;
+
+
+
 
 //dd($company);
         $invoice = (object)[
@@ -264,6 +355,11 @@ $str_ttc = $formatter->format($totaux["ttc"]);
 return $pdf->stream("facture-{$invoice->number}.pdf");
 
 return $pdf->download("facture-{$invoice->number}.pdf");
+
+} catch (\Throwable $th) {
+    DB::rollback();
+    throw $th;
+}
     }
 
     

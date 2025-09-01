@@ -113,7 +113,7 @@
     <!-- Mission -->
     <div class="mission">
         Assistance aux passagers à mobilité réduite à l’Aéroport International de {{ $invoice->airport }}
-        au courant du mois de {{ $invoice->month }}
+        durant le mois de {{ $invoice->month }}
     </div>
 
     <!-- Tableau -->
@@ -150,11 +150,11 @@
         </tr>
         <tr>
             <td class="right"><strong>Net à payer TTC :</strong></td>
-            <td class="right"><strong>{{ number_format($invoice->ttc, 0, ',', ' ') }}</strong></td>
+            <td class="right"><strong>{{ number_format($invoice->ttc, 0, ',', ' ') }} FCFA</strong></td>
         </tr>
     </table>
 
-    <p><em>Facture arrêtée à la somme de {{ $invoice->amount_letters }}</em></p>
+    <p><em>Facture arrêtée à la somme de FCFA {{ $invoice->amount_letters }}</em></p>
 
     <!-- Conditions -->
     <div class="conditions">

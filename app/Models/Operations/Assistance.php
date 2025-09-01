@@ -2,7 +2,7 @@
 
 namespace App\Models\Operations;
 
-use App\Models\AssistanceLine;
+use App\Models\Adjustment;
 use App\Models\Company;
 use App\Models\GroundAgent;
 use App\Models\Misc\File;
@@ -26,6 +26,11 @@ class Assistance extends Model
     {
         return $this->belongsTo(Company::class);
     }
+
+    public function adjustments()
+{
+    return $this->morphMany(Adjustment::class, 'adjustable');
+}
 
     public function signature()
 {

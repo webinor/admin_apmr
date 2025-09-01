@@ -156,6 +156,10 @@ beforeSend: function (xhr) {
         if (data.status) {
 
           $("#overview .alert-success").toggleClass("d-none");
+
+          if ($("#action").val() == "create") {
+            $("#form")[0].reset();
+          }
         //  $('.customer').val(data.data.customer);
          // $("#form")[0].reset();
     //  $('.line').remove();

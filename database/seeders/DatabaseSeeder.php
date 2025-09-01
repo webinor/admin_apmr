@@ -53,6 +53,15 @@ class DatabaseSeeder extends Seeder
             ]
             ],
 
+            ['menu_name'=>'Gestion des Factures', 
+            'menu_slug'=>Str::slug('Gestion des Factures'),
+            'menu_description'=>'',
+            'menu_icon'=>'menu-icon mdi mdi-account-card-details',
+            'children'=>[
+            ['submenu_name'=>'Liste des Factures','link'=> ('invoice') ],
+            ]
+            ],
+
 
             ['menu_name'=>'Gestion des villes', 
             'menu_slug'=>Str::slug('Gestion des villes'),

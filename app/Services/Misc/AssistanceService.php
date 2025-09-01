@@ -2,7 +2,6 @@
 
 namespace App\Services\Misc ;
 
-use App\Models\User;
 use App\Jobs\SendSmsJob;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -10,7 +9,7 @@ use App\Models\Misc\Resource;
 use App\Models\Operations\Mission;
 use App\Models\Operations\Step;
 use App\Models\City;
-use App\Models\Setting\Company;
+use App\Models\Company;
 use App\Models\Storage\Reception;
 use App\Models\Storage\Warehouse;
 use Illuminate\Support\Facades\DB;
@@ -27,8 +26,12 @@ use App\Addons\Misc\EditVariablesResponder;
 use App\Addons\Misc\IndexVariablesResponder;
 use App\Addons\Misc\ShowVariablesResponder;
 use App\Addons\Misc\ViewsResponder;
-use App\Models\Company as ModelsCompany;
+use App\Models\AssistanceAgent;
 use App\Models\Operations\Assistance;
+use App\Models\Registrator;
+use App\Models\User\User;
+use App\Models\WheelChair;
+use Carbon\Carbon;
 
 class AssistanceService  implements
 //IndexVariablesResponder,
@@ -38,6 +41,142 @@ EditVariablesResponder,
 ViewsResponder {
 
     use DataConstructor , FileUploadHandler  ;
+
+
+    protected string $apmerServiceBaseUrl;
+
+    public function __construct()
+    {
+        // À mettre dans .env par exemple USER_SERVICE_BASE_URL
+        $this->apmerServiceBaseUrl = config('services.apmr_service.base_url');
+    }
+
+
+
+    public function count_filtered_results(Request $filters)  {
+        
+        
+        
+        $filtered_results = count($this->new_get_filtered_results($filters));
+
+
+
+        return [
+            "status" => true,
+            "folders" => $filtered_results,
+            "filter-button-text" => __($filtered_results." dossier(s) trouvé(s)"),
+            
+        ];
+
+    }
+
+
+    public function new_get_filtered_results(Request $filters , Slip $binded_slip = null)  {
+        
+        $slip =   $binded_slip ? $binded_slip : Slip::whereCode($filters->input('slip'))->first() ;
+
+
+     //   dd($slip);
+       
+
+        $query = Folder::query()->
+        with([
+            "seen:id,seenable_type,seenable_id,user_id",
+            "validator:id,seenable_type,seenable_id,user_id",
+            "validator.user:id,employee_id",
+            "validator.user.employee:id,role_id,first_name,last_name",
+            "user:id,employee_id",
+            "user.employee:id,role_id,first_name,last_name",
+            "invoices.invoice_lines.invoice.prestationable",
+            "invoices.invoice_lines.invoice.folder.slip.provider.provider_type",
+            "invoices.prestationable"]);
+           
+            if ($slip) {
+               $query ->whereSlipId($slip -> id);
+            }
+
+            if (($filters->input('folder-validated'))) {
+            
+                $query->where('save_at','!=',null);
+                $query->where('validate_at',null);
+            }
+
+            if (($filters->input('contract-linked'))) {
+
+                $query->has('contract');
+    
+            }
+
+            if (($filters->input('conform-pathology'))) {
+                //$query->has('pathology');
+            }
+    
+
+
+        
+            $folders = $query->get();
+
+        
+
+        
+        
+      
+    
+    
+            if (($filters->input('prestations-exist'))) {
+            
+                $folders = $folders->filter(function ($folder, $key) {
+                    return !$folder->all_prestations_exist();
+                });
+                
+            }
+
+
+            if (($filters->input('should-be-validated'))) {
+            
+                $folders = $folders->filter(function ($folder, $key) {
+                    return $folder->should_be_validated();
+                });
+                
+            }
+
+            
+
+        
+        
+        if (($filters->input('conform-price'))) {
+            
+            $folders = $folders->filter(function ($folder, $key) {
+                return !$folder->all_prices_are_coherent();
+            });
+
+        }
+
+        $min_price = $filters->input('min-price') ? $filters->input('min-price') : 0;
+        $max_price = $filters->input('max-price') ? $filters->input('max-price') : 200000;
+        $folders = $folders->filter(function ($folder, $key) use ($min_price,$max_price) {
+            return $folder->get_amount() >= $min_price &&  $folder->get_amount() <= $max_price;
+        });
+
+       
+
+       
+
+     
+
+        if (($filters->input('lock-filter'))) {
+            # code...
+        }
+
+         
+     return   $folders = $folders->all();
+        
+        
+      
+        
+
+
+    }
 
 
     function searchInvoices($slip , $query_search)
@@ -51,7 +190,7 @@ ViewsResponder {
         ])
         ->first();/**/
 
-        $folders = Folder::
+        $folders = Assistance::
         whereHas('invoices',function($query) use ($query_search){
             $query->whereReference(substr($query_search, 0, 8));
         })
@@ -68,7 +207,7 @@ ViewsResponder {
 
        // dd($folders);
 
-        $folders_success = Folder::
+        $folders_success = Assistance::
         whereHas('invoices',function($query) use ($query_search){
             $query->whereReference(substr($query_search, 0, 8));
         })
@@ -84,7 +223,7 @@ ViewsResponder {
         ->paginate(10)
         ->withQueryString();
 
-        $folders_reject = Folder::
+        $folders_reject = Assistance::
         whereHas('invoices',function($query) use ($query_search){
             $query->whereReference(substr($query_search, 0, 8));
         })
@@ -102,8 +241,8 @@ ViewsResponder {
 
        
 
-        $service_types  = ServiceType::select('id','code','name','fullname')->get();
-        $product_types  = ProductType::select('id','code','name','fullname')->get();
+        $service_types  = Assistance::select('id','code','name','fullname')->get();
+        $product_types  = Assistance::select('id','code','name','fullname')->get();
 
        // $folders = $slip->folders;
        
@@ -148,7 +287,7 @@ ViewsResponder {
                 //  $upload_file_service = new UpdloadFileService();
                     $user = Auth::guard("sanctum")->user();
                     $home  = $_SERVER['SERVER_NAME'] == '192.168.43.84' ||/**/ $_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1' ? "marcel" : ( $_SERVER['SERVER_NAME'] == "51.254.121.221" || $_SERVER['SERVER_NAME'] == "51.254.121.44" ?  "ubuntu" : "thsailid64");
-                    $provider= Provider::whereName($request['provider'])
+                    $provider= Assistance::whereName($request['provider'])
                     ->with(['provider_category'])
                     ->first();
                     $timer = null;
@@ -167,7 +306,7 @@ ViewsResponder {
 
                     // dd(Carbon::createFromFormat());
 
-                    $slip = Slip::whereIdentification($slip_identification)->first();
+                    $slip = Assistance::whereIdentification($slip_identification)->first();
 
 
                     if ($request['timer']) {
@@ -177,7 +316,7 @@ ViewsResponder {
                        // $slip = Slip::whereIdentification($slip_identification)->first();
         
                         if ( ! $slip) {
-                            $slip = new Slip();
+                            $slip = new Assistance();
                             $slip->code = Str::random(15);
                             $slip->identification = $slip_identification;
                             $slip->provider_id = $provider->id;
@@ -216,7 +355,7 @@ ViewsResponder {
 
                         
 
-                            $existing_folder = Folder::whereDocName($file['name'])
+                            $existing_folder = Assistance::whereDocName($file['name'])
                             ->whereSlipId($slip ? $slip->id : 0)
                             ->first();
 
@@ -247,11 +386,11 @@ ViewsResponder {
 
                                     $delay = $date->subHour();// now()->addMinutes($diff);
                                     
-                                    $schedule = new Schedule();
+                                    $schedule = new Assistance();
                                     $schedule->start_at = $delay->setTimezone('Africa/Douala');
                                     $slip->schedules()->save($schedule);
                                 
-                                ExtractCaseJob::dispatch($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address)
+                                Assistance::dispatch($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address)
                                     //->afterCommit() 
                                     ->delay($delay);
 
@@ -262,7 +401,7 @@ ViewsResponder {
 
                                 } else {
 
-                                ExtractCaseJob::dispatch($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address)
+                                Assistance::dispatch($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address)
                                     //->afterCommit() 
                                     ;
 
@@ -271,8 +410,8 @@ ViewsResponder {
                             }
                             elseif($_SERVER['SERVER_ADDR'] == "51.254.121.221"  || $_SERVER['SERVER_ADDR'] == "51.254.121.44"){
                             
-                            $s3_file = Storage::disk('s3')->get("extracted_doc/".($file['path']));
-                            $s3 = Storage::disk('public');
+                            $s3_file = Assistance::disk('s3')->get("extracted_doc/".($file['path']));
+                            $s3 = Assistance::disk('public');
                             $s3->put(("extracted_doc/".$file['path']), $s3_file);
 
                                 if ($request['timer']) {
@@ -294,11 +433,11 @@ ViewsResponder {
     
                                     $delay = $date->subHour();// now()->addMinutes($diff);
                                     
-                                    $schedule = new Schedule();
+                                    $schedule = new Assistance();
                                     $schedule->start_at = $delay->setTimezone('Africa/Douala');
                                     $slip->schedules()->save($schedule);
                                 
-                                ExtractCaseJob::dispatch($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address)
+                                    Assistance::dispatch($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address)
                                 //->afterCommit()   
                                 ->delay($delay);
     
@@ -309,14 +448,14 @@ ViewsResponder {
     
                                 } else {
 
-                                ExtractCaseJob::dispatchSync($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address);
+                                    Assistance::dispatchSync($slip_identification, [$file['path']], "https://extract237-pass24.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address);
 
 
                                 }
 
                             }
                             else {
-                                ExtractCaseJob::dispatchSync($slip_identification, [$file['path']], "https://extract237.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address);
+                                Assistance::dispatchSync($slip_identification, [$file['path']], "https://extract237.s3.eu-west-3.amazonaws.com/extracted_doc/".$file['path'], $file['name'] , $home ,$user , $provider , $timer , $all_folders , $index , $host , $remote_address);
                             }
                             
                         }
@@ -341,7 +480,7 @@ ViewsResponder {
                             $is_new_folder = false;
 
                       
-                            SlipExtracted::dispatch($existing_folder ,$has_items , $is_new_folder , $user /*, $host , $remote_address/*, $_SERVER['REMOTE_ADDR'] , $_SERVER['SERVER_ADDR']*/);
+                        Assistance::dispatch($existing_folder ,$has_items , $is_new_folder , $user /*, $host , $remote_address/*, $_SERVER['REMOTE_ADDR'] , $_SERVER['SERVER_ADDR']*/);
                     
                             
                             }
@@ -396,11 +535,15 @@ ViewsResponder {
         ->paginate(10)
         ->withQueryString();
 
-        $companies = ModelsCompany::get();
+        $companies = Company::get();
+        $agents = AssistanceAgent::get();
+        $users = Registrator::get();
+        $cities = City::get();
+        $wheel_chairs = WheelChair::get();
 
       //  dd($assistances);
 
-        $vars = compact("assistances" , "companies");
+        $vars = compact("assistances" , "companies" , "agents" , "users" , "cities" , "wheel_chairs");
 
         return $vars;
     }
@@ -442,8 +585,8 @@ ViewsResponder {
 
       //  dd($next); 
 
-        $service_types  = ServiceType::select('id','code','name','fullname')->get();
-        $product_types  = ProductType::select('id','code','name','fullname')->get();
+        $service_types  = Assistance::select('id','code','name','fullname')->get();
+        $product_types  = Assistance::select('id','code','name','fullname')->get();
 
         //$current_user = Auth::user();
 
@@ -481,9 +624,48 @@ ViewsResponder {
             "product_types"
         );
     }
-    function getEditVariables($supplier)
+    function getEditVariables($assistance)
     {
-        $supplier->load(["logo", "documents"]);
+
+        $assistance = $assistance->load([
+            'signature',
+            'assistance_lines.assistance_agent',
+            'assistance_lines.wheel_chair',
+            'ground_agent.company.ground_agents']);
+    
+    
+         //   dd($assistance);
+    
+           $current_city_id = $assistance->ground_agent->company->city->id;
+    
+           //dd($current_city_id);
+    
+    
+            $cities = City::orderBy('name')->get();
+            $companies = Company::orderBy('name')->whereCityId($current_city_id)->get();
+    
+           //dd($companies);
+    
+            $wheel_chairs = $assistance->ground_agent ? $assistance->ground_agent->company->wheel_chairs : [];
+            $agents = AssistanceAgent::whereCityId($current_city_id)->get();
+            $action = "update";
+            $disabled =  $assistance->signature ? "disabled" : "" ;
+            $readonly = $assistance->signature ? "readonly" : "" ;
+            $apmr_url = $this->apmerServiceBaseUrl;
+       
+            return compact(
+                "assistance",
+                "apmr_url",
+                "cities",
+                "companies", "assistance",
+                "wheel_chairs",
+                "agents",
+                "action",
+                "disabled",
+                "readonly",
+            );
+
+        $assistance->load(["logo", "documents"]);
         $action = "update";
         $disabled = "";
         $readonly = "";

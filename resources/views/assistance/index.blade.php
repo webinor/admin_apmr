@@ -29,7 +29,7 @@
     data-bs-target="#balance-modal"><i class="icon-check"></i>Solde prestataire</a>
 
 
-   {{--  <a href="#" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn btn-info text-white"><i class="mdi mdi-filter"></i>Filter la recherche</a> --}}
+   {{-- --}} <a href="#" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn btn-info text-white"><i class="mdi mdi-filter"></i>Filter la recherche</a> 
 
 
     <a href="{{url('assistance/create')}}" class="d-none btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS</a>
@@ -255,12 +255,12 @@
                               
                                   
                               
-                              <a    id="print_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 print" href="{{url('assistance/'.$assistance->code)}}" ><i class="menu-icon mdi mdi-eye"></i></a>
+                         {{--      <a    id="print_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 print" href="{{url('assistance/'.$assistance->code)}}" ><i class="menu-icon mdi mdi-eye"></i></a>
+
+                              --}}
 
                              
-
-                             
-                              <a    id="edit_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 edit" href="{{url('assistance/'.$assistance->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
+                              <a    id="edit_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 edit" href="{{url('assistance/'.$assistance->code.'/edit')}}"><i class="menu-icon mdi mdi-eye"></i></a>
                               
 
                               @can('delete', $assistance)
@@ -319,7 +319,7 @@
 
 @include('layouts.partials._new_modal_invoice')
 
-@include('layouts.partials._modal_new_filter') 
+@include('layouts.partials._modal_filter') 
 
         
 @endsection
@@ -330,7 +330,7 @@
 
 <script>
   $(function () {
-    
+     
 
     document.getElementById('previewBtn').addEventListener('click', function() {
     const company = document.getElementById('company').value;
@@ -352,6 +352,69 @@
 
     
   });
+</script>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+
+const form = document.getElementById('form_filter');
+const filterButton = document.getElementById('filter-button');
+const filterLoader = document.getElementById('filter-loader');
+const filterUrl = document.getElementById('filter_url').value;
+
+// Fonction pour récupérer les filtres du formulaire
+function getFilters() {
+  const filters = {};
+  form.querySelectorAll('.filter').forEach(input => {
+    if (input.type === 'checkbox') {
+      if (input.checked) filters[input.name] = 1;
+    } else if (input.value) {
+      filters[input.name] = input.value;
+    }
+  });
+  return filters;
+}
+
+// Fonction pour mettre à jour le nombre de résultats
+async function updateCount() {
+  const filters = getFilters();
+  filterLoader.classList.remove('d-none');
+
+  try {
+    const params = new URLSearchParams(filters);
+    const response = await fetch(`${filterUrl}?${params.toString()}`,{
+  method: 'GET', // ou 'POST' selon ton cas
+  headers: {
+    'Accept': 'application/json',
+    'Authorization': `Bearer ${window.localStorage.getItem('token')}`,
+    // Si tu envoies aussi du JSON dans le body, ajoute :
+    // 'Content-Type': 'application/json'
+  }});
+    const data = await response.json();
+
+    // Affiche le nombre de résultats sur le bouton
+    filterButton.querySelector('#filter-button-text').textContent = `Filtrer (${data.count})`;
+
+  } catch (error) {
+    console.error(error);
+  } finally {
+    filterLoader.classList.add('d-none');
+  }
+}
+
+// On écoute tous les changements dans le formulaire
+form.querySelectorAll('.filter').forEach(input => {
+  input.addEventListener('change', updateCount);
+});
+
+// Si tu veux, tu peux déclencher un filtre direct au clic du bouton
+filterButton.addEventListener('click', function () {
+  form.submit(); // Soumet le formulaire normalement
+});
+});
+
 </script>
 
 @endsection

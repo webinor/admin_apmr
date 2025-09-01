@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AssistanceAgentController;
+use App\Http\Controllers\AssistanceController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyWheelChairController;
@@ -151,7 +152,10 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
         //Route::post("validate-invoices", [FolderController::class, "validate_invoices"]);
         Route::post("update-reference", [InvoiceController::class, "update_reference"]);
         Route::post("update-identification", [FolderController::class, "update_identification"]);
-        Route::post("count-filtered-results", [FolderController::class, "count_filtered_results"]);
+        //Route::post("count-filtered-results", [FolderController::class, "count_filtered_results"]);
+
+
+        Route::get("count-filtered-results", [AssistanceController::class, "countFiltered"]);
 
         
 

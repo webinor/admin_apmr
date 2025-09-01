@@ -61,7 +61,7 @@
                     @csrf
                     <input id="token" type="hidden" class="form-control" value="{{session('user')->code}}" >
                     <input id="city" type="hidden" class="form-control" value="{{$city ? $city->code : ''}}" >
-                    <input id="action" type="hidden" class="" value="{{ $action }}" >
+                    <input id="action" type="hidden" value="{{ $action }}" >
           
           <div class="form-group row">
             <div class="col-sm-12 mb-3 mb-sm-0">
@@ -145,11 +145,15 @@ beforeSend: function (xhr) {
 },
         dataType: "json",
         success: function(data, textStatus, xhr) {
-        if (data.status) {
+        if (data.status) { 
 
           $("#overview .alert-success").toggleClass("d-none");
+
+          if ($("#action").val() == "create") {
+            $("#form")[0].reset();
+          }
         //  $('.customer').val(data.data.customer);
-         // $("#form")[0].reset();
+         // 
     //  $('.line').remove();
         //  $('.additionnal_details').removeAttr('disabled');
         } 

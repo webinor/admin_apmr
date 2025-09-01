@@ -18,6 +18,7 @@ use App\Models\Supplier\Transfert;
 use Illuminate\Support\Facades\Route;
 use App\Models\HumanResource\Employee;
 use App\Models\Misc\Payment;
+use App\Models\Operations\Assistance;
 use App\Models\Operations\Folder;
 use App\Models\Operations\Provider;
 use App\Models\Operations\Slip;
@@ -122,22 +123,11 @@ class RouteServiceProvider extends ServiceProvider
             return AssistanceAgent::where('code', $value)->first();
         });
 
-
-        Route::bind('aaaafetch-folder', function ($value) {
-            dd($value);
-            return Folder::where('code', $value)->first();
+        Route::bind('assistance', function ($value) {
+            return Assistance   ::where('code', $value)->first();
         });
 
-       
-        
 
-
-           Route::bind('provider', function ($value) {
-           // dd($value);
-               return Provider::where('code', $value)->first();
-           });
-
-      
 
            Route::bind('file', function ($value) {
             return File::where('code', $value)->first();

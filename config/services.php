@@ -30,4 +30,14 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'external' => [
+        'url_front' => env('APMR_URL'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+    ],
+
+    'apmr_service' => [
+        'base_url' => env('APMR_URL', 'http://localhost:8090'),
+    ],
+
 ];
