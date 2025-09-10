@@ -122,8 +122,12 @@ $this->wheelChairTypes = $wheelChairTypes;
  // construire le tableau final
  $array = [];
 
+ 
+
  // Lignes d'information sur les filtres
 $meta = [];
+
+$meta[] = ['', '', '', ''];
 
 // Compagnie(s)
 if (!empty($this->filters['compagnie'])) {
@@ -163,6 +167,10 @@ if (!empty($this->filters['agent'])) {
     'Embarquement / Debarquement',
     '# de vol',
  ];
+
+ $emptyLine = array_fill(0, count($headings), '');
+
+ $array[] = [$emptyLine ,$emptyLine];
 
  foreach ($wheelChairTypes as $type) {
      $headings[] = $type;
