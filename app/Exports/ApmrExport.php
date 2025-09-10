@@ -200,14 +200,14 @@ foreach ($filtered as $index => $line) {
 
 
 
-    $line3 = AssistanceLine::find(3);
-    $wc = WheelChair::find($line3->wheel_chair_id);
+   // $line3 = AssistanceLine::find(3);
+  //  $wc = WheelChair::find($line3->wheel_chair_id);
     
    // dd($line3->wheel_chair_id, $wc->id);
 
 
-    $w = WheelChair::find(2);
-    $line2 = AssistanceLine::with('wheel_chair')->whereId(2)->get();
+   // $w = WheelChair::find(2);
+  //  $line2 = AssistanceLine::with('wheel_chair')->whereId(2)->get();
   //  dd($line2);
   //  dd($line->wheel_chair_id, $line2->wheel_chair->id, $line->wheel_chair->slug , $w->id);
    // dd($wheelChairTypes);
