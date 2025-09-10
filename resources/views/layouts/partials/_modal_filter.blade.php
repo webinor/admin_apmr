@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body pt-0">
-        <form id="form_filter" class="pt-0" novalidate method="GET" action="{{ url('slip/') }}">
+        <form id="form_filter" class="pt-0" novalidate method="GET" action="{{ url('apmrs/export') }}">
           @csrf
           <input id="filter_url" type="hidden" value="{{ ('/api/count-filtered-results') }}">
           <input id="slip" name="slip" class="form-control" type="hidden" value="">
@@ -28,7 +28,7 @@
 
               <!-- Agent -->
               <div class="mb-3 border-bottom">
-                <label for="agent" class="form-label">Agent</label>
+                <label for="agent" class="form-label">Agent CAS</label>
                 <select id="agent" name="agent" class="form-control filter">
                   <option value="">-- Tous --</option>
                   @foreach($agents as $agent)
@@ -57,19 +57,9 @@
                 </select>
               </div>
 
-              <!-- Enregistré par -->
-              <div class="mb-3 border-bottom">
-                <label for="user" class="form-label">Enregistré par</label>
-                <select id="user" name="user" class="form-control filter">
-                  <option value="">-- Tous --</option>
-                  @foreach($users as $user)
-                    <option value="{{ $user->code }}">{{ $user->fullName() }}</option>
-                  @endforeach
-                </select>
-              </div>
+             
 
-              
-
+            
              
 
               <!-- Ville -->
@@ -82,6 +72,20 @@
                   @endforeach
                 </select>
               </div>
+
+                <!-- Enregistré par -->
+                <div class="mb-3 border-bottom">
+                  <label for="user" class="form-label">operateur APMR</label>
+                  <select id="user" name="user" class="form-control filter">
+                    <option value="">-- Tous --</option>
+                    @foreach($users as $user)
+                      <option value="{{ $user->code }}">{{ $user->fullName() }}</option>
+                    @endforeach
+                  </select>
+                </div>
+  
+                
+  
 
               {{--  --}
               <!-- Min / Max prix -->

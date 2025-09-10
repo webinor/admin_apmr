@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ApmrExport;
 use App\Http\Requests\StoreAssistanceRequest;
 use App\Http\Requests\UpdateAssistanceRequest;
 use App\Models\Operations\Assistance;
 use App\Models\Operations\AssistanceLine;
 use App\Services\Misc\AssistanceService;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AssistanceController extends Controller
 {
@@ -139,107 +141,16 @@ class AssistanceController extends Controller
         'count' => $totalLines
     ]);
 
+    }
 
+    public function export(Request $request)
+    {
+        $filters = $request->all();
 
-
-
-
-
-
-
-
-
-
-
-//////////////////////old
-
-        $query = Assistance::query()
-        ->has('signature')
-        ->with('assistance_lines');
-
-        // Compagnie
-        if ($request->filled('compagnie')) {
-            $query->whereHas('ground_agent.company', function ($qry) use ($request) {
-
-                $qry->whereCode($request->compagnie);
-                
-            });
-        }
-
-        // Agent
-        if ($request->filled('agent')) {
-
-            $query->whereHas('assistance_lines.assistance_agent', function ($qry) use ($request) {
-
-                $qry->whereCode($request->agent);
-                
-            });
-        }
-
-        // Période
-        if ($request->filled('date_debut')) {
-            $query->whereDate('created_at', '>=', $request->date_debut);
-        }
-        if ($request->filled('date_fin')) {
-            $query->whereDate('created_at', '<=', $request->date_fin);
-        }
-
-        // Type de chaise
-        if ($request->filled('wheel_chair')) {
-           // $query->where('wheel_chair_code', $request->wheel_chair);
-
-            $query->whereHas('assistance_lines.wheel_chair', function ($qry) use ($request) {
-
-                $qry->whereCode($request->wheel_chair);
-                
-            });
-
-        }
-
-        // Enregistré par
-        if ($request->filled('user')) {
-          //  $query->where('user_code', $request->user);//
-
-            $query->whereHas('registrator', function ($qry) use ($request) {
-
-                $qry->whereCode($request->user);
-                
-            });
-        }
-
-        // Ville
-        if ($request->filled('city')) {
-           // $query->where('city_code', $request->city);
-
-            $query->whereHas('assistance_lines.assistance_agent.city', function ($qry) use ($request) {
-
-                $qry->whereCode($request->city);
-                
-            });
-        }
-
-        // Déjà facturées
-        if ($request->filled('justificatifs')) {
-            $query->where('is_invoiced', true);
-        }
-
-        // Min / Max prix
-        if ($request->filled('min-price')) {
-            $query->where('total', '>=', $request->input('min-price'));
-
-
-        }
-        if ($request->filled('max-price')) {
-            $query->where('total', '<=', $request->input('max-price'));
-        }
-
-     return   $results = $query->get()->toArray();
-
-        $totalLines = array_sum(array_map(function($assistance) {
-            return count($assistance['assistance_lines'] ?? []);
-        }, $results));
-
-        return response()->json(['count' => $totalLines]);
+        return Excel::download(
+            new ApmrExport($filters), // ici on passe le tableau des filtres
+            'apmr_export_' . date('Ymd_His') . '.xlsx'
+        );
     }
 
     /**

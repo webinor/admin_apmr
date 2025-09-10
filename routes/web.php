@@ -167,6 +167,9 @@ Route::middleware(["auth"])->group(function () {
         "show",
     ]);
 
+    Route::get('/apmrs/export', [AssistanceController::class, 'export'])->name('apmrs.export');
+
+
 
     Route::post("save-invoices", [FolderController::class, "save_invoices"]);
     Route::post("validate-invoices", [FolderController::class, "validate_invoices"]);

@@ -18,6 +18,10 @@ class AssistanceLine extends Model
     return $this->morphMany(Adjustment::class, 'adjustable');
 }
 
+protected $casts = [
+    'wheel_chair_id' => 'integer',
+    'assistance_agent_id' => 'integer',
+];
 
  /**
      * Get the Assistance that owns the AssistanceLine
@@ -47,7 +51,7 @@ class AssistanceLine extends Model
      */
     public function wheel_chair(): BelongsTo
     {
-        return $this->belongsTo(WheelChair::class);
+        return $this->belongsTo(WheelChair::class, 'wheel_chair_id', 'id');
     }
 
 
