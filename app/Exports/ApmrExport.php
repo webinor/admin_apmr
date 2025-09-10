@@ -139,7 +139,7 @@ if (!empty($this->filters['date_debut']) || !empty($this->filters['date_fin'])) 
     $end = !empty($this->filters['date_fin']) ? \Carbon\Carbon::parse($this->filters['date_fin'])->format('d/m/Y') : 'fin';
     $meta[] = ['', '', '', 'Période : du ' . $start . ' au ' . $end];
 } else {
-    $meta[] = ['', '', '', 'Période : Toutes les périodes'];
+   // $meta[] = ['', '', '', 'Période : Toutes les périodes'];
 }
 
 // Tu peux ajouter d'autres infos si nécessaire, par ex. agent
@@ -148,7 +148,7 @@ if (!empty($this->filters['agent'])) {
     $agents = AssistanceAgent::whereIn('code', (array) $this->filters['agent'])->first()->fullName();//->pluck('fullName')->join(' / ');
     $meta[] = ['', '', '', 'Agent : ' . $agents];
 } else {
-    $meta[] = ['', '', '', 'Agent(s) : Tous les agents'];
+   // $meta[] = ['', '', '', 'Agent(s) : Tous les agents'];
 }
 
 // Ensuite tu concatènes $meta et ton tableau principal
