@@ -100,6 +100,7 @@
     <table>
         <thead>
             <tr>
+                <th>#</th>
                 <th>Date</th>
                 <th>N° Feuille de mission</th>
                 <th>Bénéficiaire</th>
@@ -114,6 +115,7 @@
         <tbody>
             @foreach($lines as $line)
                 <tr>
+                    <td>{{ strtoupper($line['#']) }}</td>
                     <td>{{ strtoupper($line['date']) }}</td>
                     <td>{{ strtoupper($line['mission']) }}</td>
                     <td>{{ strtoupper($line['beneficiary']) }}</td>
@@ -128,7 +130,7 @@
         </tbody>
         <tfoot>
             <tr class="totals">
-                <td colspan="5">TOTAL</td>
+                <td colspan="6">TOTAL</td>
                 @foreach($totals as $total)
                     <td>{{ $total }}</td>
                 @endforeach

@@ -169,10 +169,10 @@ foreach ($export->wheelChairTypes as $type) {
     $totals[$type] = 0;
 }
 $totalAgents = 0;
-
+$seenMissions = [];
     // On commence à partir de l’index où se trouvent les vraies données
     // Ici d’après ton dump, les données commencent à l’index 4 avec l’en-tête
-    for ($i = 5; $i < count($data); $i++) { 
+    for ($i = 4; $i < count($data); $i++) { 
 
     
         
@@ -180,15 +180,24 @@ $totalAgents = 0;
     
         // Ignore les lignes de totaux ou vides
         if (empty($row[0]) && empty($row[1])) continue;
+
+        $chairs = [];
+foreach ($export->wheelChairTypes as $index => $type) {
+    // On suppose que les colonnes du Excel commencent à l'index 6 pour les chaises
+    $colIndex = 6 + $index; 
+    $chairs[$type] = $row[$colIndex] ?? 0;
+}
     
         $lines[] = [
+            '#'             => $row[0] ?? null,
             'date'          => $row[1] ?? null,
             'mission'       => $row[2] ?? null,
             'beneficiary'   => $row[3] ?? null,
             'flight_type'   => $row[4] ?? null,
             'flight_number' => $row[5] ?? null,
-            'chairs'        => ['C' => $row[6] ?? 0, 'R' => $row[7] ?? 0],
-            'nb_agents'     => $row[8] ?? 0,
+            'chairs'        => $chairs,
+            'nb_agents'     => $row[6 + count($export->wheelChairTypes)] ?? 0, // dernière colonne pour nb_agents
+        
         ];
 
       
@@ -202,8 +211,13 @@ $totalAgents = 0;
          // return
             $totals[$type] += $line['chairs'][$type] ?? 0;
         }
-        $totalAgents += $line['nb_agents'] ?? 0;
+       
+        
+       
     }
+
+    $lastLine = end($lines); // récupère la dernière ligne du tableau
+$totalAgents = $lastLine['nb_agents'] ?? 0; // total global
     
   
 
@@ -219,7 +233,7 @@ $totalAgents = 0;
         'wheelChairTypes' => $export->wheelChairTypes,
         'lines'         => $lines,
         'totals'        => $totals, // récupérés du calcul Excel
-        'totalAgents'   => 1,          // idem
+        'totalAgents'   => $totalAgents,          // idem
     ]);
 
     return $pdf->download('apmr_recap.pdf');

@@ -62,7 +62,7 @@ $this->dateFin = isset($filters['date_fin'])
       
     }
 
-    public function collection()
+    public function collectionoo()
     {
         $data = AssistanceLine::with('wheelChair')
             ->when($this->filters['compagnie'] ?? null, fn($q, $compagnie) => $q->where('compagnie', $compagnie))

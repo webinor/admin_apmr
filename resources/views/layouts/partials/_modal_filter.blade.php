@@ -83,6 +83,7 @@
                     @endforeach
                   </select>
                 </div>
+
   
                 
   
@@ -118,6 +119,17 @@
               </div>
 
               {{--  --}}
+
+              <!-- Type de fichier -->
+<div class="mb-3 border-bottom">
+  <label for="file_type" class="form-label">Type de fichier</label>
+  <select id="file_type" name="file_type" class="form-control">
+    <option value="excel" selected>Excel</option>
+    <option value="pdf">PDF</option>
+    {{-- <option value="csv">CSV</option> --}}
+  </select>
+</div>
+
 
             </div>
           </div>

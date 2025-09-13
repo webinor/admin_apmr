@@ -827,6 +827,7 @@
   $(document).ready(function () {
 
 
+   
     let apmr_service_url = $("#apmr_service_url").val();
 
                           function createNewRow(companyId) {

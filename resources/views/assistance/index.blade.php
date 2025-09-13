@@ -329,7 +329,23 @@
 
 document.addEventListener('DOMContentLoaded', function () {
 
-const form = document.getElementById('form_filter');
+
+  const fileTypeSelect = document.getElementById('file_type');
+    const form = document.getElementById('form_filter');
+
+    fileTypeSelect.addEventListener('change', function () {
+      const type = this.value;
+
+      // Exemple d'URLs selon le type
+      let url = '/apmrs/export';
+      if (type === 'excel') url = "{{ url('/apmrs/export') }}";
+      else if (type === 'pdf') url = "{{ url('/apmrs/export-pdf') }}";
+      else if (type === 'csv') url = "{{ url('/apmrs/export-csv') }}";
+
+      form.action = url;
+    });
+
+
 const filterButton = document.getElementById('filter-button');
 const filterLoader = document.getElementById('filter-loader');
 const filterUrl = document.getElementById('filter_url').value;
@@ -380,8 +396,53 @@ form.querySelectorAll('.filter').forEach(input => {
 });
 
 // Si tu veux, tu peux déclencher un filtre direct au clic du bouton
-filterButton.addEventListener('click', function () {
+filterButton.addEventListener('click', async function () {
   form.submit(); // Soumet le formulaire normalement
+
+  /*
+   // Afficher loader
+   filterButton.classList.add('d-none');
+   filterLoader.classList.remove('d-none');
+
+    // Récupérer les données du formulaire
+    const formData = new FormData(form);
+    const action = form.action;
+
+    try {
+      const response = await fetch(action, {
+        method: 'GET', // ou POST selon ton endpoint
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Erreur lors de l\'export');
+
+      // Si c'est un fichier à télécharger
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+
+      console.log(url);
+      
+
+      // Nom du fichier selon le type sélectionné
+      const type = formData.get('file_type') || 'export';
+      a.download = `${type}-export.${type === 'excel' ? 'xlsx' : type}`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+    } catch (error) {
+      console.error(error);
+      alert('Une erreur est survenue lors de l\'export.');
+    } finally {
+      // Masquer loader
+      filterLoader.classList.add('d-none');
+      filterButton.classList.remove('d-none');
+    }
+
+    */
+
 });
 });
 
