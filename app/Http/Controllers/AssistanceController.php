@@ -219,7 +219,7 @@ foreach ($export->wheelChairTypes as $index => $type) {
    // return $data;
 
     $lastLine = $data[count($data)-1];
-    $totalAgents = $lastLine[5 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
+    $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
     
   
 
