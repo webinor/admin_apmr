@@ -233,7 +233,7 @@ $totalAgents = $lastLine['nb_agents'] ?? 0; // total global
         'wheelChairTypes' => $export->wheelChairTypes,
         'lines'         => $lines,
         'totals'        => $totals, // récupérés du calcul Excel
-        'totalAgents'   => $_SERVER['SERVER_NAME'] == "127.0.0.1" ? "" : $totalAgents,          // idem
+        'totalAgents'   => $_SERVER['SERVER_NAME'] != "127.0.0.1" ? "" : $totalAgents,          // idem
     ]);
 
     return $pdf->download('apmr_recap.pdf');
