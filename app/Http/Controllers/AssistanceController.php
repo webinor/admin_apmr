@@ -159,7 +159,7 @@ public function exportPdf(Request $request)
 {
     // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
     $export = new ApmrExport($request->all());
-    $data = $export->array(); // même structure que ton Excel
+  return  $data = $export->array(); // même structure que ton Excel
     
     $lines = [];
 
