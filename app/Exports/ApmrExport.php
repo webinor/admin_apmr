@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Operations\Assistance;
 use App\Models\Operations\AssistanceLine;
 use App\Models\WheelChair;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -18,11 +19,38 @@ class ApmrExport implements FromArray//FromCollection//, WithMapping, WithHeadin
 
 
     protected $filters;
-    protected $wheelChairTypes;
+    public $wheelChairTypes;
+
+    public $companyName;
+    public $companyImage;
+    public $month;
+    public $year;
+    public $dateDebut;
+    public $dateFin;
 
     public function __construct(array $filters)
     {
         $this->filters = $filters;
+
+         // Compagnie : si un ID est passé, on va chercher le libellé
+         if (!empty($filters['compagnie'])) {
+            $company = Company::whereCode($filters['compagnie'])->first();
+            $this->companyImage = $company->image_path ? asset('storage/company_images/' . $company->image_path) : null;
+            $this->companyName = $company ? $company->name : 'Toutes les compagnies';
+        } else {
+            $this->companyName = 'Toutes les compagnies';
+        }
+
+        // Autres paramètres
+        $this->month     = $filters['month'] ?? now()->translatedFormat('F');
+        $this->year      = $filters['year'] ?? now()->year;
+        $this->dateDebut = isset($filters['date_debut']) 
+    ? Carbon::parse($filters['date_debut'])->format('d/m/Y') 
+    : null;
+
+$this->dateFin = isset($filters['date_fin']) 
+    ? Carbon::parse($filters['date_fin'])->format('d/m/Y') 
+    : null;
     }
     /**
     * @return \Illuminate\Support\Collection
@@ -32,6 +60,23 @@ class ApmrExport implements FromArray//FromCollection//, WithMapping, WithHeadin
 
       return $this->filter();
       
+    }
+
+    public function collection()
+    {
+        $data = AssistanceLine::with('wheelChair')
+            ->when($this->filters['compagnie'] ?? null, fn($q, $compagnie) => $q->where('compagnie', $compagnie))
+            ->when($this->filters['periode'] ?? null, fn($q, $periode) => $q->whereBetween('date', $periode))
+            ->get();
+
+        // Récupération dynamique des types présents dans l’export
+      /*  $this->wheelChairTypes = $data
+            ->pluck('wheelChair.code')
+            ->unique()
+            ->values()
+            ->toArray();
+
+        return $data;*/
     }
 
     public function filter()

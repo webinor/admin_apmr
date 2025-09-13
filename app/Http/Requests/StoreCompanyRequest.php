@@ -29,11 +29,10 @@ class StoreCompanyRequest extends FormRequest
             "mensual_fee"=>"required|numeric",
             "city"=>"required|string",
             'billing_address'=>'required|string',
-
+            'email' => 'required|email|unique:companies,email',
             'post_box'=>'nullable|string',
             'uni'=>'nullable|string',
             'rc'=>'nullable|string',
-
             'file' => 'nullable|file|mimes:jpg,jpeg,png|max:10240,dimensions:min_width=80,min_height=80',
 
         ];

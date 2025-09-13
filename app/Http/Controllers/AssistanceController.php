@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateAssistanceRequest;
 use App\Models\Operations\Assistance;
 use App\Models\Operations\AssistanceLine;
 use App\Services\Misc\AssistanceService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -152,6 +153,78 @@ class AssistanceController extends Controller
             'apmr_export_' . date('Ymd_His') . '.xlsx'
         );
     }
+
+
+public function exportPdf(Request $request)
+{
+    // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
+    $export = new ApmrExport($request->all());
+    $data = $export->array(); // même structure que ton Excel
+    
+    $lines = [];
+
+    // On prépare un tableau de totaux initialisés à 0
+$totals = [];
+foreach ($export->wheelChairTypes as $type) {
+    $totals[$type] = 0;
+}
+$totalAgents = 0;
+
+    // On commence à partir de l’index où se trouvent les vraies données
+    // Ici d’après ton dump, les données commencent à l’index 4 avec l’en-tête
+    for ($i = 5; $i < count($data); $i++) { 
+
+    
+        
+        $row = $data[$i];
+    
+        // Ignore les lignes de totaux ou vides
+        if (empty($row[0]) && empty($row[1])) continue;
+    
+        $lines[] = [
+            'date'          => $row[1] ?? null,
+            'mission'       => $row[2] ?? null,
+            'beneficiary'   => $row[3] ?? null,
+            'flight_type'   => $row[4] ?? null,
+            'flight_number' => $row[5] ?? null,
+            'chairs'        => ['C' => $row[6] ?? 0, 'R' => $row[7] ?? 0],
+            'nb_agents'     => $row[8] ?? 0,
+        ];
+
+      
+    }
+
+
+      // On additionne
+      foreach ($lines as $line) {
+        foreach ($export->wheelChairTypes as $type) {
+           // return $line;
+         // return
+            $totals[$type] += $line['chairs'][$type] ?? 0;
+        }
+        $totalAgents += $line['nb_agents'] ?? 0;
+    }
+    
+  
+
+   // return $totals;
+
+    $pdf = Pdf::loadView('pdf.apmr_recap', [
+        'companyImage'=> $export->companyImage,
+        'companyName'     => $export->companyName,  // libellé déjà résolu
+        'month'           => $export->month,
+        'year'            => $export->year,
+        'dateDebut'       => $export->dateDebut,
+        'dateFin'         => $export->dateFin,
+        'wheelChairTypes' => $export->wheelChairTypes,
+        'lines'         => $lines,
+        'totals'        => $totals, // récupérés du calcul Excel
+        'totalAgents'   => 1,          // idem
+    ]);
+
+    return $pdf->download('apmr_recap.pdf');
+}
+
 
     /**
      * Display the specified resource.

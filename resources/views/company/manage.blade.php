@@ -137,10 +137,21 @@
             </div>
           </div> 
 
+          <div class="form-group row">
+            <div class="col-sm-12 mb-3 mb-sm-0">
+              <label for="email">email</label>
+              <input type="email" name="email" value="{{$company ? $company->email : ''}}" class=" form-control" id="email" placeholder="Ex : aaa@gmail.com" required>
+              <div class="valid-feedback">
+              </div>
+              <div class="invalid-feedback">
+              </div>
+            </div>
+          </div>
+
 
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="mensual_fee">Abonement mensual</label>
+                        <label for="mensual_fee">Abonement mensuel</label>
                         <input {{ $readonly }} type="number" value="{{ $company ? $company->mensual_fee : '' }}" name="mensual_fee" class=" form-control" id="mensual_fee" placeholder="150000" required>
                         <div class="valid-feedback">
                         </div>

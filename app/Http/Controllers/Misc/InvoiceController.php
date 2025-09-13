@@ -111,12 +111,13 @@ class InvoiceController extends Controller
 
         ///////////////////on ajuste selon les ajustements
 
-        $lineAdjustments = Adjustment::where('adjustable_type', "App\Models\Operations\AssistanceLine")
+        $lineAdjustments = collect([]); /*Adjustment::where('adjustable_type', "App\Models\Operations\AssistanceLine")
     ->whereIn('adjustable_id', $lines->pluck('id'))
     ->orderBy('created_at') // important
     ->get()
     ->groupBy(fn($a) => $a->adjustable_id . '_' . $a->field)
     ->map(fn($group) => $group->last()); // garder le dernier ajustement
+    */
 
 
   //  dd($lineAdjustments);

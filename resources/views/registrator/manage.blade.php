@@ -154,6 +154,34 @@
                       </div>
                     </div>
 
+               
+                  @if (!$registrator)
+
+                  <div class="form-group row">
+                    <div class="col-sm-12 mb-3 mb-sm-0">
+                      <label for="password">Mot de passe</label>
+                      <input type="password" name="password" value="" class=" form-control" id="password" placeholder="Mot de passe" required>
+                      <div class="valid-feedback">
+                      </div>
+                      <div class="invalid-feedback">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-group row">
+                    <div class="col-sm-12 mb-3 mb-sm-0">
+                      <label for="password_confirmation">Confirmation du Mot de passe</label>
+                      <input type="password" name="password_confirmation" value="" class=" form-control" id="password_confirmation" placeholder="Confirmation du Mot de passe" required>
+                      <div class="valid-feedback">
+                      </div>
+                      <div class="invalid-feedback">
+                      </div>
+                    </div>
+                  </div>
+                      
+                  @endif
+                   
+
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="file">Signature</label>

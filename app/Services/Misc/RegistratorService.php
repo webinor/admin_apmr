@@ -556,7 +556,7 @@ ViewsResponder {
                 
                 $registrator->code = Str::random(10);
                 $registrator->city_id = City::whereCode($details['city'])->first()->id;
-                $registrator->password = Str::random(10);
+                $registrator->password = Hash::make($details['password']);// Str::random(10);
                // $registrator->admin_id = Auth::guard('sanctum')->user()->id;
                 //$mission = Mission::select('id')->whereId($details['mission'])->first();
 

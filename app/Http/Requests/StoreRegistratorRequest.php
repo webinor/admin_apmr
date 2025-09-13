@@ -28,6 +28,12 @@ class StoreRegistratorRequest extends FormRequest
             "last_name"=>"required|string",
             "email"=>"nullable|string|email",
             "city"=>"required|string",
+            "password" => [
+                "required",
+                "string",
+                "min:8",            // au moins 8 caractères
+                "confirmed"         // nécessite un champ password_confirmation
+            ],
             "signature"=>"nullable|string",
             'file' => 'required|file|mimes:jpg,jpeg,png|max:10240,dimensions:min_width=80,min_height=80',
         ];
