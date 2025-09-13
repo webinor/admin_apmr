@@ -167,8 +167,8 @@ Route::middleware(["auth"])->group(function () {
         "show",
     ]);
 
-   // Route::get('/apmrs/export', [AssistanceController::class, 'export'])->name('apmrs.export');
-    Route::get('/apmrs/export', [AssistanceController::class, 'exportPdf'])->name('apmrs.exportPdf');
+    Route::get('/apmrs/export', [AssistanceController::class, 'export'])->name('apmrs.export');
+   // Route::get('/apmrs/export', [AssistanceController::class, 'exportPdf'])->name('apmrs.exportPdf');
 
 
 
