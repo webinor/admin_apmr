@@ -216,8 +216,10 @@ foreach ($export->wheelChairTypes as $index => $type) {
        
     }
 
-  return $lastLine = end($lines); // récupère la dernière ligne du tableau
-$totalAgents = $lastLine['nb_agents'] ?? 0; // total global
+    //return $data;
+
+    $lastLine = $data[count($data)-1];
+    $totalAgents = $lastLine[9] ?? 0; // index correspondant à 'Nb d'agents'
     
   
 
@@ -233,7 +235,7 @@ $totalAgents = $lastLine['nb_agents'] ?? 0; // total global
         'wheelChairTypes' => $export->wheelChairTypes,
         'lines'         => $lines,
         'totals'        => $totals, // récupérés du calcul Excel
-        'totalAgents'   => $_SERVER['SERVER_NAME'] != "127.0.0.1" ? "" : $totalAgents,          // idem
+        'totalAgents'   => $_SERVER['SERVER_NAME'] != "127.0.0.1" ? "$totalAgents" : $totalAgents,          // idem
     ]);
 
     return $pdf->download('apmr_recap.pdf');
