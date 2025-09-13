@@ -216,7 +216,7 @@ foreach ($export->wheelChairTypes as $index => $type) {
        
     }
 
-    $lastLine = end($lines); // récupère la dernière ligne du tableau
+  return $lastLine = end($lines); // récupère la dernière ligne du tableau
 $totalAgents = $lastLine['nb_agents'] ?? 0; // total global
     
   
