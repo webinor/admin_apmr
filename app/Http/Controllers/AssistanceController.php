@@ -209,7 +209,9 @@ foreach ($export->wheelChairTypes as $index => $type) {
         foreach ($export->wheelChairTypes as $type) {
            // return $line;
          // return
-            $totals[$type] += $line['chairs'][$type] ?? 0;
+            $totals[$type] += $line
+            ['chairs']
+            [$type] ?? 0;
         }
        
         
