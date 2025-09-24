@@ -3,14 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ApmrExport;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\Operations\Assistance;
+use App\Services\Misc\AssistanceService;
+use App\Models\Operations\AssistanceLine;
 use App\Http\Requests\StoreAssistanceRequest;
 use App\Http\Requests\UpdateAssistanceRequest;
-use App\Models\Operations\Assistance;
-use App\Models\Operations\AssistanceLine;
-use App\Services\Misc\AssistanceService;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use ZipArchive;
 
 class AssistanceController extends Controller
 {
@@ -154,12 +158,65 @@ class AssistanceController extends Controller
         );
     }
 
+  public function save_remote_assistance(array $codes)
+{
+    $path = storage_path('app/public/fiches_apmr');
+
+    // Vérifie et crée le dossier si nécessaire
+    if (!File::exists($path)) {
+        File::makeDirectory($path, 0755, true); // true => récursif
+    }
+
+    $client = new \GuzzleHttp\Client();
+    $savedFiles = []; // tableau pour stocker les fichiers enregistrés
+
+    foreach ($codes as $code) {
+        $url = config('services.apmr_service.base_url')."/api/operations/export-pdf/{$code}?output=save-remote";
+
+        $response = $client->get($url, [
+            'headers' => [
+                'Accept' => 'application/pdf',
+            ],
+        ]);
+
+        $contentType = $response->getHeaderLine('Content-Type');
+
+        if ($contentType !== 'application/pdf') {
+            // On peut logguer l'erreur plutôt que dd()
+            Log::error("Erreur lors de l'export PDF pour le code {$code} : " . (string) $response->getBody());
+            continue; // on passe au code suivant
+        }
+
+        $fileName = $code . '_' . Str::random(8) . '.pdf';
+        $filePath = $path . '/' . $fileName;
+
+        file_put_contents($filePath, $response->getBody());
+
+        if ($response->getStatusCode() === 200) {
+            $savedFiles[] = $filePath; // on ajoute le chemin au tableau
+        }
+    }
+
+    return $savedFiles; // retourne la liste des fichiers PDF enregistrés
+}
+
+
 
 public function exportPdf(Request $request)
 {
+   // dd($request->all());
     // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
     $export = new ApmrExport($request->all());
     $data = $export->array(); // même structure que ton Excel
+    $filtered = $export->get_filtered();
+
+    $params = $request->all();
+
+    // ($filtered); save-remote
+    $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
+
+    $savedFiles = $this->save_remote_assistance($codes);
+
     
     $lines = [];
 
@@ -243,9 +300,107 @@ foreach ($export->wheelChairTypes as $index => $type) {
         'totalAgents'   => $_SERVER['SERVER_NAME'] != "127.0.0.1" ? "$totalAgents" : $totalAgents,          // idem
     ]);
 
-    return $pdf->download('apmr_recap.pdf');
+
+    switch ($params["action"]) {
+        case 'download-single':
+            
+             return $pdf->download('apmr_recap.pdf');
+
+            break;
+
+        case 'download-all':
+
+            $recapPath =  $this->savePdf($pdf,"fiches_apmr");
+
+           // $allFiles = [];
+
+           $allFiles = array_merge([$recapPath] , $savedFiles);
+            
+           // array_push($savedFiles,  $recapPath);
+
+          //  dd($savedFiles);
+            
+           $zipPath =  $this->get_zip($allFiles);
+
+                // Retourne le ZIP pour téléchargement
+    return response()->download($zipPath)->deleteFileAfterSend(true);
+            break;
+        
+        default:
+            # code...
+            break;
+    }
+
+
+   
 }
 
+
+/**
+     * Sauvegarde un PDF et retourne le chemin complet
+     *
+     * @param \Barryvdh\DomPDF\PDF $pdf
+     * @param string|null $folder Dossier de sauvegarde relatif à storage/app/public
+     * @param string|null $fileName Nom du fichier, si null => génère un nom aléatoire
+     * @return string Chemin complet du fichier sauvegardé
+     */
+    function savePdf($pdf, $folder = 'pdfs', $fileName = null)
+    {
+        // Dossier complet
+        $path = storage_path('app/public/' . $folder);
+
+        // Crée le dossier si inexistant
+        if (!File::exists($path)) {
+            File::makeDirectory($path, 0755, true);
+        }
+
+        // Nom du fichier
+        if (!$fileName) {
+            $fileName = 'pdf_' . Str::random(8) . '.pdf';
+        } elseif (!str_ends_with($fileName, '.pdf')) {
+            $fileName .= '.pdf';
+        }
+
+        $filePath = $path . '/' . $fileName;
+
+        // Sauvegarde le PDF
+        file_put_contents($filePath, $pdf->output());
+
+        return $filePath;
+    }
+
+public function get_zip($savedFiles){
+
+
+  //  dd($savedFiles);
+
+    $path = storage_path('app/public/fiches_apmr');
+
+    // Création du ZIP
+    $zipName = 'fiches_apmr_' . date('Ymd_His') . '.zip';
+    $zipPath = $path . '/' . $zipName;
+    //$zipPath = tempnam(sys_get_temp_dir(), 'fiches_apmr_') . '.zip';
+
+    $zip = new ZipArchive;
+    $res = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+
+if ($res === TRUE) {
+
+   // dd("ok");
+        foreach ($savedFiles as $file) {
+            $zip->addFile($file, basename($file)); // ajoute le fichier dans le zip
+        }
+        $zip->close();
+
+            if (!file_exists($zipPath)) {
+        abort(500, 'Le ZIP n’a pas pu être créé');
+    }
+    } else {
+         abort(500, "Impossible de créer le ZIP. Code erreur ZipArchive: $res");
+    }
+
+    return $zipPath;
+}
 
     /**
      * Display the specified resource.

@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body pt-0">
-        <form id="form_filter" class="pt-0" novalidate method="GET" action="{{ url('apmrs/export') }}">
+        <form id="form_filter" class="pt-0" novalidate method="GET" action="{{ url('apmrs/export-pdf') }}">
           @csrf
           <input id="filter_url" type="hidden" value="{{ ('/api/count-filtered-results') }}">
           <input id="slip" name="slip" class="form-control" type="hidden" value="">
@@ -124,9 +124,17 @@
 <div class="mb-3 border-bottom">
   <label for="file_type" class="form-label">Type de fichier</label>
   <select id="file_type" name="file_type" class="form-control">
-    <option value="excel" selected>Excel</option>
-    <option value="pdf">PDF</option>
+    <option value="pdf" selected>PDF</option>
+    <option value="excel" >Excel</option>
     {{-- <option value="csv">CSV</option> --}}
+  </select>
+</div>
+
+<div class="mb-3 border-bottom">
+  <label for="action" class="form-label">Joindre les fiches ?</label>
+  <select id="action" name="action" class="form-control">
+    <option value="download-single" selected>Non</option>
+    <option value="download-all" >Oui</option>
   </select>
 </div>
 

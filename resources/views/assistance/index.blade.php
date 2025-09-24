@@ -330,11 +330,26 @@
 document.addEventListener('DOMContentLoaded', function () {
 
 
+  
+
   const fileTypeSelect = document.getElementById('file_type');
     const form = document.getElementById('form_filter');
 
+        function toggleActionDiv(actionDiv) {
+        if (fileTypeSelect.value === 'pdf') {
+            actionDiv.style.display = 'block';
+        } else {
+            actionDiv.style.display = 'none';
+        }
+    }
+
     fileTypeSelect.addEventListener('change', function () {
+
+     // console.log(fileTypeSelect);
+      
       const type = this.value;
+          const actionDiv = document.getElementById('action').closest('.mb-3'); // le div parent à masquer/afficher
+
 
       // Exemple d'URLs selon le type
       let url = '/apmrs/export';
@@ -343,6 +358,11 @@ document.addEventListener('DOMContentLoaded', function () {
       else if (type === 'csv') url = "{{ url('/apmrs/export-csv') }}";
 
       form.action = url;
+
+          // Initialisation
+    toggleActionDiv(actionDiv);
+
+      
     });
 
 

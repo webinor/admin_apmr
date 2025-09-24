@@ -79,8 +79,18 @@ $this->dateFin = isset($filters['date_fin'])
         return $data;*/
     }
 
-    public function filter()
+
+    public function assistances()
     {
+
+        
+
+    }
+
+        public function get_filtered()
+    {
+
+
 
         $query = AssistanceLine::query()
         ->with([
@@ -150,9 +160,18 @@ if (!empty($this->filters['wheel_chair'])) {
 }
 
 
-$filtered = $query->get();
+ return $query->get();
+        
+
+    }
+
+    public function filter()
+    {
+
 
 //dd($filtered);
+
+$filtered = $this->get_filtered() ;
 
 
 // Récupérer tous les wheel_chairs de toutes les compagnies
