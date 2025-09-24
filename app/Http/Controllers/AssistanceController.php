@@ -187,7 +187,9 @@ class AssistanceController extends Controller
             continue; // on passe au code suivant
         }
 
-        $fileName = $code . '_' . Str::random(8) . '.pdf';
+        $assistance = Assistance::whereCode($code)->first();
+      //  $fileName = $assistance->flight_number . '_' . Str::random(8) . '.pdf';
+        $fileName = $assistance->reference . '.pdf';
         $filePath = $path . '/' . $fileName;
 
         file_put_contents($filePath, $response->getBody());
@@ -208,14 +210,14 @@ public function exportPdf(Request $request)
     // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
     $export = new ApmrExport($request->all());
     $data = $export->array(); // même structure que ton Excel
-    $filtered = $export->get_filtered();
+   
 
     $params = $request->all();
 
     // ($filtered); save-remote
-    $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
+   // $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
 
-    $savedFiles = $this->save_remote_assistance($codes);
+   // $savedFiles = $this->save_remote_assistance($codes);
 
     
     $lines = [];
@@ -310,7 +312,15 @@ foreach ($export->wheelChairTypes as $index => $type) {
 
         case 'download-all':
 
-            $recapPath =  $this->savePdf($pdf,"fiches_apmr");
+             $filtered = $export->get_filtered();
+
+                $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
+
+          $savedFiles = $this->save_remote_assistance($codes);
+
+             $recapName = 'recapitulatif_' . date('d_m_Y_H_i_s') ;
+
+            $recapPath =  $this->savePdf($pdf,"fiches_apmr" , $recapName );
 
            // $allFiles = [];
 
@@ -377,7 +387,8 @@ public function get_zip($savedFiles){
     $path = storage_path('app/public/fiches_apmr');
 
     // Création du ZIP
-    $zipName = 'fiches_apmr_' . date('Ymd_His') . '.zip';
+   $zipName = 'fiches_apmr_' . date('d_m_Y_H_i_s') . '.zip';
+
     $zipPath = $path . '/' . $zipName;
     //$zipPath = tempnam(sys_get_temp_dir(), 'fiches_apmr_') . '.zip';
 
