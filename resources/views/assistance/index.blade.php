@@ -260,16 +260,18 @@
                               <a    id="edit_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 edit" href="{{url('assistance/'.$assistance->code.'/edit')}}"><i class="menu-icon mdi mdi-eye"></i></a>
                               
 
-                              @can('delete', $assistance)
+                               @can('delete', $assistance)  
                             
-                              <a id="delete_{{$assistance->code}}" class="assistance_{{$assistance->code }}  delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{$assistance->code}}" type="hidden" value="{{$assistance->code}}">
-                              <div id="loader" class="assistance_{{$assistance->code }}  d-none d-flex justify-content-center mt-3">
-            
-                              <div class="inner-loading dot-flashing"></div>
-                              
-                              </div> 
-                               @endcan
+                                @endcan 
+
+                          <a   data-bs-toggle="modal"
+                          data-bs-target="#delete-modal" data-model-to-delete="{{ $assistance->flight_number }}" data-delete-link="{{ ('/api/assistance/'.($assistance->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                        
+                            <div id="loader" class="assistance_{{$assistance->code }}  d-none d-flex justify-content-center mt-3">
+          
+                            <div class="inner-loading dot-flashing"></div>
+                            
+                            </div>
                              
                             </form> 
                           </td>

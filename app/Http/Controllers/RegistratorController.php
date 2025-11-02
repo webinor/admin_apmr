@@ -111,6 +111,9 @@ class RegistratorController extends Controller
      */
     public function destroy(Registrator $registrator)
     {
-        //
+        //return $registrator;
+         $response =  $this->registratorService->deleteRegistrator($registrator);
+
+        return $response;
     }
 }

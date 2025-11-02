@@ -71,15 +71,15 @@ ViewsResponder {
     }
 
 
-    public function new_get_filtered_results(Request $filters , Slip $binded_slip = null)  {
+    public function new_get_filtered_results(Request $filters , Assistance $binded_slip = null)  {
         
-        $slip =   $binded_slip ? $binded_slip : Slip::whereCode($filters->input('slip'))->first() ;
+        $slip =   $binded_slip ? $binded_slip : Assistance::whereCode($filters->input('slip'))->first() ;
 
 
      //   dd($slip);
        
 
-        $query = Folder::query()->
+        $query = Assistance::query()->
         with([
             "seen:id,seenable_type,seenable_id,user_id",
             "validator:id,seenable_type,seenable_id,user_id",
@@ -834,5 +834,34 @@ ViewsResponder {
        
     }
 
+
+           public function deleteAssistance(Assistance $assistance  ) 
+    {
+
+                    
+                    try {
+                        
+                     DB::beginTransaction();
+                $assistance->is_active = false;
+                $assistance->save();
+
+              
+                    //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
+                    
+                   DB::commit();
+                    
+                    return [
+                        'status'=>true,
+                        'data'=> $assistance 
+                    ];
+
+
+                } catch (\Throwable $th) {
+                 DB::rollback();
+                    throw $th;
+                }
+                    
+       
+    }
 
 }

@@ -241,7 +241,7 @@
                               <a    id="edit_{{$company->code}}" class="company_{{$company->code }} me-3 edit" href="{{url('company/'.$company->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
                                --}}
 
-                              @can('delete', $company)
+                             {{--  @can('delete', $company)
                             
                               <a id="delete_{{$company->code}}" class="company_{{$company->code }}  delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
                               <input id="input_{{$company->code}}" type="hidden" value="{{$company->code}}">
@@ -250,7 +250,21 @@
                               <div class="inner-loading dot-flashing"></div>
                               
                               </div> 
-                               @endcan
+                               @endcan --}}
+
+                                @can('delete', $company)  
+                            
+                                @endcan 
+
+                          <a   data-bs-toggle="modal"
+                          data-bs-target="#delete-modal" data-model-to-delete="{{ $company->name }}" data-delete-link="{{ ('/api/company/'.($company->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                        
+                            <div id="loader" class="company_{{$company->code }}  d-none d-flex justify-content-center mt-3">
+          
+                            <div class="inner-loading dot-flashing"></div>
+                            
+                            </div> 
+                            
                              
                             </form> 
                           </td>

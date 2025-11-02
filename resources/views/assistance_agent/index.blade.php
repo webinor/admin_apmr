@@ -228,16 +228,18 @@
                              {{--  <a    id="edit_{{$assistance_agent->code}}" class="assistance_agent_{{$assistance_agent->code }} me-3 edit" href="{{url('assistance-agent/'.$assistance_agent->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
                                --}}
 
-                              @can('delete', $assistance_agent)
+                                 @can('delete', $assistance_agent)  
                             
-                              <a id="delete_{{$assistance_agent->code}}" class="assistance_agent_{{$assistance_agent->code }}  delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{$assistance_agent->code}}" type="hidden" value="{{$assistance_agent->code}}">
-                              <div id="loader" class="assistance_agent_{{$assistance_agent->code }}  d-none d-flex justify-content-center mt-3">
-            
-                              <div class="inner-loading dot-flashing"></div>
-                              
-                              </div> 
-                               @endcan
+                                @endcan 
+
+                          <a   data-bs-toggle="modal"
+                          data-bs-target="#delete-modal" data-model-to-delete="{{ $assistance_agent->fullName() }}" data-delete-link="{{ ('/api/assistance-agent/'.($assistance_agent->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                        
+                            <div id="loader" class="assistance_agent_{{$assistance_agent->code }}  d-none d-flex justify-content-center mt-3">
+          
+                            <div class="inner-loading dot-flashing"></div>
+                            
+                            </div> 
                              
                             </form> 
                           </td>

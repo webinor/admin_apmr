@@ -457,6 +457,8 @@ if ($res === TRUE) {
      */
     public function destroy(Assistance $assistance)
     {
-        //
+         $response =  $this->assistance_service->deleteAssistance($assistance);
+
+        return $response;
     }
 }

@@ -138,6 +138,12 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
             "destroy",
         ]);
 
+            Route::resource("assistance", AssistanceController::class)->only([
+         // "store",
+          //  "update",
+            "destroy",
+    ]);
+
 
         Route::apiResource("registrator", RegistratorController::class)->only([
             "store",

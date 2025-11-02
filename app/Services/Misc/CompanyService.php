@@ -698,4 +698,34 @@ ViewsResponder {
     }
 
 
+    public function deleteCompany(Company $company  ) 
+    {
+
+                    
+                    try {
+                        
+                     DB::beginTransaction();
+                $company->is_active = false;
+                $company->save();
+
+              
+                    //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
+                    
+                   DB::commit();
+                    
+                    return [
+                        'status'=>true,
+                        'data'=> $company 
+                    ];
+
+
+                } catch (\Throwable $th) {
+                 DB::rollback();
+                    throw $th;
+                }
+                    
+       
+    }
+    
+
 }

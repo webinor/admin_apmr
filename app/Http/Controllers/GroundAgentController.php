@@ -107,6 +107,8 @@ class GroundAgentController extends Controller
      */
     public function destroy(GroundAgent $groundAgent)
     {
-        //
+         $response =  $this->groundAgentService->deleteGroundAgent($groundAgent);
+
+        return $response;
     }
 }

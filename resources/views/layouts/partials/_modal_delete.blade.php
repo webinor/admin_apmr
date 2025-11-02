@@ -6,7 +6,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="deleteModalLabel">{{ $header_title }} ( <span id="model-to-delete" ></span> )</h5>
+        <h5 class="modal-title" id="deleteModalLabel">{{ $header_title ?? "Voulez-vous Supprimer ?" }} ( <span id="model-to-delete" ></span> )</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -37,7 +37,7 @@
         
         </div>
           <div class="menu_button" >
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Non</button>
         </div>
 
         <div class="menu_button">

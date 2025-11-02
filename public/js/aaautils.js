@@ -221,7 +221,7 @@ $(".instances_lines").on('click', '.delete', function(e) {
 	$("#invoice_line").val(invoice_line);
 
 	
-
+ 
 
 
 	e.preventDefault(); 

@@ -52,7 +52,7 @@
                       
                   @else
                       
-                  <h4 class="card-title">Modifier la chef de vol</h4>
+                  <h4 class="card-title">Modifier le chef de vol</h4>
                   <div class="d-none alert alert-success" role="alert">
                     <h6 class="alert-heading">chef de vol modifié avec succes</h6>
                   </div>

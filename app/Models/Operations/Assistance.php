@@ -9,6 +9,7 @@ use App\Models\Misc\File;
 use App\Models\Operations\Signature;
 use App\Models\Registrator;
 use App\Models\User\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,6 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Assistance extends Model
 {
     use HasFactory;
+
+
+    
      /**
      * Get the company that owns the Company
      *
@@ -74,6 +78,16 @@ class Assistance extends Model
  {
      return $this->belongsTo(Registrator::class,'user_id');
  }
+
+ /**
+     * Boot du modèle pour ajouter le scope global
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('is_active', true);
+        });
+    }
 
 
 

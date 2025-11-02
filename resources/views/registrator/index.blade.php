@@ -139,16 +139,18 @@
 
                               {{-- <a id="edit_{{$registrator->code}}" class="me-3 edit" href="{{url('registrator/'.$registrator->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
  --}}
-                              @can('delete', $registrator)
+                                   @can('delete', $registrator)  
+                            
+                                @endcan 
 
-                              <a id="delete_{{$registrator->code}}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{$registrator->code}}" type="hidden" value="{{$registrator->code}}">
-                              <div id="loader" class="d-none d-flex justify-content-center mt-3">
-            
-                              <div class="inner-loading dot-flashing"></div>
-                              
-                              </div> 
-                              @endcan
+                          <a   data-bs-toggle="modal"
+                          data-bs-target="#delete-modal" data-model-to-delete="{{ $registrator->fullName() }}" data-delete-link="{{ ('/api/registrator/'.($registrator->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                        
+                            <div id="loader" class="registrator_{{$registrator->code }}  d-none d-flex justify-content-center mt-3">
+          
+                            <div class="inner-loading dot-flashing"></div>
+                            
+                            </div>
                              
                             </form> 
                           </td>

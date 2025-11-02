@@ -107,6 +107,8 @@ class AssistanceAgentController extends Controller
      */
     public function destroy(AssistanceAgent $assistanceAgent)
     {
-        //
+         $response =  $this->assistance_agent_service->deleteAssistanceAgent($assistanceAgent);
+
+        return $response;
     }
 }

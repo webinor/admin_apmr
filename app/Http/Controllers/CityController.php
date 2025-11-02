@@ -107,6 +107,9 @@ class CityController extends Controller
      */
     public function destroy(City $city)
     {
-        //
+        
+         $response =  $this->city_service->deleteCity($city);
+
+        return $response;
     }
 }

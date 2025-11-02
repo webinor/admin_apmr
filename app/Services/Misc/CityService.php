@@ -641,4 +641,34 @@ ViewsResponder {
     }
 
 
+           public function deleteCity(City $city  ) 
+    {
+
+                    
+                    try {
+                        
+                     DB::beginTransaction();
+                $city->is_active = false;
+                $city->save();
+
+              
+                    //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
+                    
+                   DB::commit();
+                    
+                    return [
+                        'status'=>true,
+                        'data'=> $city 
+                    ];
+
+
+                } catch (\Throwable $th) {
+                 DB::rollback();
+                    throw $th;
+                }
+                    
+       
+    }
+
+
 }

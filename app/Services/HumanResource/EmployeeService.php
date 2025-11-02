@@ -326,4 +326,33 @@ class EmployeeService
 
 }
 
+         public function deleteEmployee(Employee $employee  ) 
+    {
+
+                    
+                    try {
+                        
+                     DB::beginTransaction();
+                $employee->is_active = false;
+                $employee->save();
+
+              
+                    //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
+                    
+                   DB::commit();
+                    
+                    return [
+                        'status'=>true,
+                        'data'=> $employee 
+                    ];
+
+
+                } catch (\Throwable $th) {
+                 DB::rollback();
+                    throw $th;
+                }
+                    
+       
+    }
+
 }

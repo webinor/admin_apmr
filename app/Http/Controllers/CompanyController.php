@@ -108,6 +108,9 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        //
+        //return $company;
+          $response =  $this->company_service->deleteCompany($company);
+
+        return $response;
     }
 }

@@ -196,8 +196,10 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Employee $employee)
     {
-        //
+         $response =  $this->employee_service->deleteEmployee($employee);
+
+        return $response;
     }
 }

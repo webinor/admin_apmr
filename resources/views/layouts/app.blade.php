@@ -156,6 +156,7 @@ select.form-control{
       <source src="{{ asset('sound/chat_notification.mp3') }}" />
   </audio>	--}}
 
+  @include('layouts.partials._modal_delete') 
 
   <!-- container-scroller -->
     @yield('custom_modal')

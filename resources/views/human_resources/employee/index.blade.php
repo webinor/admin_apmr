@@ -174,17 +174,16 @@
 
                               <a id="edit_{{$employee->code}}" target="_blank" class="me-3 edit" href="{{url('human_resource/employee/'.$employee->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
 
-                              @if ($employee->role_id == 8)
-                              <a id="delete_{{$employee->code}}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{$employee->code}}" type="hidden" value="{{$employee->code}}">
-                              
-                              @endif
+                                           <a   data-bs-toggle="modal"
+                          data-bs-target="#delete-modal" data-model-to-delete="{{ $employee->full_name() }}" data-delete-link="{{ ('/api/human_resource/employee/'.($employee->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                        
+                            <div id="loader" class="employee_{{$employee->code }}  d-none d-flex justify-content-center mt-3">
+          
+                            <div class="inner-loading dot-flashing"></div>
                             
-                              <div id="loader" class="d-none d-flex justify-content-center mt-3">
-            
-                                <div class="inner-loading dot-flashing"></div>
-                              
                             </div>
+
+                            
 
                             </form> 
                           </td>

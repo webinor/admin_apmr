@@ -5,6 +5,7 @@ use App\Models\Adjustment;
 use App\Models\AssistanceAgent;
 use App\Models\Operations\Assistance;
 use App\Models\WheelChair;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,6 +23,16 @@ protected $casts = [
     'wheel_chair_id' => 'integer',
     'assistance_agent_id' => 'integer',
 ];
+
+/**
+     * Boot du modèle pour ajouter le scope global
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('is_active', true);
+        });
+    }
 
  /**
      * Get the Assistance that owns the AssistanceLine
