@@ -48,7 +48,9 @@ ViewsResponder {
     {
        
 
-        $ground_agents = GroundAgent::oldest()
+        $ground_agents = GroundAgent::
+        //has('company.city')
+        with('company.city')->oldest()
         ->paginate(10)
         ->withQueryString();
 

@@ -23,7 +23,11 @@ class GroundAgent extends Model
      */
     public function company(): BelongsTo
     {
-        return $this->belongsTo(Company::class,);
+        return $this->belongsTo(Company::class)->withDefault([
+            'name' => 'Non définie',
+            //'email' => null,
+            //'phone' => null,
+        ]);;
     }
 
     /**

@@ -93,6 +93,7 @@ $this->dateFin = isset($filters['date_fin'])
 
 
         $query = AssistanceLine::query()
+        ->has('assistance.ground_agent.company.wheel_chairs')
         ->with([
             'assistance.ground_agent.company.wheel_chairs',
             'assistance.registrator',

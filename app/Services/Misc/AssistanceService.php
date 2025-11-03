@@ -526,6 +526,7 @@ ViewsResponder {
 
         $assistances = Assistance::oldest()
         ->has('signature')
+        //->has('ground_agent.company')
         ->with([
        // 'signature',
         'registrator',

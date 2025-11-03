@@ -125,11 +125,11 @@
                           </td>
 
                           <td>
-                          {{ $ground_agent->company->name }}
+                          {{ $ground_agent->company ? $ground_agent->company->name : '' }}
                           </td>
 
                           <td>
-                            {{ $ground_agent->company->city->name }}
+                            {{ ($ground_agent->company && $ground_agent->company->city) ? $ground_agent->company->city->name : '' }}
                           </td>
                           <td>
                             {{$ground_agent->created_at}}
