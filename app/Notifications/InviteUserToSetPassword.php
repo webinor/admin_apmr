@@ -4,13 +4,13 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\View;
 
 class InviteUserToSetPassword extends Notification implements ShouldQueue
 {
     use Queueable;
-
 
     private $link;
 
@@ -26,23 +26,23 @@ class InviteUserToSetPassword extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
+        // Variables passées à la vue Blade
+        $data = [
+            'name' => $notifiable->name,
+            'link' => $this->link,
+            'year' => date('Y'),
+        ];
+
+        // On rend la vue Blade comme contenu HTML
+        $html = View::make('emails.invite-user', $data)->render();
+
         return (new MailMessage)
             ->subject('Définissez votre mot de passe')
-            ->greeting('Bonjour ' . $notifiable->name . ',')
-            ->line('Votre compte a été créé. Cliquez sur le bouton ci-dessous pour définir votre mot de passe :')
-            ->action('Définir mon mot de passe', $this->link)
-            ->line('Si vous n\'êtes pas à l\'origine de cette demande, ignorez cet email.');
+            ->view('emails.invite-user', $data);
     }
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
+
     public function toArray($notifiable)
     {
-        return [
-            //
-        ];
+        return [];
     }
 }
