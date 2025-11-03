@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class PasswordRequest extends Notification  implements ShouldQueue
+class PasswordRequest extends Notification //implements ShouldQueue
 {
     use Queueable;
 
@@ -20,7 +20,7 @@ class PasswordRequest extends Notification  implements ShouldQueue
      */
     public function __construct()
     {
-        $this->afterCommit();
+      //  $this->afterCommit();
     }
 
     /**
