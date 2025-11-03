@@ -52,7 +52,7 @@ class UpdateUserService
 
         try {
 
-            //  DB::beginTransaction();
+              DB::beginTransaction();
              
           // return 
             $employee = Employee::whereCode($user_data['employee_code'])
@@ -73,7 +73,7 @@ class UpdateUserService
     
        $user->notify(new PasswordRequest());
         
-        //  DB::commit(); 
+          DB::commit(); 
          
   
     
@@ -84,7 +84,7 @@ class UpdateUserService
   
   
       } catch (\Throwable $th) {
-         // DB::rollback();
+          DB::rollback();
           throw $th;
           return $th;
       }
