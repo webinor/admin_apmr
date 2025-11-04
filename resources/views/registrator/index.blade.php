@@ -164,6 +164,27 @@
               </div>
             </div>
           </div>
+
+
+          @if ($registrators->count()>0)
+                     
+                  <div class="row align-items-center py-5">
+                   
+                    
+                    <div class="col-12 text-center">
+                       <div class="custom-pagination">
+                       
+                        
+                         {{ $registrators ->links('layouts.partials.pagination') }}
+                       
+                        
+                       </div>
+                     </div>
+                   </div>
+                  
+                  @endif
+
+
         </div>
       </div>
     </div>

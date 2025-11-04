@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>{{ $title ?? "App AI" }}</title>
+  <title>{{ $title ?? "Cameroun Assistance Sanitaire" }}</title>
   <!-- plugins:css -->
   <link rel="stylesheet" href="{{asset('zen2')}}/vendors/feather/feather.min.css">
   <link rel="stylesheet" href="{{asset('zen')}}/vendors/mdi/css/materialdesignicons.min.css">
