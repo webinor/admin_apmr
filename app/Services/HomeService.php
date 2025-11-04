@@ -39,9 +39,9 @@ class HomeService implements IndexVariablesResponder, ViewsResponder
         
 
       //$fiches=Assistance::with('assistance_lines')->get();
-      $fichesCount = Assistance::count();
+      $fichesCount = Assistance::has('signature')->count();
       $beneficiairesCount = AssistanceLine::
-      whereHas('assistance.signature')->
+      has('assistance.signature')->
       count(); // $fiches->assistance_lines->count();
       $compagniesCount = Company::count();
       $agentsCount = GroundAgent::count();
