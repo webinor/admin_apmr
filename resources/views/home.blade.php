@@ -64,7 +64,7 @@
                     </div>
 
                     <div>
-                      <p class="statistics-title">Nouvelles fiches ce mois</p>
+                      <p class="statistics-title">Nouvelles fiches du mois</p>
                       <h3 class="rate-percentage">{{ $nouvelles_fiches }}</h3>
                       <p class="d-none text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.5%</span></p>
                     </div>
