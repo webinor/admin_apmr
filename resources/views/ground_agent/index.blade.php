@@ -169,6 +169,25 @@
               </div>
             </div>
           </div>
+
+          @if ($ground_agents->count()>0)
+                     
+                  <div class="row align-items-center py-5">
+                   
+                    
+                    <div class="col-12 text-center">
+                       <div class="custom-pagination">
+                       
+                        
+                         {{ $ground_agents ->links('layouts.partials.pagination') }}
+                       
+                        
+                       </div>
+                     </div>
+                   </div>
+                  
+                  @endif
+
         </div>
       </div>
     </div>
