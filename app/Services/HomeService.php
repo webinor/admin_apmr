@@ -48,7 +48,7 @@ class HomeService implements IndexVariablesResponder, ViewsResponder
       $assistanceAgentsCount = AssistanceAgent::count();
 
 
-$fichesAvantMoisEnCours = Assistance::whereDate('flight_date', '<', Carbon::now()->startOfMonth())->count();
+$fichesAvantMoisEnCours = Assistance::has('signature')->whereDate('flight_date', '<', Carbon::now()->startOfMonth())->count();
 $nouvelles_fiches = $fichesCount - $fichesAvantMoisEnCours;
 
   
