@@ -25,6 +25,7 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
     public $year;
     public $dateDebut;
     public $dateFin;
+    public $agent;
 
     public function __construct(array $filters)
     {
@@ -53,6 +54,23 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         $this->dateFin = isset($filters["date_fin"])
             ? Carbon::parse($filters["date_fin"])->format("d/m/Y")
             : null;
+
+        if (!empty($this->filters["agent"])) {
+            // dd($this->filters['agent']);
+            $agent = AssistanceAgent::whereIn(
+                "code",
+                (array) $this->filters["agent"]
+            )
+                ->first()
+                ->fullName(); 
+                $this->agent = "Agent : " . $agent;
+                //->pluck('fullName')->join(' / ');
+          //  $meta[] = ["", "", "", "Agent : " . $agent];
+          //  dd($agent);
+        } else {
+            $this->agent = 'Agent(s) : Tous les agents';
+           //  $meta[] = ['', '', '', 'Agent(s) : Tous les agent'];
+        }
     }
     /**
      * @return \Illuminate\Support\Collection
@@ -236,7 +254,8 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
             )
                 ->first()
                 ->fullName(); //->pluck('fullName')->join(' / ');
-            $meta[] = ["", "", "", "Agent : " . $agent];
+          //  $meta[] = ["", "", "", "Agent : " . $agent];
+          //  dd($agent);
         } else {
            //  $meta[] = ['', '', '', 'Agent(s) : Tous les agent'];
         }
@@ -267,8 +286,10 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
 
         //$array[] = $headings;
 
+        
+
         foreach ($filtered as $index => $line) {
-            // dd($line);
+            // dd($filtered);
 
             $row = [
                 ++$index,
@@ -367,6 +388,8 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         $totals[$agentColumnIndex] = $uniqueAgents;
         // ajoute la ligne total à la fin
         $array[] = $totals;
+
+        //dd($array);
 
         return $array;
     }

@@ -143,6 +143,8 @@
     <p>PÉRIODE JUSQU'AU {{ Str::upper($fin) }}</p>
 @endif
 
+ <p>{{ strtoupper($agent) }}</p>
+
     </div>
 
     <!-- TABLEAU -->

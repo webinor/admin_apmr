@@ -217,6 +217,8 @@ class AssistanceController extends Controller
         $export = new ApmrExport($request->all());
         $data = $export->array(); // même structure que ton Excel
 
+       // dd($data);
+
         $params = $request->all();
 
         // ($filtered); save-remote
@@ -281,6 +283,7 @@ class AssistanceController extends Controller
         $lastLine = $data[count($data) - 1];
         $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
 
+        //dd($lines);
         // return $totals;
 
         $pdf = Pdf::loadView("pdf.apmr_recap", [
@@ -290,6 +293,7 @@ class AssistanceController extends Controller
             "year" => $export->year,
             "dateDebut" => $export->dateDebut,
             "dateFin" => $export->dateFin,
+            "agent" => $export->agent,
             "wheelChairTypes" => $export->wheelChairTypes,
             "lines" => $lines,
             "totals" => $totals, // récupérés du calcul Excel
