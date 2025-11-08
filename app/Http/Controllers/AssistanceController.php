@@ -301,7 +301,7 @@ class AssistanceController extends Controller
 
         switch ($params["action"]) {
             case "download-single":
-                return $pdf->download("apmr_recap.pdf");
+                return $pdf->download("APMR_RECAP_". date("d_m_Y_H_i_s").".pdf");
 
                 break;
 
