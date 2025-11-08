@@ -91,9 +91,58 @@
     <!-- META INFO -->
     <div class="meta-info">
         <h2>{{ strtoupper($companyName) }}</h2>
-        <h3>MOIS DE {{ strtoupper($month) }} {{ $year }}</h3>
+        {{-- <h3>MOIS DE {{ strtoupper($month) }} {{ $year }}</h3> --}}
         <p>ANNEXÉ À LA FACTURE</p>
-        <p>PÉRIODE DU {{ $dateDebut }} AU {{ $dateFin }}</p>
+        @php
+    use Carbon\Carbon;
+    use Illuminate\Support\Str;
+
+    function parseDateFlexible($date) {
+        if (!$date) return null; // champ vide
+
+        //dd(preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date));
+
+        try {
+            // Si c’est déjà un objet Carbon
+            if ($date instanceof Carbon) {
+                return $date->locale('fr')->translatedFormat('d F Y');
+            }
+
+            // Si c’est une chaîne ISO (format Y-m-d)
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                return Carbon::createFromFormat('Y-m-d', $date)
+                    ->locale('fr')
+                    ->translatedFormat('d F Y');
+            }
+
+            // Si c’est du format mm/dd/yyyy
+            if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $date)) {
+                return Carbon::createFromFormat('d/m/Y', $date)
+                    ->locale('fr')
+                    ->translatedFormat('d F Y');
+            }
+
+            
+
+            // Sinon, on tente un parsing générique
+            return Carbon::parse($date)->locale('fr')->translatedFormat('d F Y');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    $debut = parseDateFlexible($dateDebut ?? null);
+    $fin = parseDateFlexible($dateFin ?? null);
+@endphp
+
+@if($debut && $fin)
+    <p>PÉRIODE DU {{ Str::upper($debut) }} AU {{ Str::upper($fin) }}</p>
+@elseif($debut && !$fin)
+    <p>PÉRIODE À PARTIR DU {{ Str::upper($debut) }}</p>
+@elseif(!$debut && $fin)
+    <p>PÉRIODE JUSQU'AU {{ Str::upper($fin) }}</p>
+@endif
+
     </div>
 
     <!-- TABLEAU -->

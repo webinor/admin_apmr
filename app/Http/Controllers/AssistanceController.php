@@ -20,42 +20,43 @@ class AssistanceController extends Controller
 {
     protected $assistance_service;
 
-    public function __construct(AssistanceService $assistance_service) {
-          
-      $this->assistance_service = $assistance_service;
-        
-     // $this->authorizeResource(Company::class, "employee");
-  
-      }
-      /**
-       * Display a listing of the resource.
-       *
-       * @return \Illuminate\Http\Response
-       */
-      public function index(Request $request)  {
-          
-          $results = $request->results ? (int)$request->results : 10;
-    
-    
-            $variables = $this->assistance_service->getIndexVariables($results);
+    public function __construct(AssistanceService $assistance_service)
+    {
+        $this->assistance_service = $assistance_service;
 
-           
-            return  $this->assistance_service->getView('assistance.index', $variables);
-    
-        }
-  
-      /**
-       * Show the form for creating a new resource.
-       *
-       * @return \Illuminate\Http\Response
-       */
-      public function create()
-      {
-          
-          $variables = $this->assistance_service->getCreateVariables();
-           
-          return  $this->assistance_service->getView('assistance.manage', $variables);
-      }
+        // $this->authorizeResource(Company::class, "employee");
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $results = $request->results ? (int) $request->results : 10;
+
+        $variables = $this->assistance_service->getIndexVariables($results);
+
+        return $this->assistance_service->getView(
+            "assistance.index",
+            $variables
+        );
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        $variables = $this->assistance_service->getCreateVariables();
+
+        return $this->assistance_service->getView(
+            "assistance.manage",
+            $variables
+        );
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -68,84 +69,86 @@ class AssistanceController extends Controller
         //
     }
 
-    public function count_filtered_results(Request $request)  {
-        
+    public function count_filtered_results(Request $request)
+    {
         return $this->assistance_service->count_filtered_results($request);
     }
 
     public function countFiltered(Request $request)
     {
+        // On part directement des lignes d'assistance
+        $query = AssistanceLine::query()
+            ->whereHas("assistance.signature") // s'assure que l'assistance a une signature
+            ->whereHas("assistance", function ($q) use ($request) {
+                // Compagnie
+                if ($request->filled("compagnie")) {
+                    $q->whereHas("ground_agent.company", function ($qry) use (
+                        $request
+                    ) {
+                        $qry->whereCode($request->compagnie);
+                    });
+                }
 
+                // Période
+                if ($request->filled("date_debut")) {
+                    $q->whereDate("created_at", ">=", $request->date_debut);
+                }
+                if ($request->filled("date_fin")) {
+                    $q->whereDate("created_at", "<=", $request->date_fin);
+                }
 
-    // On part directement des lignes d'assistance
-    $query = AssistanceLine::query()
-        ->whereHas('assistance.signature') // s'assure que l'assistance a une signature
-        ->whereHas('assistance', function($q) use ($request) {
+                // Enregistré par
+                if ($request->filled("user")) {
+                    $q->whereHas("registrator", function ($qry) use ($request) {
+                        $qry->whereCode($request->user);
+                    });
+                }
 
-            // Compagnie
-            if ($request->filled('compagnie')) {
-                $q->whereHas('ground_agent.company', function($qry) use ($request) {
-                    $qry->whereCode($request->compagnie);
-                });
-            }
+                // Déjà facturées
+                if ($request->filled("justificatifs")) {
+                    $q->where("is_invoiced", true);
+                }
 
-            // Période
-            if ($request->filled('date_debut')) {
-                $q->whereDate('created_at', '>=', $request->date_debut);
-            }
-            if ($request->filled('date_fin')) {
-                $q->whereDate('created_at', '<=', $request->date_fin);
-            }
+                // Min / Max prix
+                if ($request->filled("min-price")) {
+                    $q->where("total", ">=", $request->input("min-price"));
+                }
+                if ($request->filled("max-price")) {
+                    $q->where("total", "<=", $request->input("max-price"));
+                }
+            });
 
-            // Enregistré par
-            if ($request->filled('user')) {
-                $q->whereHas('registrator', function($qry) use ($request) {
-                    $qry->whereCode($request->user);
-                });
-            }
+        // Filtre sur Agent (ligne d'assistance)
+        if ($request->filled("agent")) {
+            $query->whereHas("assistance_agent", function ($qry) use (
+                $request
+            ) {
+                $qry->whereCode($request->agent);
+            });
+        }
 
-            // Déjà facturées
-            if ($request->filled('justificatifs')) {
-                $q->where('is_invoiced', true);
-            }
+        // Filtre sur Ville (ligne d'assistance)
+        if ($request->filled("city")) {
+            $query->whereHas("assistance_agent.city", function ($qry) use (
+                $request
+            ) {
+                $qry->whereCode($request->city);
+            });
+        }
 
-            // Min / Max prix
-            if ($request->filled('min-price')) {
-                $q->where('total', '>=', $request->input('min-price'));
-            }
-            if ($request->filled('max-price')) {
-                $q->where('total', '<=', $request->input('max-price'));
-            }
-        });
+        // Filtre sur Type de chaise (ligne d'assistance)
+        if ($request->filled("wheel_chair")) {
+            $query->whereHas("wheel_chair", function ($qry) use ($request) {
+                $qry->whereCode($request->wheel_chair);
+            });
+        }
 
-    // Filtre sur Agent (ligne d'assistance)
-    if ($request->filled('agent')) {
-        $query->whereHas('assistance_agent', function($qry) use ($request) {
-            $qry->whereCode($request->agent);
-        });
-    }
+        // Comptage exact des lignes filtrées
+        $totalLines = $query->count();
 
-    // Filtre sur Ville (ligne d'assistance)
-    if ($request->filled('city')) {
-        $query->whereHas('assistance_agent.city', function($qry) use ($request) {
-            $qry->whereCode($request->city);
-        });
-    }
-
-    // Filtre sur Type de chaise (ligne d'assistance)
-    if ($request->filled('wheel_chair')) {
-        $query->whereHas('wheel_chair', function($qry) use ($request) {
-            $qry->whereCode($request->wheel_chair);
-        });
-    }
-
-    // Comptage exact des lignes filtrées
-    $totalLines = $query->count();
-
-    return response()->json([
-        'count' => $totalLines
-    ]);
-
+        return response()->json([
+            "count" => $totalLines,
+        ]);
     }
 
     public function export(Request $request)
@@ -154,199 +157,192 @@ class AssistanceController extends Controller
 
         return Excel::download(
             new ApmrExport($filters), // ici on passe le tableau des filtres
-            'apmr_export_' . date('Ymd_His') . '.xlsx'
+            "apmr_export_" . date("Ymd_His") . ".xlsx"
         );
     }
 
-  public function save_remote_assistance(array $codes)
-{
-    $path = storage_path('app/public/fiches_apmr');
+    public function save_remote_assistance(array $codes)
+    {
+        $path = storage_path("app/public/fiches_apmr");
 
-    // Vérifie et crée le dossier si nécessaire
-    if (!File::exists($path)) {
-        File::makeDirectory($path, 0755, true); // true => récursif
-    }
-
-    $client = new \GuzzleHttp\Client();
-    $savedFiles = []; // tableau pour stocker les fichiers enregistrés
-
-    foreach ($codes as $code) {
-        $url = config('services.apmr_service.base_url')."/api/operations/export-pdf/{$code}?output=save-remote";
-
-        $response = $client->get($url, [
-            'headers' => [
-                'Accept' => 'application/pdf',
-            ],
-        ]);
-
-        $contentType = $response->getHeaderLine('Content-Type');
-
-        if ($contentType !== 'application/pdf') {
-            // On peut logguer l'erreur plutôt que dd()
-            Log::error("Erreur lors de l'export PDF pour le code {$code} : " . (string) $response->getBody());
-            continue; // on passe au code suivant
+        // Vérifie et crée le dossier si nécessaire
+        if (!File::exists($path)) {
+            File::makeDirectory($path, 0755, true); // true => récursif
         }
 
-        $assistance = Assistance::whereCode($code)->first();
-      //  $fileName = $assistance->flight_number . '_' . Str::random(8) . '.pdf';
-        $fileName = $assistance->reference . '.pdf';
-        $filePath = $path . '/' . $fileName;
+        $client = new \GuzzleHttp\Client();
+        $savedFiles = []; // tableau pour stocker les fichiers enregistrés
 
-        file_put_contents($filePath, $response->getBody());
+        foreach ($codes as $code) {
+            $url =
+                config("services.apmr_service.base_url") .
+                "/api/operations/export-pdf/{$code}?output=save-remote";
 
-        if ($response->getStatusCode() === 200) {
-            $savedFiles[] = $filePath; // on ajoute le chemin au tableau
+            $response = $client->get($url, [
+                "headers" => [
+                    "Accept" => "application/pdf",
+                ],
+            ]);
+
+            $contentType = $response->getHeaderLine("Content-Type");
+
+            if ($contentType !== "application/pdf") {
+                // On peut logguer l'erreur plutôt que dd()
+                Log::error(
+                    "Erreur lors de l'export PDF pour le code {$code} : " .
+                        (string) $response->getBody()
+                );
+                continue; // on passe au code suivant
+            }
+
+            $assistance = Assistance::whereCode($code)->first();
+            //  $fileName = $assistance->flight_number . '_' . Str::random(8) . '.pdf';
+            $fileName = $assistance->reference . ".pdf";
+            $filePath = $path . "/" . $fileName;
+
+            file_put_contents($filePath, $response->getBody());
+
+            if ($response->getStatusCode() === 200) {
+                $savedFiles[] = $filePath; // on ajoute le chemin au tableau
+            }
         }
+
+        return $savedFiles; // retourne la liste des fichiers PDF enregistrés
     }
 
-    return $savedFiles; // retourne la liste des fichiers PDF enregistrés
-}
+    public function exportPdf(Request $request)
+    {
+        // dd($request->all());
+        // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
+        $export = new ApmrExport($request->all());
+        $data = $export->array(); // même structure que ton Excel
 
+        $params = $request->all();
 
+        // ($filtered); save-remote
+        // $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
 
-public function exportPdf(Request $request)
-{
-   // dd($request->all());
-    // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
-    $export = new ApmrExport($request->all());
-    $data = $export->array(); // même structure que ton Excel
-   
+        // $savedFiles = $this->save_remote_assistance($codes);
 
-    $params = $request->all();
+        $lines = [];
 
-    // ($filtered); save-remote
-   // $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
-
-   // $savedFiles = $this->save_remote_assistance($codes);
-
-    
-    $lines = [];
-
-    // On prépare un tableau de totaux initialisés à 0
-$totals = [];
-foreach ($export->wheelChairTypes as $type) {
-    $totals[$type] = 0;
-}
-$totalAgents = 0;
-$seenMissions = [];
-    // On commence à partir de l’index où se trouvent les vraies données
-    // Ici d’après ton dump, les données commencent à l’index 4 avec l’en-tête
-    for ($i = 4; $i < count($data); $i++) { 
-
-    
-        
-        $row = $data[$i];
-    
-        // Ignore les lignes de totaux ou vides
-        if (empty($row[0]) && empty($row[1])) continue;
-
-        $chairs = [];
-foreach ($export->wheelChairTypes as $index => $type) {
-    // On suppose que les colonnes du Excel commencent à l'index 6 pour les chaises
-    $colIndex = 6 + $index; 
-    $chairs[$type] = $row[$colIndex] ?? 0;
-}
-    
-        $lines[] = [
-            '#'             => $row[0] ?? null,
-            'date'          => $row[1] ?? null,
-            'mission'       => $row[2] ?? null,
-            'beneficiary'   => $row[3] ?? null,
-            'flight_type'   => $row[4] ?? null,
-            'flight_number' => $row[5] ?? null,
-            'chairs'        => $chairs,
-            'nb_agents'     => $row[6 + count($export->wheelChairTypes)] ?? 0, // dernière colonne pour nb_agents
-        
-        ];
-
-      
-    }
-
-
-      // On additionne
-      foreach ($lines as $line) {
+        // On prépare un tableau de totaux initialisés à 0
+        $totals = [];
         foreach ($export->wheelChairTypes as $type) {
-           // return $line;
-         // return
-            /*$totals[$type] += $line
+            $totals[$type] = 0;
+        }
+        $totalAgents = 0;
+        $seenMissions = [];
+        // On commence à partir de l’index où se trouvent les vraies données
+        // Ici d’après ton dump, les données commencent à l’index 4 avec l’en-tête
+        for ($i = 4; $i < count($data); $i++) {
+            $row = $data[$i];
+
+            // Ignore les lignes de totaux ou vides
+            if (empty($row[0]) && empty($row[1])) {
+                continue;
+            }
+
+            $chairs = [];
+            foreach ($export->wheelChairTypes as $index => $type) {
+                // On suppose que les colonnes du Excel commencent à l'index 6 pour les chaises
+                $colIndex = 6 + $index;
+                $chairs[$type] = $row[$colIndex] ?? 0;
+            }
+
+            $lines[] = [
+                "#" => $row[0] ?? null,
+                "date" => $row[1] ?? null,
+                "mission" => $row[2] ?? null,
+                "beneficiary" => $row[3] ?? null,
+                "flight_type" => $row[4] ?? null,
+                "flight_number" => $row[5] ?? null,
+                "chairs" => $chairs,
+                "nb_agents" => $row[6 + count($export->wheelChairTypes)] ?? 0, // dernière colonne pour nb_agents
+            ];
+        }
+
+        // On additionne
+        foreach ($lines as $line) {
+            foreach ($export->wheelChairTypes as $type) {
+                // return $line;
+                // return
+                /*$totals[$type] += $line
             ['chairs']
             [$type] ?? 0;*/
 
-                    $value = $line['chairs'][$type] ?? 0;
-        $totals[$type] = ($totals[$type] ?? 0) + (int)$value;
+                $value = $line["chairs"][$type] ?? 0;
+                $totals[$type] = ($totals[$type] ?? 0) + (int) $value;
+            }
         }
-       
-        
-       
-    }
 
-   // return $data;
+        // return $data;
 
-    $lastLine = $data[count($data)-1];
-    $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
-    
-  
+        $lastLine = $data[count($data) - 1];
+        $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
 
-   // return $totals;
+        // return $totals;
 
-    $pdf = Pdf::loadView('pdf.apmr_recap', [
-        'companyImage'=> $export->companyImage,
-        'companyName'     => $export->companyName,  // libellé déjà résolu
-        'month'           => $export->month,
-        'year'            => $export->year,
-        'dateDebut'       => $export->dateDebut,
-        'dateFin'         => $export->dateFin,
-        'wheelChairTypes' => $export->wheelChairTypes,
-        'lines'         => $lines,
-        'totals'        => $totals, // récupérés du calcul Excel
-        'totalAgents'   => $_SERVER['SERVER_NAME'] != "127.0.0.1" ? "$totalAgents" : $totalAgents,          // idem
-    ]);
+        $pdf = Pdf::loadView("pdf.apmr_recap", [
+            "companyImage" => $export->companyImage,
+            "companyName" => $export->companyName, // libellé déjà résolu
+            "month" => $export->month,
+            "year" => $export->year,
+            "dateDebut" => $export->dateDebut,
+            "dateFin" => $export->dateFin,
+            "wheelChairTypes" => $export->wheelChairTypes,
+            "lines" => $lines,
+            "totals" => $totals, // récupérés du calcul Excel
+            "totalAgents" =>
+                $_SERVER["SERVER_NAME"] != "127.0.0.1"
+                    ? "$totalAgents"
+                    : $totalAgents, // idem
+        ]);
 
+        switch ($params["action"]) {
+            case "download-single":
+                return $pdf->download("apmr_recap.pdf");
 
-    switch ($params["action"]) {
-        case 'download-single':
-            
-             return $pdf->download('apmr_recap.pdf');
+                break;
 
-            break;
+            case "download-all":
+                $filtered = $export->get_filtered();
 
-        case 'download-all':
+                $codes = collect($filtered)
+                    ->pluck("assistance.code")
+                    ->unique()
+                    ->values()
+                    ->all();
 
-             $filtered = $export->get_filtered();
+                $savedFiles = $this->save_remote_assistance($codes);
 
-                $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
+                $recapName = "recapitulatif_" . date("d_m_Y_H_i_s");
 
-          $savedFiles = $this->save_remote_assistance($codes);
+                $recapPath = $this->savePdf($pdf, "fiches_apmr", $recapName);
 
-             $recapName = 'recapitulatif_' . date('d_m_Y_H_i_s') ;
+                // $allFiles = [];
 
-            $recapPath =  $this->savePdf($pdf,"fiches_apmr" , $recapName );
+                $allFiles = array_merge([$recapPath], $savedFiles);
 
-           // $allFiles = [];
+                // array_push($savedFiles,  $recapPath);
 
-           $allFiles = array_merge([$recapPath] , $savedFiles);
-            
-           // array_push($savedFiles,  $recapPath);
+                //  dd($savedFiles);
 
-          //  dd($savedFiles);
-            
-           $zipPath =  $this->get_zip($allFiles);
+                $zipPath = $this->get_zip($allFiles);
 
                 // Retourne le ZIP pour téléchargement
-    return response()->download($zipPath)->deleteFileAfterSend(true);
-            break;
-        
-        default:
-            # code...
-            break;
+                return response()
+                    ->download($zipPath)
+                    ->deleteFileAfterSend(true);
+                break;
+
+            default:
+                # code...
+                break;
+        }
     }
 
-
-   
-}
-
-
-/**
+    /**
      * Sauvegarde un PDF et retourne le chemin complet
      *
      * @param \Barryvdh\DomPDF\PDF $pdf
@@ -354,10 +350,10 @@ foreach ($export->wheelChairTypes as $index => $type) {
      * @param string|null $fileName Nom du fichier, si null => génère un nom aléatoire
      * @return string Chemin complet du fichier sauvegardé
      */
-    function savePdf($pdf, $folder = 'pdfs', $fileName = null)
+    function savePdf($pdf, $folder = "pdfs", $fileName = null)
     {
         // Dossier complet
-        $path = storage_path('app/public/' . $folder);
+        $path = storage_path("app/public/" . $folder);
 
         // Crée le dossier si inexistant
         if (!File::exists($path)) {
@@ -366,12 +362,12 @@ foreach ($export->wheelChairTypes as $index => $type) {
 
         // Nom du fichier
         if (!$fileName) {
-            $fileName = 'pdf_' . Str::random(8) . '.pdf';
-        } elseif (!str_ends_with($fileName, '.pdf')) {
-            $fileName .= '.pdf';
+            $fileName = "pdf_" . Str::random(8) . ".pdf";
+        } elseif (!str_ends_with($fileName, ".pdf")) {
+            $fileName .= ".pdf";
         }
 
-        $filePath = $path . '/' . $fileName;
+        $filePath = $path . "/" . $fileName;
 
         // Sauvegarde le PDF
         file_put_contents($filePath, $pdf->output());
@@ -379,39 +375,40 @@ foreach ($export->wheelChairTypes as $index => $type) {
         return $filePath;
     }
 
-public function get_zip($savedFiles){
+    public function get_zip($savedFiles)
+    {
+        //  dd($savedFiles);
 
+        $path = storage_path("app/public/fiches_apmr");
 
-  //  dd($savedFiles);
+        // Création du ZIP
+        $zipName = "fiches_apmr_" . date("d_m_Y_H_i_s") . ".zip";
 
-    $path = storage_path('app/public/fiches_apmr');
+        $zipPath = $path . "/" . $zipName;
+        //$zipPath = tempnam(sys_get_temp_dir(), 'fiches_apmr_') . '.zip';
 
-    // Création du ZIP
-   $zipName = 'fiches_apmr_' . date('d_m_Y_H_i_s') . '.zip';
+        $zip = new ZipArchive();
+        $res = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
 
-    $zipPath = $path . '/' . $zipName;
-    //$zipPath = tempnam(sys_get_temp_dir(), 'fiches_apmr_') . '.zip';
-
-    $zip = new ZipArchive;
-    $res = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
-
-if ($res === TRUE) {
-
-   // dd("ok");
-        foreach ($savedFiles as $file) {
-            $zip->addFile($file, basename($file)); // ajoute le fichier dans le zip
-        }
-        $zip->close();
+        if ($res === true) {
+            // dd("ok");
+            foreach ($savedFiles as $file) {
+                $zip->addFile($file, basename($file)); // ajoute le fichier dans le zip
+            }
+            $zip->close();
 
             if (!file_exists($zipPath)) {
-        abort(500, 'Le ZIP n’a pas pu être créé');
-    }
-    } else {
-         abort(500, "Impossible de créer le ZIP. Code erreur ZipArchive: $res");
-    }
+                abort(500, "Le ZIP n’a pas pu être créé");
+            }
+        } else {
+            abort(
+                500,
+                "Impossible de créer le ZIP. Code erreur ZipArchive: $res"
+            );
+        }
 
-    return $zipPath;
-}
+        return $zipPath;
+    }
 
     /**
      * Display the specified resource.
@@ -433,8 +430,11 @@ if ($res === TRUE) {
     public function edit(Assistance $assistance)
     {
         $variables = $this->assistance_service->getEditVariables($assistance);
-           
-        return  $this->assistance_service->getView('assistance.manage', $variables);
+
+        return $this->assistance_service->getView(
+            "assistance.manage",
+            $variables
+        );
     }
 
     /**
@@ -444,8 +444,10 @@ if ($res === TRUE) {
      * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateAssistanceRequest $request, Assistance $assistance)
-    {
+    public function update(
+        UpdateAssistanceRequest $request,
+        Assistance $assistance
+    ) {
         //
     }
 
@@ -457,7 +459,7 @@ if ($res === TRUE) {
      */
     public function destroy(Assistance $assistance)
     {
-         $response =  $this->assistance_service->deleteAssistance($assistance);
+        $response = $this->assistance_service->deleteAssistance($assistance);
 
         return $response;
     }
