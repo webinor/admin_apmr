@@ -34,7 +34,7 @@ class InvoiceController extends Controller
         public function index(Request $request)
         {
             $invoices = [];
-        $companies = Company::get();
+        $companies = Company::orderBy('name')->get();
 
             return view("invoice.index" , compact('invoices','companies'));
         }

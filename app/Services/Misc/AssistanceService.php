@@ -536,11 +536,11 @@ ViewsResponder {
         ->paginate(10)
         ->withQueryString();
 
-        $companies = Company::get();
-        $agents = AssistanceAgent::get();
-        $users = Registrator::get();
-        $cities = City::get();
-        $wheel_chairs = WheelChair::get();
+        $companies = Company::orderBy('name')->get();
+       $agents = AssistanceAgent::get()->sortBy(fn($a) => $a->fullName())->values();
+        $users = Registrator::get()->sortBy(fn($a) => $a->fullName())->values();
+        $cities = City::orderBy('name')->get();
+        $wheel_chairs = WheelChair::orderBy('name')->get();
 
       //  dd($assistances);
 
