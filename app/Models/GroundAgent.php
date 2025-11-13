@@ -19,7 +19,7 @@ class GroundAgent extends Model
 
      public function comment(): string
     {
-        return $this->comment;
+        return '';// $this->comment;
     }
     /**
      * Get the company that owns the GroundAgent
