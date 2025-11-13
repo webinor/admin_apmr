@@ -2,24 +2,30 @@
 
 namespace App\Models\Operations;
 
-use App\Models\Adjustment;
 use App\Models\Company;
-use App\Models\GroundAgent;
 use App\Models\Misc\File;
-use App\Models\Operations\Signature;
-use App\Models\Registrator;
 use App\Models\User\User;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Adjustment;
+use App\Models\GroundAgent;
+use App\Models\Registrator;
+use Illuminate\Support\Str;
+use App\Models\Operations\Signature;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Assistance extends Model
 {
     use HasFactory;
 
 
+
+    public function flight_type_text()  {
+        
+        return  Str::substr($this->flight_type, 0, 3);
+    }
     
      /**
      * Get the company that owns the Company

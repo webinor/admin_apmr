@@ -16,6 +16,11 @@ class GroundAgent extends Model
     {
         return $this->first_name." ".$this->last_name;
     }
+
+     public function comment(): string
+    {
+        return $this->comment;
+    }
     /**
      * Get the company that owns the GroundAgent
      *
