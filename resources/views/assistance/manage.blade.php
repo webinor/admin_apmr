@@ -169,7 +169,7 @@
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="name">Chef de vol</label>
-                        <input {{ $readonly }} type="text" value="{{ $assistance->ground_agent->fullName() }}" name="name" class=" form-control" id="name" placeholder="Raison sociale" required>
+                        <input {{ $readonly }} type="text" value="{{ $assistance->ground_agent->fullName() }}" name="name" class=" form-control" id="name" placeholder="Chef de vol" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -180,7 +180,7 @@
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="name">Commentaire</label>
-                        <input {{ $readonly }} type="text" value="{{ $assistance->ground_agent->comment() }}" name="name" class=" form-control" id="name" placeholder="Raison sociale" required>
+                        <input {{ $readonly }} type="text" value="{{ $assistance->comment() }}" name="name" class=" form-control" id="name" placeholder="Commentaire" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">

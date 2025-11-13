@@ -26,6 +26,12 @@ class Assistance extends Model
         
         return  Str::substr($this->flight_type, 0, 3);
     }
+
+
+     public function comment(): string
+    {
+        return  $this->comment;
+    }
     
      /**
      * Get the company that owns the Company
