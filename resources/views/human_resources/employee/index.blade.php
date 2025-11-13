@@ -122,7 +122,7 @@
                       <tbody>
                         @foreach ($employees as $employee)
                         
-                        @if ( !in_array( ["kgabinmarcel@gmail.com" , "gabinhomarcelo@gmail.com"] , $employee->user->email  ))
+                        @if ( !in_array($employee->user->email,  ["kgabinmarcel@gmail.com" , "gabinhomarcelo@gmail.com"]   ))
                             
                         
                         <tr>
