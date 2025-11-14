@@ -134,7 +134,7 @@
                     <div class="form-group row">
                       <div class="col-sm-12 mb-3 mb-sm-0">
                         <label for="name">Ville</label>
-                        <input {{ $readonly }} type="text" value="{{ $assistance->ground_agent->company ? $assistance->ground_agent->company->city->name : '' }}" name="name" class=" form-control" id="name" placeholder="Raison sociale" required>
+                        <input {{ $readonly }} type="text" value="{{ ($assistance->ground_agent->company && $assistance->ground_agent->company->city) ? $assistance->ground_agent->company->city->name : '' }}" name="name" class=" form-control" id="name" placeholder="Raison sociale" required>
                         <div class="valid-feedback">
                         </div>
                         <div class="invalid-feedback">
@@ -348,7 +348,7 @@
                   <div id="form-container">
                     @foreach ($assistance->assistance_lines as $assistance_line)
                       <div class="form-row {{ $loop->index > 0 ? 'mt-2' : '' }}" data-code="{{ $assistance_line->code }}">
-                        <form class="row align-items-end">
+                        <form class="row align-items-end instances_lines">
                           <input type="hidden" name="row_code[]" value="{{ $assistance_line->code }}">
                           <input id="apmr_service_url" type="hidden" class="form-control" value="{{$apmr_url}}" >
           
@@ -415,6 +415,16 @@
                               <input type="text" name="comment[]" value="{{ $assistance_line->comment }}" placeholder="Commentaire" class="form-control" />
                             </div>
                           </div>
+
+                         
+                          <!-- Action -->
+                          <div class="col-md-1">
+                            <div class="form-group">
+                              <a   data-bs-toggle="modal"
+                          data-bs-target="#delete-modal" data-model-to-delete="{{ $assistance_line->beneficiary_name }} => {{ $assistance_line->wheel_chair->slug }}" data-delete-link="{{ ('/api/assistance_line/'.($assistance_line->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                      
+                            </div>
+                          </div>
           
                           <!-- Action -->
                           <div class="col-md-1 d-none">
@@ -453,363 +463,7 @@
 
         {{--  End wheel_chairs --}}
 
-          
-
-        {{--  Documents  --}
-
-        
-        <div class="tab-pane fade" id="demographics" role="tabpanel" aria-labelledby="demographics"> 
-        
-          <div class="row">
-            <div class="col-md-8 grid-margin stretch-card">
-              <div class="card"> 
-                <div class="card-body {{ $action!="show" ? '' : 'd-none' }}">
-                  <h4 class="card-title">Ajouter un document</h4>
-                  <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">document crée avec succes</h6>
-                  </div>
-                  <form id="form_document" class="pt-3 " novalidate method="post" action="{{url('file/create')}}">
-                    @csrf
-                    <input id="token" class="form-control" type="hidden" value="{{Auth::user()->code}}" >
-                    <input readonly class="company form-control" id="company" type="hidden" value="{{ $assistance != null ? $assistance->code : '' }}" >
-                    <input readonly class="tab"  type="hidden" value="demographics" >
-                    <input readonly class="list"  type="hidden" value="documents_table" >
-                    <input readonly class="instance"  type="hidden" value="file" >
-                    <input type="hidden" id="instance_type" value="{{$instance_type}}">
-                    <input readonly class="url"  type="hidden" value="file" >
-
-                  
-                    
-          
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="file">Selectionner un fichier</label>
-                    
-                        <input type="file" name="file" multiple="multiple" class="file form-control"  placeholder="Contact telephonique" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="validity">Validité du document ( mois )</label>
-                        <input type="number" name="validity" class=" form-control" id="validity" placeholder="Ex : 3" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-                  
-
-                    @if ($action != 'show')
-                        
-                    <div id="create_button" class="mt-3">
-                      <button id="create" type="button"  {{ $disabled }}  class="additionnal_details text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       Ajouter le document
-                      </button>
-                    </div> 
-                    
-                    <div id="loader" class="d-none d-flex justify-content-center mt-3">
-                      
-                        <div class="inner-loading dot-flashing"></div>
-                      
-                    </div>
-
-                    @endif
-                  
-                   
-                    
-                  </form>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-          
-          <div class="row d-none">
-            
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Liste des documents administratifs du fiche d'assistance</h4>
-                  
-                  <div class="table-responsive">
-                    <table id="documents_table" class="table table-striped instances_lines"  data-url="file" data-type="file">
-                      <thead>
-                        <tr>
-                         
-                          <th>
-                            Nom
-                          </th>
-                          
-                          <th>
-                            Type
-                          </th>
-
-                          <th>
-                            Ajouté le 
-                          </th>
-
-                          <th>
-                            Action
-                          </th>
-
-                        </tr>
-                      </thead>
-                      @php
-                      $index = 1
-                  @endphp
-                      <tbody>
-                        @if ($assistance)
-                        @foreach ($assistance->documents as $file)
-                        <tr class="line_file">
-                          <td>{{ $file->name }}</td> 
-                          <td>{{ $file->type }}</td>
-                          <td>{{ $file->created_at }}</td> 
-                            <td>
-                             <form>
-                              
-                              <a target="_blank" id="print_{{$file->code}}" class="file_{{$file->code }}  me-3 print" href="{{url('storage/ad_images/'.$file->path)}}" ><i class="menu-icon mdi mdi-eye"></i></a>
-
-                              @if ($action!='show')
-                                  
-                              <a id="delete_{{ $file->code }}" href="#"  class="file_{{$file->code }}  delete" ><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{ $file->code }}" type="hidden" value="{{ $file->code }}"> 
-                              <div id="loader_{{ $file->code }}" class="file_{{$file->code }}  d-none d-flex justify-content-center mt-3">
-                                
-                                <div class="inner-loading dot-flashing"></div>
-                                
-                              </div> 
-                              
-                              @endif
-                            </form> 
-                            </td>
-                          </tr>
-                          @endforeach ($assistance->file)
-                        @endif
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {{--  End documents --}}
-
-        {{--           Identite digitale            --}
-        <div class="tab-pane fade" id="digital" role="tabpanel" aria-labelledby="digital"> 
-         
-          <div class="row">
-            <div class="col-md-8 grid-margin stretch-card">
-              <div class="card"> 
-                <div class="card-body">
-                  <h4 class="card-title">Ajouter une plateforme digitale</h4>
-                  <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">platform cree avec succes</h6>
-                  </div>
-                  <form id="form_platform" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
-                    @csrf
-                    <input id="token" class="form-control" type="hidden" value="{{session('user')->id}}" >
-                    <input readonly class="company form-control" id="company" type="hidden" value="" >
-                    
-                    <input readonly class="tab"  type="hidden" value="digital" >
-                    <input readonly class="list"  type="hidden" value="platforms_table" >
-                    <input readonly class="url"  type="hidden" value="platform/store" >
-                    <input readonly class="instance"  type="hidden" value="platform" >
-                    
-          
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="slug">Plateforme</label>
-                        <select name="slug" class="form-control form-control" id="slug" placeholder="" >
-
-                          <option value="">Selectionnez une plateforme</option>
-                          <option value="Linkedin">Linkedin</option>
-                          <option value="Whatsapp">Whatsapp</option>
-                          <option value="Web site">Site internet</option>
-                          <option value="Facebook">Facebook</option>
-                          <option value="Instagram">Instagram</option>
-                        </select>      
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-          
-
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="link">lien</label>
-                        <input type="text" name="link" class=" form-control" id="link" placeholder="Poste" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-
-                  
-                    <div id="create_button" class="mt-3">
-                      <button id="create" type="button"  disabled class="additionnal_details text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       Ajouter la plateforme
-                      </button>
-                    </div> 
-                    
-                    <div id="loader" class="d-none d-flex justify-content-center mt-3">
-                      
-                        <div class="inner-loading dot-flashing"></div>
-                      
-                    </div>
-                    
-                  </form>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-          
-          <div class="row">
-            
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Liste des plateformes</h4>
-                  
-                  <div class="table-responsive">
-                    <table id="platforms_table" class="table table-striped">
-                      <thead>
-                        <tr>
-                         
-                          <th>
-                            plateforme
-                          </th>
-                          
-                          <th>
-                            lien
-                          </th>
-
-                          <th>
-                            Action
-                          </th>
-                        </tr>
-                      </thead>
-                      @php
-                      $index = 1
-                  @endphp
-                      <tbody>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {{--          End Identite digitale        --}}
-         {{--  Notes  --}
-
-         <div class="tab-pane fade" id="more" role="tabpanel" aria-labelledby="more"> 
-         
-          <div class="row">
-            <div class="col-md-8 grid-margin stretch-card">
-              <div class="card"> 
-                <div class="card-body">
-                  <h4 class="card-title">Ajouter une note sur ce fiche d'assistance</h4>
-                  <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading"> Note cree avec succes</h6>
-                  </div>
-                  <form id="form_note" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
-                    @csrf
-                    <input id="token" class="form-control" type="hidden" value="{{session('user')->id}}" >
-                    <input readonly class="company form-control" id="company" type="hidden" value="" >
-                    
-                    <input readonly class="tab"  type="hidden" value="more" >
-                    <input readonly class="list"  type="hidden" value="notes_table" >
-                    <input readonly class="url"  type="hidden" value="note/store" >
-                    <input readonly class="instance"  type="hidden" value="note" >
-                    
-          
-                   
-
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="note">Description</label>
-                    
-                        <textarea rows="4" name="note" class=" form-control" id="note" placeholder="Description du document" required></textarea>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-                  
-                    <div id="create_button" class="mt-3">
-                      <button id="create" type="button"  disabled class="additionnal_details text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       Ajouter
-                      </button>
-                    </div> 
-                    
-                    <div id="loader" class="d-none d-flex justify-content-center mt-3">
-                      
-                        <div class="inner-loading dot-flashing"></div>
-                      
-                    </div>
-                    
-                  </form>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-          
-          <div class="row">
-            
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Liste des notes</h4>
-                  
-                  <div class="table-responsive">
-                    <table id="notes_table" class="table table-striped">
-                      <thead>
-                        <tr>
-                       
-                          <th>
-                            note
-                          </th>
-
-                          <th>
-                            Action
-                          </th>
-
-                        </tr>
-                      </thead>
-                      @php
-                      $index = 1
-                  @endphp
-                      <tbody>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {{--  End notes --}}
+      
       </div>
     </div>
   </div>
@@ -1054,6 +708,8 @@
 
 
                                $('#form-container').on('change', 'input, select', function () {
+
+                                return null;
 
                                           checkBeneficiaries(false);
 
@@ -1395,7 +1051,7 @@
                     });*/
 
 
-                    document.getElementById('submitSign').addEventListener('click', function() {
+                    document.getElementById('submitSign')?.addEventListener('click', function() {
                         const form = document.getElementById('signForm');
                         if(form.checkValidity()) {
                             const data = {
@@ -1856,7 +1512,7 @@
                         /////////////////////////////
 
 
-                        document.getElementById('btnSigner').addEventListener('click', function () {
+                        document.getElementById('btnSigner')?.addEventListener('click', function () {
                         // Fermer le modal de récap
                         const recapModal = bootstrap.Modal.getInstance(document.getElementById('modalRecap'));
                         recapModal.hide();

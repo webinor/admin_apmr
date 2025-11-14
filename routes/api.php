@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AssistanceAgentController;
 use App\Http\Controllers\AssistanceController;
+use App\Http\Controllers\AssistanceLineController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CompanyWheelChairController;
@@ -139,8 +140,10 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
         ]);
 
             Route::resource("assistance", AssistanceController::class)->only([
-         // "store",
-          //  "update",
+            "destroy",
+    ]);
+
+         Route::resource("assistance_line", AssistanceLineController::class)->only([
             "destroy",
     ]);
 

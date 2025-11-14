@@ -21,7 +21,7 @@
   <!-- inject:css -->
   <link rel="stylesheet" href="{{asset('zen/css/vertical-layout-light/style.css')}}">
   <!-- endinject -->
-  <link rel="shortcut icon" href="{{asset('wordpress/2022/06/logo.png')}}" />
+  <link rel="shortcut icon" href="{{asset('wordpress/2022/06/LOGO_CAMEROUN_ASSIST.png')}}" />
   @include('layouts.partials._loader_style') 
 </head>
 

@@ -32,7 +32,7 @@
 <noscript><link media="all"  rel="stylesheet" href="{{asset('zen2')}}/css/vertical-layout-light/style.min.css"></noscript>
   <!-- endinject -->
 
-  <link rel="shortcut icon" href="{{asset('LOGO_CAMEROUN_ASSIST.png')}}"  />
+  {{-- <link rel="shortcut icon" href="{{asset('LOGO_CAMEROUN_ASSIST.png')}}"  /> --}}
   
   @yield('custom_css')
 

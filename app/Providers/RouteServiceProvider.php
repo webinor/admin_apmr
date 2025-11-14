@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\HumanResource\Employee;
 use App\Models\Misc\Payment;
 use App\Models\Operations\Assistance;
+use App\Models\Operations\AssistanceLine;
 use App\Models\Operations\Folder;
 use App\Models\Operations\Provider;
 use App\Models\Operations\Slip;
@@ -125,6 +126,10 @@ class RouteServiceProvider extends ServiceProvider
 
         Route::bind('assistance', function ($value) {
             return Assistance   ::where('code', $value)->first();
+        });
+
+         Route::bind('assistance_line', function ($value) {
+            return AssistanceLine::where('code', $value)->first();
         });
 
 

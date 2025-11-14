@@ -28,12 +28,13 @@ use App\Addons\Misc\ShowVariablesResponder;
 use App\Addons\Misc\ViewsResponder;
 use App\Models\AssistanceAgent;
 use App\Models\Operations\Assistance;
+use App\Models\Operations\AssistanceLine;
 use App\Models\Registrator;
 use App\Models\User\User;
 use App\Models\WheelChair;
 use Carbon\Carbon;
 
-class AssistanceService implements
+class AssistanceLineService implements
     //IndexVariablesResponder,
     CreateVariablesResponder, ShowVariablesResponder, EditVariablesResponder, ViewsResponder
 {
@@ -835,12 +836,11 @@ class AssistanceService implements
         }
     }
 
-    public function deleteAssistance(Assistance $assistance)
+    public function deleteAssistanceLine(AssistanceLine $assistance_line)
     {
         try {
             DB::beginTransaction();
-            $assistance->is_active = false;
-            $assistance->save();
+            $assistance_line->delete();
 
             //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
 
@@ -848,7 +848,7 @@ class AssistanceService implements
 
             return [
                 "status" => true,
-                "data" => $assistance,
+                "data" => $assistance_line,
             ];
         } catch (\Throwable $th) {
             DB::rollback();

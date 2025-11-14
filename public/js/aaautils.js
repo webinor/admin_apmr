@@ -203,8 +203,6 @@ function constructUploadAjaxRequest(url, data_send = {}, onSuccess, onError, onC
 
 
 $(".instances_lines").on('click', '.delete', function(e) {
-
-//	console.log($(this));
 	
 	let link = $(this).data('delete-link');;
 	let model_to_delete = $(this).data('model-to-delete');
@@ -222,6 +220,8 @@ $(".instances_lines").on('click', '.delete', function(e) {
 
 	
  
+	//console.log($("#confirm_delete"));
+	
 
 
 	e.preventDefault(); 
@@ -233,6 +233,9 @@ $(".instances_lines").on('click', '.delete', function(e) {
 
 $("#confirm_delete").on('click', function (e) { 
 
+	//console.log($(this));
+
+
 	e.preventDefault();
 
 	let link = $("#modal_delete_url").val() ,
@@ -241,7 +244,7 @@ $("#confirm_delete").on('click', function (e) {
 	
 
 
-	//console.log(invoice_line);
+	//console.log(invoice_line!=null && invoice_line!='');
 	
 	
 
