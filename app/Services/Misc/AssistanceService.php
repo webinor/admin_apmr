@@ -541,7 +541,7 @@ class AssistanceService implements
         $filters = $request->all();
 
        // dd(request()->query());
-        if (!empty(request()->except('page'))) {
+        if (!empty(request()->except(['page', 'results']))) {
 
 
         $query = Assistance::query()
