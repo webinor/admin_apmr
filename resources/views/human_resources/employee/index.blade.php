@@ -173,7 +173,7 @@
                             @endif
 {{----}}
 
-                              <a id="edit_{{$employee->code}}" target="_blank" class="me-3 edit" href="{{url('human_resource/employee/'.$employee->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
+                              <a id="edit_{{$employee->code}}"  class="me-3 edit" href="{{url('human_resource/employee/'.$employee->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
 
                                            <a   data-bs-toggle="modal"
                           data-bs-target="#delete-modal" data-model-to-delete="{{ $employee->full_name() }}" data-delete-link="{{ ('/api/human_resource/employee/'.($employee->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>

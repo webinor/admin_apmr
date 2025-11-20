@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body pt-0">
-        <form id="form_filter" class="pt-0" novalidate method="GET" action="{{ url('apmrs/export-pdf') }}">
+        <form id="form_filter" class="pt-0" novalidate method="GET" action="{{ url('apmrs/export?type=pdf') }}">
           @csrf
           <input id="filter_url" type="hidden" value="{{ ('/api/count-filtered-results') }}">
           <input id="slip" name="slip" class="form-control" type="hidden" value="">
@@ -144,10 +144,24 @@
         </form>
       </div>
       <div class="modal-footer">
-        <div class="menu_button">
+
+      <div class="menu_button">
+        
+
           <button id="filter-button" type="button" class="text-white w-100 btn btn-block btn-primary font-weight-medium auth-form-btn">
-            <span id="filter-button-text">Exporter</span>
+            <span id="filter-button-text">Filtrer</span>
             <div id="filter-loader" class="d-none d-flex justify-content-start">
+              <div class="inner-loading dot-flashing"></div>
+            </div>
+          </button>
+        </div>
+
+        <div class="menu_button">
+        
+
+          <button id="export-button" type="button" class="text-white w-100 btn btn-block btn-primary font-weight-medium auth-form-btn">
+            <span id="export-button-text">Exporter</span>
+            <div id="export-loader" class="d-none d-flex justify-content-start">
               <div class="inner-loading dot-flashing"></div>
             </div>
           </button>

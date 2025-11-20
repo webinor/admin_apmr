@@ -31,6 +31,9 @@ class RegisterUserService
                 
             }
 
+            $password = isset($user_data['password']) ? $user_data['password'] : Hash::make(str::random(30));
+
+            //dd($password);
 
             $user= User::create( [
                 'code'=>Str::random(10),
@@ -39,7 +42,7 @@ class RegisterUserService
                 'defined_token' => Str::random(40),
                'defined_token_expire_in'=>  Carbon::now()->addDay(),
                'phone_number'=>$user_data['phone_number'],
-               'password'=>Hash::make(str::random(30))
+               'password'=>$password
       
             ]); 
      

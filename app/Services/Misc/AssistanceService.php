@@ -534,9 +534,91 @@ class AssistanceService implements
             throw $th;
         }
     }
-    function getIndexVariables()
+    function getIndexVariables(Request $request ,  $results)
     {
-        $assistances = Assistance::oldest()
+        /**/
+
+        $filters = $request->all();
+
+       // dd(request()->query());
+        if (!empty(request()->except('page'))) {
+
+
+        $query = Assistance::query()
+    ->has("signature") // assistance doit être signée
+    ->whereHas("ground_agent.company.wheel_chairs") // filtre compagnie
+    ->with([
+        "ground_agent.company.wheel_chairs",
+        "registrator",
+        "assistance_lines.assistance_agent.city",
+        "assistance_lines.wheel_chair",
+    ]);
+
+// Compagnie
+if (!empty($filters["compagnie"])) {
+    $query->whereHas("ground_agent.company", function ($qry) use ($filters) {
+        $qry->whereCode($filters["compagnie"]);
+    });
+}
+
+// Période
+if (!empty($filters["date_debut"])) {
+    $query->whereDate("created_at", ">=", $filters["date_debut"]);
+}
+if (!empty($filters["date_fin"])) {
+    $query->whereDate("created_at", "<=", $filters["date_fin"]);
+}
+
+// Enregistré par
+if (!empty($filters["user"])) {
+    $query->whereHas("registrator", function ($qry) use ($filters) {
+        $qry->whereCode($filters["user"]);
+    });
+}
+
+// Déjà facturées
+if (!empty($filters["justificatifs"])) {
+    $query->where("is_invoiced", true);
+}
+
+// Min / Max prix
+if (!empty($filters["min-price"])) {
+    $query->where("total", ">=", $filters["min-price"]);
+}
+if (!empty($filters["max-price"])) {
+    $query->where("total", "<=", $filters["max-price"]);
+}
+
+// Filtre Agent (au niveau des lignes)
+if (!empty($filters["agent"])) {
+    $query->whereHas("assistance_lines.assistance_agent", function ($qry) use ($filters) {
+        $qry->whereCode($filters["agent"]);
+    });
+}
+
+// Filtre Ville (au niveau des lignes)
+if (!empty($filters["city"])) {
+    $query->whereHas("assistance_lines.assistance_agent.city", function ($qry) use ($filters) {
+        $qry->whereCode($filters["city"]);
+    });
+}
+
+// Filtre Type chaise (au niveau des lignes)
+if (!empty($filters["wheel_chair"])) {
+    $query->whereHas("assistance_lines.wheel_chair", function ($qry) use ($filters) {
+        $qry->whereCode($filters["wheel_chair"]);
+    });
+}
+
+
+
+   
+    $assistances =  $query->get();
+
+}
+else{
+
+    $assistances = Assistance::oldest()
             ->has("signature")
             //->has('ground_agent.company')
             ->with([
@@ -546,8 +628,14 @@ class AssistanceService implements
                // 'assistance_lines.wheel_chair',
                 "ground_agent.company.ground_agents",
             ])
-            ->paginate(10)
+            ->paginate($results)
             ->withQueryString();
+
+}
+
+
+
+
 
         $companies = Company::orderBy("name")->get();
         $agents = AssistanceAgent::get()
@@ -561,6 +649,7 @@ class AssistanceService implements
 
         $vars = compact(
             "assistances",
+            "filters",
             "companies",
             "agents",
             "users",

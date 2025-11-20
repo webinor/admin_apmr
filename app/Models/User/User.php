@@ -46,7 +46,8 @@ class User extends Authenticatable implements ShouldAccess //implements MustVeri
         "verification_code",
         "remember_token",
         "defined_token",
-        "employee_id"
+        "employee_id",
+        "password"
     ];
 
     /**
@@ -131,15 +132,7 @@ class User extends Authenticatable implements ShouldAccess //implements MustVeri
 
     
 
-    /**
-     * Get all of the Providers for the User
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function providers(): HasMany
-    {
-        return $this->hasMany(Provider::class);
-    }
+   
 
 
     public function fullName(): String

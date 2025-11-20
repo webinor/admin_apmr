@@ -203,7 +203,23 @@ select.form-control{
   {{----}}<script src="{{asset('zen/')}}/js/Chart.roundedBarCharts.js"></script> {{----}}
   {{----}}<script type="text/javascript" src="{{asset('zen')}}/js/local.js"></script> {{----}}
   <script src="{{asset('js/aaautils.js')}}"></script>
+  <script>
+    const togglePassword = document.querySelector('#togglePassword');
+ const password = document.querySelector('#password');
 
+ if (togglePassword) {
+
+ togglePassword.addEventListener('click', function (e) {
+  //console.log(togglePassword);
+   // toggle the type attribute
+   const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+   password.setAttribute('type', type);
+   // toggle the eye slash icon
+   this.classList.toggle('fa-eye-slash');
+}); 
+
+}
+ </script>
   <script>
       $("#results").change(function (e) { 
      
@@ -211,9 +227,9 @@ select.form-control{
      //   $(".form-results").submit();
    // e.preventDefault();
 
-   $(this).parents('.form-results').submit();
+   $('#form-results').submit();
 
-  //  console.log($(this).parents('.form-results'));
+   // console.log($('#form-results'));
     
     
   });

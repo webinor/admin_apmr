@@ -3,6 +3,7 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UpdateCredentialRequest extends FormRequest
 {
@@ -28,6 +29,12 @@ class UpdateCredentialRequest extends FormRequest
             "authorize_actions"=>"required|string",
             "employee"=>"required|numeric",
             "token"=>"required|numeric",
+            "password"=>[
+                'nullable',
+                Password::min(8)
+                    ->letters()
+                   // ->mixedCase()
+            ],
         ];
     }
 }

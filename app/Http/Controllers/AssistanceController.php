@@ -35,7 +35,7 @@ class AssistanceController extends Controller
     {
         $results = $request->results ? (int) $request->results : 10;
 
-        $variables = $this->assistance_service->getIndexVariables($results);
+        $variables = $this->assistance_service->getIndexVariables($request , $results);
 
         return $this->assistance_service->getView(
             "assistance.index",
@@ -76,6 +76,87 @@ class AssistanceController extends Controller
 
     public function countFiltered(Request $request)
     {
+
+
+        $filters = $request->all();
+
+           $query = Assistance::query()
+    ->has("signature") // assistance doit être signée
+    ->whereHas("ground_agent.company.wheel_chairs") // filtre compagnie
+    ->with([
+        "ground_agent.company.wheel_chairs",
+        "registrator",
+        "assistance_lines.assistance_agent.city",
+        "assistance_lines.wheel_chair",
+    ]);
+
+// Compagnie
+if (!empty($filters["compagnie"])) {
+    $query->whereHas("ground_agent.company", function ($qry) use ($filters) {
+        $qry->whereCode($filters["compagnie"]);
+    });
+}
+
+// Période
+if (!empty($filters["date_debut"])) {
+    $query->whereDate("created_at", ">=", $filters["date_debut"]);
+}
+if (!empty($filters["date_fin"])) {
+    $query->whereDate("created_at", "<=", $filters["date_fin"]);
+}
+
+// Enregistré par
+if (!empty($filters["user"])) {
+    $query->whereHas("registrator", function ($qry) use ($filters) {
+        $qry->whereCode($filters["user"]);
+    });
+}
+
+// Déjà facturées
+if (!empty($filters["justificatifs"])) {
+    $query->where("is_invoiced", true);
+}
+
+// Min / Max prix
+if (!empty($filters["min-price"])) {
+    $query->where("total", ">=", $filters["min-price"]);
+}
+if (!empty($filters["max-price"])) {
+    $query->where("total", "<=", $filters["max-price"]);
+}
+
+// Filtre Agent (au niveau des lignes)
+if (!empty($filters["agent"])) {
+    $query->whereHas("assistance_lines.assistance_agent", function ($qry) use ($filters) {
+        $qry->whereCode($filters["agent"]);
+    });
+}
+
+// Filtre Ville (au niveau des lignes)
+if (!empty($filters["city"])) {
+    $query->whereHas("assistance_lines.assistance_agent.city", function ($qry) use ($filters) {
+        $qry->whereCode($filters["city"]);
+    });
+}
+
+// Filtre Type chaise (au niveau des lignes)
+if (!empty($filters["wheel_chair"])) {
+    $query->whereHas("assistance_lines.wheel_chair", function ($qry) use ($filters) {
+        $qry->whereCode($filters["wheel_chair"]);
+    });
+}
+
+
+// Comptage exact des lignes filtrées
+        $totalFiches = $query->count();
+
+        return response()->json([
+            "count" => $totalFiches,
+        ]);
+
+
+
+        /////////////////////////////////////////////////////////////////////////////
         // On part directement des lignes d'assistance
         $query = AssistanceLine::query()
             ->whereHas("assistance.signature") // s'assure que l'assistance a une signature
@@ -151,7 +232,7 @@ class AssistanceController extends Controller
         ]);
     }
 
-    public function export(Request $request)
+    public function export_old(Request $request)
     {
         $filters = $request->all();
 
@@ -210,8 +291,35 @@ class AssistanceController extends Controller
         return $savedFiles; // retourne la liste des fichiers PDF enregistrés
     }
 
-    public function exportPdf(Request $request)
+    
+
+    public function export(Request $request)
     {
+        $params = $request->all();
+        
+       // dd($request->has('export'));
+
+        if (!$request->has('export')) {
+
+          //  dd("ici");
+    return $this->filterData($request);
+}
+
+
+
+if ($params["file_type"] == "excel" ) {
+   
+     return Excel::download(
+            new ApmrExport($params), // ici on passe le tableau des filtres
+            "apmr_export_" . date("Ymd_His") . ".xlsx"
+        );
+}
+
+elseif($params["file_type"] == "csv"){
+
+}
+
+
         // dd($request->all());
         // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
         $export = new ApmrExport($request->all());
@@ -219,7 +327,7 @@ class AssistanceController extends Controller
 
        // dd($data);
 
-        $params = $request->all();
+      
 
         // ($filtered); save-remote
         // $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();

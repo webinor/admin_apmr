@@ -15,79 +15,6 @@ class AuthenticateUserService
 
 
 
-  public function check_remote_user($credentials)  {
-        
-  //  $username = $credentials["username"];
-  //  $password = $credentials["password"];
-  
-  
-  //  $response = Http::post("https://pass24api.insighttelematics.tn/pass24/login?username=$username&password=$password");
-  
-   /* $response = Http::get('https://pass24api.insighttelematics.tn/pass24/login', [
-      'username' => $username,
-      'password' => $password,
-  ]);*/
-  
-  //dd($response->json()["success"]);
-  // Récupération du CookieJar (GuzzleHttp\Cookie\CookieJar)
-//  $cookieJar = $response->cookies();
-  
-  // Trouver le cookie par nom (ex: 'session_id')
- // $sessionCookie = collect($cookieJar->toArray())->firstWhere('Name', '.ASPXAUTH');
-  
- /* if ($sessionCookie) {
-  
-      $cookieName = $sessionCookie['Name'];
-      $cookieValue = $sessionCookie['Value'];
-  
-      // Sauvegarder
-      // Stocker le cookie en session
-  session([$cookieName => encrypt($cookieValue)]);
-  }*/
-  
-    return $response->json()["success"];
-  
-      
-   
-  }
-
-
-public function getApiToken($credentials)  {
-        
-  $username = $credentials["username"];
-  $password = $credentials["password"];
-
-
-  $response = Http::post("https://pass24api.insighttelematics.tn/api/v1/pass24/createToken",[
-    'username' => $username,
-    'password' => $password,
-  ]);
-
- /* $response = Http::get('https://pass24api.insighttelematics.tn/pass24/login', [
-    'username' => $username,
-    'password' => $password,
-]);*/
-
-if ($response->successful()) {
-  $data = $response->json(); // Par exemple ['token' => 'abc123', ...]
-  // Tu peux accéder au token par exemple :
-  $accessToken = $data['accessToken'];
-
- // dd($accessToken);
-
-  session(["accessToken" => encrypt($accessToken)]);
-} else {
-
-  // En cas d’erreur
-  Log::error('Erreur API', [
-      'status' => $response->status(),
-      'body' => $response->body(),
-  ]);
-}
-    
- 
-}
-
 public function execute($user_data)  {
         
   return $this->getUserData($user_data);
@@ -112,15 +39,7 @@ public function execute($user_data)  {
             ]);
         }
 
-        /*if ($user && !$this->check_remote_user($credentials)) {
-          
-          return \response()->json([
-            'status'=>false,
-            'errors'=> ["password" => ["Mot de passe incorrect"]]
-        ]);
-          
-        }/**/
-
+    
        
 
 
@@ -145,9 +64,9 @@ public function execute($user_data)  {
         if (Auth::attempt($credentials , $remember)) {
 
           $user=$user_checked['user'];
-          $to = $user->isExtractor() ? url('/') : url("/");
+          $to = url("/");
 
-            //$apiToken =$this->getApiToken($credentials);
+            
          
             return $this->setSession($user_checked , redirect()->intended($to)->getTargetUrl());
 

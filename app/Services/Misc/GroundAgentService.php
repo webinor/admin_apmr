@@ -44,15 +44,17 @@ ViewsResponder {
 
 
     
-    function getIndexVariables()
+    function getIndexVariables($results)
     {
        
 
+      //  /** @var \Illuminate\Pagination\LengthAwarePaginator $ground_agents */
         $ground_agents = GroundAgent::
         //has('company.city')
         with('company.city')->oldest()
-        ->paginate(10)
-        ->withQueryString();
+        ->paginate($results)
+        ->appends(request()->query());
+        //->withQueryString();
 
         $vars = compact("ground_agents");
 
@@ -80,64 +82,7 @@ ViewsResponder {
     }
     function getShowVariables($folder)
     {
-        $folder->load([
-        "slip:id,code,identification,provider_id,user_id",
-        "slip.provider:id,code,name,provider_category_id",
-        "slip.provider.provider_category:id,code,name",
-        "invoices.remote_inserted",
-        "invoices.folder",
-        "invoices.invoice_lines.validation",
-        "invoices.invoice_lines.invoice.prestationable",
-        "invoices.invoice_lines.invoice.folder",
-        "invoices.prestationable"]);
-
-     //   dd($folder);
-
-        $previous = $folder->previous();
-        $next = $folder->next();
-
-      //  dd($previous);
-
-      //  dd($next); 
-
-       // $service_types  = ServiceType::select('id','code','name','fullname')->get();
-       // $product_types  = ProductType::select('id','code','name','fullname')->get();
-
-        //$current_user = Auth::user();
-
-        /*
-        if (!Seen::whereSeenableType(Folder::class)->whereSeenableId($folder->id)->whereUserId($current_user->id)->exists()) {
-            # code...
-            $view = new Seen();
-            $view->user_id = $current_user->id ;
-            $view->seenable_type = Folder::class ;
-            $view->seenable_id = $folder->id ;
-            $view->save() ;
-        }
-        */
-
-
-
-        $query_label = "Numero de bordereau";
-
-        $header_title = "Voulez-vous supprimer cette ligne ?";
-
-
-        $typeahead_url = url("/api/getInvoices?slip=".($folder->slip->code));
-        $extractor_typeahead_url = url("/api/getPrestations");
         
-
-        return compact(
-            "folder",
-            "query_label",
-            "header_title",
-            "typeahead_url",
-            "extractor_typeahead_url",
-            "previous",
-            "next",
-            "service_types",
-            "product_types"
-        );
     }
     function getEditVariables($ground_agent)
     {

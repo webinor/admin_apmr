@@ -266,6 +266,26 @@
 </div>
 
 
+<div class="form-group row">
+  <div class="col-sm-12 mb-3 mb-sm-0">
+    <label for="password">Mot de passe de l'utilisateur</label>
+
+    <input {{ $action != "create" ? "" : "" }} type="password" name="password" class=" form-control form-control-lg" id="password" placeholder="Mot de passe" value="" required>
+    <div class="valid-feedback">
+    </div>
+    <div class="invalid-feedback">
+    </div>
+  </div>
+</div>
+
+<div  class="form-check w-50">
+                <label class="form-check-label text-start fw-bold">
+                  <input id="togglePassword" type="checkbox" class="form-check-input"/>
+                  Afficher le mot de passe
+                <i class="input-helper"></i></label>
+              </div>
+
+
 @foreach ($menus as $menu)
     
     

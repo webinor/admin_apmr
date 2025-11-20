@@ -41,12 +41,12 @@ ViewsResponder {
 
    
   
-    function getIndexVariables()
+    function getIndexVariables($results)
     {
        
 
         $assistance_agents = AssistanceAgent::oldest()
-        ->paginate(20)
+        ->paginate($results)
         ->withQueryString();
 
         $vars = compact("assistance_agents");

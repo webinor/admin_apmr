@@ -29,7 +29,7 @@
     data-bs-target="#balance-modal"><i class="icon-check"></i>Solde prestataire</a>
 
 
-   {{-- --}} <a href="#" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn btn-info text-white"><i class="mdi mdi-export"></i>Exporter les données</a> 
+   {{-- --}} <a href="#" data-bs-toggle="modal" data-bs-target="#filterModal" class="btn btn-info text-white"><i class="mdi mdi-export"></i>Filtrer & Exporter les données</a> 
 
 
     <a href="{{url('assistance/create')}}" class="d-none btn btn-primary text-white me-0" ><i class="icon-download"></i>Nouveau servant CAS</a>
@@ -161,9 +161,17 @@
 
                         @php
 
-                        $start_index  = $assistances->count() > 0 ? ($assistances->currentPage()-1)*$assistances->perPage() + 1 : 1;
+                        //$start_index  = $assistances->count() > 0 ? ($assistances->currentPage()-1)*$assistances->perPage() + 1 : 1;
            
                         
+                        if (empty(request()->except('page'))) {
+    
+    $start_index = ($assistances->currentPage() - 1) * $assistances->perPage() + 1;
+
+} else {
+    // Mode filtres avec get()
+    $start_index = $assistances->count() > 0 ? 1 : 0;
+}
                  
 
                         
@@ -285,8 +293,10 @@
             </div>
           </div>
 
-          @if ($assistances->count()>0)
+          @if ($assistances->count() > 0 && empty(request()->except('page')))
              
+          
+
           <div class="row align-items-center py-5">
            
             
@@ -354,10 +364,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // Exemple d'URLs selon le type
       let url = '/apmrs/export';
-      if (type === 'excel') url = "{{ url('/apmrs/export') }}";
-      else if (type === 'pdf') url = "{{ url('/apmrs/export-pdf') }}";
-      else if (type === 'csv') url = "{{ url('/apmrs/export-csv') }}";
+      if (type === 'excel') url = "{{ url('/apmrs/export?type=excel') }}";
+      else if (type === 'pdf') url = "{{ url('/apmrs/export?type=pdf') }}";
+      else if (type === 'csv') url = "{{ url('/apmrs/export?type=csv') }}";
 
+      console.log(url);
+      
       form.action = url;
 
           // Initialisation
@@ -369,6 +381,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 const filterButton = document.getElementById('filter-button');
 const filterLoader = document.getElementById('filter-loader');
+
+const exportButton = document.getElementById('export-button');
+const exportLoader = document.getElementById('export-loader');
+
 const filterUrl = document.getElementById('filter_url').value;
 
 // Fonction pour récupérer les filtres du formulaire
@@ -402,7 +418,8 @@ async function updateCount() {
     const data = await response.json();
 
     // Affiche le nombre de résultats sur le bouton
-    filterButton.querySelector('#filter-button-text').textContent = `Exporter (${data?.count})`;
+    filterButton.querySelector('#filter-button-text').textContent = `Filtrer (${data?.count})`;
+    exportButton.querySelector('#export-button-text').textContent = `Exporter (${data?.count})`;
 
   } catch (error) {
     console.error(error);
@@ -416,8 +433,26 @@ form.querySelectorAll('.filter').forEach(input => {
   input.addEventListener('change', updateCount);
 });
 
+
 // Si tu veux, tu peux déclencher un filtre direct au clic du bouton
 filterButton.addEventListener('click', async function () {
+
+   form.action = "/assistance";
+  form.querySelector('input[name="export"]')?.remove();
+  form.submit(); // Soumet le formulaire normalement
+
+});
+
+// Si tu veux, tu peux déclencher un filtre direct au clic du bouton
+exportButton.addEventListener('click', async function () {
+
+    let input = document.createElement("input");
+    input.type = "hidden";
+    input.name = "export";
+    input.value = "1";
+
+    form.appendChild(input);
+
   form.submit(); // Soumet le formulaire normalement
 
   /*

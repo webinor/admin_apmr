@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Redis;
 use App\Models\HumanResource\Employee;
 use App\Notifications\Auth\PasswordRequest;
 use App\Notifications\WelcomeUserNotification;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -43,6 +44,11 @@ class UserService
             if ($employee->user != null) {
                 $user = $employee->user; // User::select('id')->where('email' ,  $user_data['email'])->first();
 
+                if (isset($user_data["password"])) {
+                    $user->password = Hash::make($user_data["password"]);
+                    $user->save();
+                }
+                
                 if ($user->email == $user_data["email"]) {
                     ActionMenuUser::where("admin_id", $user->id)->delete();
                     Redis::del("distincts_actions_" . $user->id);
@@ -67,6 +73,12 @@ class UserService
                 }
             } else {
                 $register_user_service = new RegisterUserService();
+
+                if (isset($user_data["password"])) {
+                    $user_data['password'] = Hash::make($user_data["password"]);
+                }
+
+                
 
                 $response = $register_user_service->execute(
                     $user_data + [
