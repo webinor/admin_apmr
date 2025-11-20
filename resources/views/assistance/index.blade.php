@@ -164,7 +164,7 @@
                         //$start_index  = $assistances->count() > 0 ? ($assistances->currentPage()-1)*$assistances->perPage() + 1 : 1;
            
                         
-                        if (empty(request()->except('page'))) {
+                        if (empty(request()->except(['page', 'results']))) {
     
     $start_index = ($assistances->currentPage() - 1) * $assistances->perPage() + 1;
 
@@ -293,7 +293,7 @@
             </div>
           </div>
 
-          @if ($assistances->count() > 0 && empty(request()->except('page')))
+          @if ($assistances->count() > 0 && empty(request()->except(['page', 'results'])))
              
           
 
