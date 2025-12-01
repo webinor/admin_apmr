@@ -139,8 +139,11 @@
                           <td>
                             <form>
 
+                              @can('update', $invoice)
+                                  
                               <a id="print_{{$invoice->code}}" class="me-3 print" href="{{url('invoice/'.$invoice->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
-
+                              
+                              @endcan
 
 {{--                               <a id="edit_{{$invoice->code}}" class="me-3 edit" href="{{url('invoice/'.$invoice->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
  --}}

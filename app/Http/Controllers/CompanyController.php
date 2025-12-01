@@ -26,6 +26,8 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)  {
+
+        $this->authorize('viewAny',Company::class);
         
         $results = $request->results ? (int)$request->results : 10;
   
@@ -43,6 +45,9 @@ class CompanyController extends Controller
      */
     public function create()
     {
+
+        $this->authorize('create',Company::class);
+
         
         $variables = $this->company_service->getCreateVariables();
          
@@ -57,6 +62,9 @@ class CompanyController extends Controller
      */
     public function store(StoreCompanyRequest $request)
     {
+
+        $this->authorize('create',Company::class);
+
         $response =  $this->company_service->createCompany($request->validated() , $request);
 
         return $response;
@@ -81,6 +89,10 @@ class CompanyController extends Controller
      */
     public function edit(Company $company)
     {
+
+        $this->authorize('update',$company);
+
+
         $variables = $this->company_service->getEditVariables($company);
            
         return  $this->company_service->getView('company.manage', $variables);
@@ -95,6 +107,8 @@ class CompanyController extends Controller
      */
     public function update(UpdateCompanyRequest $request, Company $company)
     {
+        $this->authorize('update',$company);
+
         $response =  $this->company_service->updateCompany($request->validated() , $company , $request);
 
         return $response;
@@ -108,6 +122,8 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
+        $this->authorize('delete',$company);
+
         //return $company;
           $response =  $this->company_service->deleteCompany($company);
 

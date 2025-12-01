@@ -167,15 +167,24 @@
                           <td>
                           <form> 
                              
-                            @if ($employee->user)
+                          
+{{----}}
+
+
+@can('update', $employee)
+
+  @if ($employee->user)
                             <a id="reset_{{$employee->code}}" class="me-3 reset_password" href="#" ><i class=" mdi mdi-backup-restore "></i></a>
                             <input id="input_{{$employee->code}}" class="reset_password" type="hidden" value="{{$employee->code}}">
                             @endif
-{{----}}
 
-                              <a id="edit_{{$employee->code}}"  class="me-3 edit" href="{{url('human_resource/employee/'.$employee->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
 
-                                           <a   data-bs-toggle="modal"
+      <a id="edit_{{$employee->code}}"  class="me-3 edit" href="{{url('human_resource/employee/'.$employee->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
+
+@endcan
+                            
+                          @can('delete', $employee)
+                                               <a   data-bs-toggle="modal"
                           data-bs-target="#delete-modal" data-model-to-delete="{{ $employee->full_name() }}" data-delete-link="{{ ('/api/human_resource/employee/'.($employee->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
                         
                             <div id="loader" class="employee_{{$employee->code }}  d-none d-flex justify-content-center mt-3">
@@ -183,6 +192,7 @@
                             <div class="inner-loading dot-flashing"></div>
                             
                             </div>
+                          @endcan
 
                             
 

@@ -2,16 +2,16 @@
 
 namespace App\Policies;
 
-use App\Models\Misc\Invoice;
+use App\Models\City;
 use App\Models\User\User;
 use App\Services\User\UserService;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class InvoicePolicy
+class CityPolicy
 {
     use HandlesAuthorization;
 
-    protected  $user_service;
+      protected  $user_service;
 
     public function __construct(UserService $user_service) {
         $this->user_service = $user_service;
@@ -25,24 +25,19 @@ class InvoicePolicy
      */
     public function viewAny(User $user)
     {
-            
-        //dd($this -> user_service -> verifyPermission("liste_des_factures", [2],$user));
-        return $this -> user_service -> verifyPermission("liste_des_factures", [2],$user);
-    
+        return $this -> user_service -> verifyPermission("liste_des_villes", [2],$user);
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\City  $city
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Invoice $invoice)
+    public function view(User $user, City $city)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [2],$user);
-    
+        //
     }
 
     /**
@@ -53,49 +48,41 @@ class InvoicePolicy
      */
     public function create(User $user)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [1],$user);
-    
+        return $this -> user_service -> verifyPermission("liste_des_villes", [1],$user);
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\City  $city
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Invoice $invoice)
+    public function update(User $user, City $city)
     {
-
-      
-            
-        return false;//$this -> user_service -> verifyPermission("liste_des_factures", [3],$user);
-    
+        return $this -> user_service -> verifyPermission("liste_des_villes", [3],$user);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\City  $city
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Invoice $invoice)
+    public function delete(User $user, City $city)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [4],$user);
-    
+        return $this -> user_service -> verifyPermission("liste_des_villes", [4],$user);
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\City  $city
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Invoice $invoice)
+    public function restore(User $user, City $city)
     {
         //
     }
@@ -104,10 +91,10 @@ class InvoicePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\City  $city
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Invoice $invoice)
+    public function forceDelete(User $user, City $city)
     {
         //
     }

@@ -285,7 +285,8 @@
                 <i class="input-helper"></i></label>
               </div>
 
-
+<div class="row">
+               
 @foreach ($menus as $menu)
     
     
@@ -309,8 +310,14 @@
     </div>
 
 
+ 
     @foreach ($menu->submenus as $submenu)
+
+ 
     @php
+
+
+    
     $already_unchecked =false;
     $already_checked=false;
     $already_action = [];
@@ -318,58 +325,38 @@
     <div id="wrapper_{{$submenu->slug}}" class="col-md-12 ms-5">
       <div class="form-group row">
         <label class="col-sm-2">{{$submenu->name}}</label>
-            @foreach ($actions as $action)
-            <div class="col-sm-2">
-              <div class="form-check">
-                <label class="form-check-label">
+           @foreach ($actions as $action)
+    @php
+        // Vérifie si cet action doit être cochée
+        $is_checked = $distincts_actions->contains(function($authorize_action) use ($submenu, $action) {
+            return $authorize_action->menu_id == $submenu->id && $authorize_action->action_id == $action->id;
+        });
+    @endphp
 
+    <div class="col-sm-2">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox"
+                       class="{{ $action->name }} form-check-input actions_input actions_input_{{ $menu->slug }}"
+                       name="{{ $submenu->name }}"
+                       id="{{ $submenu->slug }}_{{ $action->name }}"
+                       value="{{ $submenu->id }}:{{ $action->id }}"
+                       @if($is_checked) checked @endif
+                >
+                {{ __($action->name) }}
+            </label>
+        </div>
+    </div>
+@endforeach
 
-                @if ($distincts_actions->count()>0)
-                    
-               
-                  @foreach ($distincts_actions as $authorize_action )
-    
-                
-                
-
-                  @if ($authorize_action->menu_id == $submenu->id && $authorize_action->action_id == $action->id && $already_checked==false )
-             
-<input type="checkbox" class="{{$action->name}} form-check-input actions_input actions_input_{{$menu->slug}}" name="{{$submenu->name}}" id="{{$submenu->slug}}" value="{{$submenu->id}}:{{$action->id}}" checked>
-      {{-- && $already_unchecked==false       checked   --}} 
-             @break
-
-             @php
-             Arr::add($already_action,$action->name)
-               
-         @endphp
-         
-         @else
-               
-<input type="checkbox" class="{{$action->name}} form-check-input actions_input actions_input_{{$menu->slug}}" name="{{$submenu->name}}" id="{{$submenu->slug}}" value="{{$submenu->id}}:{{$action->id}}" >
-            
-          {{--     Not checked    --}}  
-             
-                
-                  @endif 
-                  
-                  @endforeach
-                  @else
-<input type="checkbox" class="{{$action->name}} form-check-input actions_input actions_input_{{$menu->slug}}" name="{{$submenu->name}}" id="{{$submenu->slug}}" value="{{$submenu->id}}:{{$action->id}}" >
-                    
-                  @endif
-
-                  {{$action->name}}
-                </label>
-              </div>
-            </div>
-
-
-            @endforeach
           </div>
         </div>
     @endforeach
 
 @endforeach
+
+
+</div>
 
                     <div id="update_button" class="mt-3">
                       <button  id="add_user_access" {{ $employee ? "" : "disabled" }} type="button"  class="additionnal_details text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
@@ -390,414 +377,7 @@
 
           
 
-        {{--  Documents  --}
-
-        <div class="tab-pane fade" id="demographics" role="tabpanel" aria-labelledby="demographics"> 
-        
-          <div class="row">
-            <div class="col-md-8 grid-margin stretch-card">
-              <div class="card"> 
-                <div class="card-body">
-                  <h4 class="card-title">Ajouter des informations managériales</h4>
-                  <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">Poste attribué avec succes</h6>
-                  </div>
-                  <form id="form_employee_position" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
-                    @csrf
-                    <input id="token" class="form-control" type="hidden" value="{{session('user')->id}}" >
-
-                    <input readonly class="employee form-control" id="employee" type="hidden" value="{{$employee ? $employee->id : ''}}" >
-
-                    <input readonly class="tab"  type="hidden" value="demographics" >
-                    <input readonly class="list"  type="hidden" value="documents_table" >
-                    <input readonly class="url"  type="hidden" value="human_resources/employee_position/store" >
-                    <input readonly class="instance"  type="hidden" value="employee_position" >
-                  
-                   <div class="form-group">
-                      <label for="department_id">Departement d'affectation</label>
-                      <select {{ $employee && $action == 'show' ? 'disabled' : ''  }}  name="department_id" class="form-control" id="department_id" placeholder="">
-                    
-                        @forelse ($departments as $department)
-
-                        @if ($loop->first)
-                        <option value="" >Selectionnez le Departement d'affectation </option>
-                        @endif
-
-                        <option value="{{$department->id}}" {{$employee && $department->employee && $employee->id == $department->employee->id ? 'selected' : '' }} >{{$department->name}}</option>
-
-                        @empty
-
-                        <option value="">Aucun(e) Departement d'affectation disponible</option>
-                    
-                        @endforelse
-                    
-                      </select>
-                      <div class="valid-feedback">
-                      </div>
-                      <div class="invalid-feedback">
-                      </div>
-                    </div> 
-
-                    <div class="form-group">
-                      <label for="position">Poste occupé</label>
-                      <select name="position" class="form-control " id="position" placeholder="Poste occupé)">
-                    
-                        @forelse ($positions as $position)
-                    
-                        @if ($loop->first)
-                        <option value="" >Selectionnez le Poste occupé</option>
-                        @endif
-                           
-                        <option value="{{$position->id}}">{{$position->title}}</option>
-                        
-                        @empty
-                    
-                        <option value="">Aucun position disponible</option>
-                    
-                        @endforelse
-                    
-                      </select>
-                      <div class="valid-feedback">
-                      </div>
-                      <div class="invalid-feedback">
-                      </div>
-                    </div>
-                    
-                    <div class="form-group">
-                      <label for="contract">Type de contrat</label>
-                      <select name="contract" class="form-control form-control-lg" id="contract" placeholder="Type de contrat">
-                    
-                        @forelse ($contracts as $contract)
-                    
-                        @if ($loop->first)
-                        <option value="" >Selectionnez le Type de contrat</option>
-                        @endif
-                           
-                        <option value="{{$contract->id}}">{{$contract->name}}</option>
-                        
-                        @empty
-                    
-                        <option value="">Aucun type de contrat disponible</option>
-                    
-                        @endforelse
-                    
-                      </select>
-                      <div class="valid-feedback">
-                      </div>
-                      <div class="invalid-feedback">
-                      </div>
-                    </div>
-
-                 
-          
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="entry_service">Date de prise de service</label>
-                        <input type="date" name="entry_service" class=" form-control" id="entry_service" placeholder="Date de prise de service" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-                    
-
-
-
-                  
-                    <div id="create_button" class="mt-3">
-                      <button id="create" type="button"  {{ $employee ? '' : 'disabled' }} class="additionnal_details text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       {{ $employee ? 'Modifier' : 'Creer' }}
-                      </button>
-                    </div> 
-                    
-                    <div id="loader" class="d-none d-flex justify-content-center mt-3">
-                      
-                        <div class="inner-loading dot-flashing"></div>
-                      
-                    </div>
-                    
-                  </form>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-          
-          <div class="row">
-            
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Liste des postes occupés</h4>
-                  
-                  <div class="table-responsive">
-                    <table id="documents_table" class="table table-striped">
-                      <thead>
-                        <tr>
-                         
-                          <th>
-                            Intitulé
-                          </th>
-                          
-                          <th>
-                            Date de prise de service
-                          </th>
-
-                          <th>
-                            Action
-                          </th>
-
-                        </tr>
-                      </thead>
-                      @php
-                      $index = 1
-                  @endphp
-                      <tbody>
-                        @if ($employee)
-                        @foreach ($employee->positions as $position)
-
-                                  
-
-                        <tr>
-                          <td>{{$position->title}}</td>
-
-                          <td>{{$position->pivot->entry_service}}</td>
-
-                          <td>
-
-                     
-                            <form>
-                              <a id="delete_{{$position->id}}"  class=" delete" ><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{$position->id}}" type="hidden" value="{{$position->id}}">
-                              
-                            </form> 
-                            
-                          </td>
-                        </tr>
-                    @endforeach
-                   
-                        
-                    @endif
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {{--  End documents --}}
-
-        {{--           Identite digitale            --}
-        <div class="tab-pane fade" id="digital" role="tabpanel" aria-labelledby="digital"> 
-         
-          <div class="row">
-            <div class="col-md-8 grid-margin stretch-card">
-              <div class="card"> 
-                <div class="card-body">
-                  <h4 class="card-title">Ajouter une plateforme digitale</h4>
-                  <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading">platform cree avec succes</h6>
-                  </div>
-                  <form id="form_platform" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
-                    @csrf
-                    <input id="token" class="form-control" type="hidden" value="{{session('user')->id}}" >
-                    <input readonly class="employee form-control" id="employee" type="hidden" value="" >
-
-                    <input readonly class="tab"  type="hidden" value="digital" >
-                    <input readonly class="list"  type="hidden" value="platforms_table" >
-                    <input readonly class="url"  type="hidden" value="platform/store" >
-                    <input readonly class="instance"  type="hidden" value="platform" >
-                    
-          
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="slug">Plateforme</label>
-                        <select name="slug" class="form-control form-control" id="slug" placeholder="" >
-
-                          <option value="">Selectionnez une plateforme</option>
-                          <option value="Linkedin">Linkedin</option>
-                          <option value="Whatsapp">Whatsapp</option>
-                          <option value="Web site">Site internet</option>
-                          <option value="Facebook">Facebook</option>
-                          <option value="Instagram">Instagram</option>
-                        </select>      
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-          
-
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="link">lien</label>
-                        <input type="text" name="link" class=" form-control" id="link" placeholder="Poste" required>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-
-                  
-                    <div id="create_button" class="mt-3">
-                      <button id="create" type="button"  disabled class="additionnal_details text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       Ajouter la plateforme
-                      </button>
-                    </div> 
-                    
-                    <div id="loader" class="d-none d-flex justify-content-center mt-3">
-                      
-                        <div class="inner-loading dot-flashing"></div>
-                      
-                    </div>
-                    
-                  </form>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-          
-          <div class="row">
-            
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Liste des plateformes</h4>
-                  
-                  <div class="table-responsive">
-                    <table id="platforms_table" class="table table-striped">
-                      <thead>
-                        <tr>
-                         
-                          <th>
-                            plateforme
-                          </th>
-                          
-                          <th>
-                            lien
-                          </th>
-
-                          <th>
-                            Action
-                          </th>
-                        </tr>
-                      </thead>
-                      @php
-                      $index = 1
-                  @endphp
-                      <tbody>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {{--          End Identite digitale        --}}
-         {{--  Notes  --}
-
-         <div class="tab-pane fade" id="more" role="tabpanel" aria-labelledby="more"> 
-         
-          <div class="row">
-            <div class="col-md-8 grid-margin stretch-card">
-              <div class="card"> 
-                <div class="card-body">
-                  <h4 class="card-title">Ajouter une note sur ce client</h4>
-                  <div class="d-none alert alert-success" role="alert">
-                    <h6 class="alert-heading"> Note cree avec succes</h6>
-                  </div>
-                  <form id="form_note" class="pt-3 " novalidate method="post" action="{{url('company/create')}}">
-                    @csrf
-                    <input id="token" class="form-control" type="hidden" value="{{session('user')->id}}" >
-                    <input readonly class="employee form-control" id="employee" type="hidden" value="" >
-                    
-                    <input readonly class="tab"  type="hidden" value="more" >
-                    <input readonly class="list"  type="hidden" value="notes_table" >
-                    <input readonly class="url"  type="hidden" value="note/store" >
-                    <input readonly class="instance"  type="hidden" value="note" >
-                    
-          
-                   
-
-                    <div class="form-group row">
-                      <div class="col-sm-12 mb-3 mb-sm-0">
-                        <label for="note">Description</label>
-                    
-                        <textarea rows="4" name="note" class=" form-control" id="note" placeholder="Description du employee_position" required></textarea>
-                        <div class="valid-feedback">
-                        </div>
-                        <div class="invalid-feedback">
-                        </div>
-                      </div>
-                    </div>
-
-                  
-                    <div id="create_button" class="mt-3">
-                      <button id="create" type="button"  disabled class="additionnal_details text-white w-100 btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">
-                       Ajouter
-                      </button>
-                    </div> 
-                    
-                    <div id="loader" class="d-none d-flex justify-content-center mt-3">
-                      
-                        <div class="inner-loading dot-flashing"></div>
-                      
-                    </div>
-                    
-                  </form>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-          
-          <div class="row">
-            
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Liste des notes</h4>
-                  
-                  <div class="table-responsive">
-                    <table id="notes_table" class="table table-striped">
-                      <thead>
-                        <tr>
-                       
-                          <th>
-                            note
-                          </th>
-
-                          <th>
-                            Action
-                          </th>
-
-                        </tr>
-                      </thead>
-                      @php
-                      $index = 1
-                  @endphp
-                      <tbody>
-                        
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {{--  End notes --}}
+       
       </div>
     </div>
   </div>
@@ -828,7 +408,7 @@ $("#role").change(function (e) {
     }
     
   });
-  
+  /*
 $(".parent").change(function (e) {
 
 
@@ -848,7 +428,8 @@ $(".parent").change(function (e) {
   });
 
 
-  $(".create").change(function (e) { 
+
+  $(".create").change(function (e) {
     let sub_menu_id = $(this).attr('id');
     let wrapper = `wrapper_${sub_menu_id}`;
 
@@ -859,6 +440,51 @@ $(".parent").change(function (e) {
     e.preventDefault();
     
   });
+  
+  
+  
+  */
+
+      $(".parent").each(function () {
+
+        let menu_slug = $(this).attr('id'); // ex : "absence"
+        let parent_checkbox = $(this);
+
+        let all_actions = $(`.actions_input_${menu_slug}`);
+        let checked_actions = $(`.actions_input_${menu_slug}:checked`);
+
+      //  console.log(all_actions);
+        
+        // si toutes les actions sont cochées
+        if (all_actions.length > 0 && all_actions.length === checked_actions.length) {
+            parent_checkbox.prop('checked', true);
+        } else {
+            parent_checkbox.prop('checked', false);
+        }
+    });
+
+
+  $(".parent").change(function () {//new
+    let menu_slug = $(this).attr('id'); // ex: absence, workflow
+    let is_checked = this.checked;
+
+    // coche/décoche toutes les actions du menu
+    $(`.actions_input_${menu_slug}`).prop('checked', is_checked);
+});
+
+$(".create").change(function () {//new
+    let wrapper = $(this).attr('id'); // ex: action_absence_create
+    //console.log(wrapper);
+    
+    let submenu_slug = wrapper.split("_").slice(0, -1).join("_"); // récupère juste "absence"
+    let is_checked = this.checked;
+
+    // coche automatiquement read + update
+    $(`#wrapper_${submenu_slug} .read`).prop('checked', is_checked);
+    $(`#wrapper_${submenu_slug} .update`).prop('checked', is_checked);
+});
+
+
 
 
     $("#create").click(function (e) {
@@ -916,7 +542,7 @@ beforeSend: function (xhr) {
 
           if (action == 'create') {
         
-            console.log(action);
+          //  console.log(action);
           $(".employee").val(data.data.employee.id);
           $(".additionnal_details").removeAttr("disabled");
           $("#form")[0].reset();
@@ -1004,7 +630,7 @@ $(`#${form} #${input.id}`).removeClass('is-invalid');
 });
 
 if (form == "form_user_access") {
-  var searchIDs = $(`#${form} .actions_input:checked`).map(function(){
+ /* var searchIDs = $(`#${form} .actions_input:checked`).map(function(){
       return $(this).val();
     }).get(); // <----
  //   console.log(searchIDs);
@@ -1013,7 +639,17 @@ if (form == "form_user_access") {
   index === self.findIndex((t) => (
     t === value 
   ))
-)
+)*/
+
+let searchIDs = [];
+
+$(`#${form} .actions_input:checked`).each(function () {
+    let val = $(this).val();
+
+    if (!searchIDs.includes(val)) {
+        searchIDs.push(val);
+    }
+});
 
 console.log(searchIDs);
 

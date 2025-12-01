@@ -27,6 +27,9 @@ class RegistratorController extends Controller
      */
     public function index(Request $request)  
         {
+
+        $this->authorize('viewAny',Registrator::class);
+
        
         $results = $request->results ? (int)$request->results : 20;
     
@@ -46,6 +49,9 @@ class RegistratorController extends Controller
     
     public function create()
     {
+        $this->authorize('create',Registrator::class);
+
+
         $variables = $this->registratorService->getCreateVariables();
            
         return  $this->registratorService->getView('registrator.manage', $variables);
@@ -60,6 +66,8 @@ class RegistratorController extends Controller
      */
     public function store(StoreRegistratorRequest $request)
     {
+        $this->authorize('create',Registrator::class);
+
         $response =  $this->registratorService->create($request->validated() , $request);
 
         return $response;
@@ -84,6 +92,9 @@ class RegistratorController extends Controller
      */
     public function edit(Registrator $registrator)
     {
+        $this->authorize('update',$registrator);
+
+
         $variables = $this->registratorService->getEditVariables($registrator);
            
         return  $this->registratorService->getView('registrator.manage', $variables);
@@ -98,6 +109,9 @@ class RegistratorController extends Controller
      */
     public function update(UpdateRegistratorRequest $request, Registrator $registrator)
     {
+        $this->authorize('update',$registrator);
+
+
         $response =  $this->registratorService->update($request->validated() , $registrator , $request );
 
         return $response;
@@ -111,6 +125,8 @@ class RegistratorController extends Controller
      */
     public function destroy(Registrator $registrator)
     {
+        $this->authorize('delete',$registrator);
+
         //return $registrator;
          $response =  $this->registratorService->deleteRegistrator($registrator);
 

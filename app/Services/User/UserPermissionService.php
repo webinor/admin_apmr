@@ -59,9 +59,8 @@ class UserPermissionService
     {
 
 
-      //  dd($menu);
-       // dd(Menu::where('name',$menu)->first());
-        $menu = is_numeric($menu) ? $menu : Menu::where('slug',$menu)->first()->id;
+  
+        $menu = is_numeric($menu) ? $menu : (Menu::where('slug',$menu)->first() ? Menu::where('slug',$menu)->first()->id : "undefined");
         /* */ $distincts_actions =
             /*session('distincts_actions_map') != null 
         ? session('distincts_actions_map')

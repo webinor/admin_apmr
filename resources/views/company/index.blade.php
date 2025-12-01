@@ -233,8 +233,10 @@
                               
                                   
                               
-                              <a    id="print_{{$company->code}}" class="company_{{$company->code }} me-3 print" href="{{url('company/'.$company->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
+@can('update', $company)
+                                  <a    id="print_{{$company->code}}" class="company_{{$company->code }} me-3 print" href="{{url('company/'.$company->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
 
+@endcan
                              
 
                             {{--  
@@ -254,17 +256,17 @@
 
                                 @can('delete', $company)  
                             
+                                
+                                <a   data-bs-toggle="modal"
+                                data-bs-target="#delete-modal" data-model-to-delete="{{ $company->name }}" data-delete-link="{{ ('/api/company/'.($company->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                                
+                                <div id="loader" class="company_{{$company->code }}  d-none d-flex justify-content-center mt-3">
+                                  
+                                  <div class="inner-loading dot-flashing"></div>
+                                  
+                                </div> 
+                                
                                 @endcan 
-
-                          <a   data-bs-toggle="modal"
-                          data-bs-target="#delete-modal" data-model-to-delete="{{ $company->name }}" data-delete-link="{{ ('/api/company/'.($company->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                        
-                            <div id="loader" class="company_{{$company->code }}  d-none d-flex justify-content-center mt-3">
-          
-                            <div class="inner-loading dot-flashing"></div>
-                            
-                            </div> 
-                            
                              
                             </form> 
                           </td>

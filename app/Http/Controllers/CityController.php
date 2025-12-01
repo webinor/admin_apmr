@@ -25,6 +25,8 @@ class CityController extends Controller
        * @return \Illuminate\Http\Response
        */
       public function index(Request $request)  {
+
+        $this->authorize('viewAny',City::class);
           
           $results = $request->results ? (int)$request->results : 10;
     
@@ -42,6 +44,8 @@ class CityController extends Controller
        */
       public function create()
       {
+
+        $this->authorize('create',City::class);
           
           $variables = $this->city_service->getCreateVariables();
            
@@ -56,6 +60,9 @@ class CityController extends Controller
      */
     public function store(StoreCityRequest $request)
     {
+        $this->authorize('create',City::class);
+
+
         $response =  $this->city_service->createcity($request->validated());
 
         return $response;
@@ -80,6 +87,9 @@ class CityController extends Controller
      */
     public function edit(City $city)
     {
+
+        $this->authorize('update',$city);
+
         $variables = $this->city_service->getEditVariables($city);
            
           return  $this->city_service->getView('city.manage', $variables);
@@ -94,6 +104,8 @@ class CityController extends Controller
      */
     public function update(UpdateCityRequest $request, City $city)
     {
+        $this->authorize('update',$city);
+
         $response =  $this->city_service->updateCity($request->validated() , $city);
 
         return $response;
@@ -107,6 +119,8 @@ class CityController extends Controller
      */
     public function destroy(City $city)
     {
+        $this->authorize('delete',$city);
+
         
          $response =  $this->city_service->deleteCity($city);
 

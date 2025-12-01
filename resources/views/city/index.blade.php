@@ -135,24 +135,28 @@
                           <td>
                             <form>
 
+                            @can('update', $city)
+
                               <a id="print_{{$city->code}}" class="me-3 print" href="{{url('city/'.$city->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
 
+                                
+                            @endcan
 
 {{--                               <a id="edit_{{$city->code}}" class="me-3 edit" href="{{url('city/'.$city->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
  --}}
                                  @can('delete', $city)  
                             
-                                @endcan 
-
-                          <a   data-bs-toggle="modal"
-                          data-bs-target="#delete-modal" data-model-to-delete="{{ $city->name }}" data-delete-link="{{ ('/api/city/'.($city->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                        
-                            <div id="loader" class="city_{{$city->code }}  d-none d-flex justify-content-center mt-3">
-          
-                            <div class="inner-loading dot-flashing"></div>
-                            
-                            </div>
-                             
+                                 
+                                 <a   data-bs-toggle="modal"
+                                 data-bs-target="#delete-modal" data-model-to-delete="{{ $city->name }}" data-delete-link="{{ ('/api/city/'.($city->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                                 
+                                 <div id="loader" class="city_{{$city->code }}  d-none d-flex justify-content-center mt-3">
+                                   
+                                   <div class="inner-loading dot-flashing"></div>
+                                   
+                                  </div>
+                                  
+                                  @endcan 
                             </form> 
                           </td>
 

@@ -153,6 +153,8 @@ class EmployeeController extends Controller
         array_push($distincts_actions_map ,$value->menu_id);
        } /**/
 
+  // return 
+    $distincts_actions_map = collect($distincts_actions_map)->unique()->values()->all();
     //   $authorized_submenus=Menu::find($distincts_actions);
     
    

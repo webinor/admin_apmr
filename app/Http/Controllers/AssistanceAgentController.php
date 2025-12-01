@@ -26,6 +26,9 @@ class AssistanceAgentController extends Controller
        */
       public function index(Request $request)  {
           
+
+        $this->authorize('viewAny',AssistanceAgent::class);
+
           $results = $request->results ? (int)$request->results : 10;
     
     
@@ -42,6 +45,8 @@ class AssistanceAgentController extends Controller
        */
       public function create()
       {
+        $this->authorize('create',AssistanceAgent::class);
+
           
           $variables = $this->assistance_agent_service->getCreateVariables();
            
@@ -56,6 +61,10 @@ class AssistanceAgentController extends Controller
      */
     public function store(StoreAssistanceAgentRequest $request)
     {
+
+        $this->authorize('create',AssistanceAgent::class);
+
+
         $response =  $this->assistance_agent_service->create($request->validated());
 
         return $response;
@@ -80,6 +89,8 @@ class AssistanceAgentController extends Controller
      */
     public function edit(AssistanceAgent $assistanceAgent)
     {
+        $this->authorize('update',$assistanceAgent);
+
         $variables = $this->assistance_agent_service->getEditVariables($assistanceAgent);
            
         return  $this->assistance_agent_service->getView('assistance_agent.manage', $variables);
@@ -94,6 +105,8 @@ class AssistanceAgentController extends Controller
      */
     public function update(UpdateAssistanceAgentRequest $request, AssistanceAgent $assistanceAgent)
     {
+        $this->authorize('update',$assistanceAgent);
+
         $response =  $this->assistance_agent_service->update($request->validated() , $assistanceAgent);
 
         return $response;
@@ -107,6 +120,8 @@ class AssistanceAgentController extends Controller
      */
     public function destroy(AssistanceAgent $assistanceAgent)
     {
+        $this->authorize('delete',$assistanceAgent);
+
          $response =  $this->assistance_agent_service->deleteAssistanceAgent($assistanceAgent);
 
         return $response;

@@ -2,12 +2,12 @@
 
 namespace App\Policies;
 
-use App\Models\Misc\Invoice;
+use App\Models\GroundAgent;
 use App\Models\User\User;
 use App\Services\User\UserService;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class InvoicePolicy
+class GroundAgentPolicy
 {
     use HandlesAuthorization;
 
@@ -26,8 +26,7 @@ class InvoicePolicy
     public function viewAny(User $user)
     {
             
-        //dd($this -> user_service -> verifyPermission("liste_des_factures", [2],$user));
-        return $this -> user_service -> verifyPermission("liste_des_factures", [2],$user);
+        return $this -> user_service -> verifyPermission("liste_des_chefs_de_vol", [2],$user);
     
     }
 
@@ -35,14 +34,12 @@ class InvoicePolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\GroundAgent  $groundAgent
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Invoice $invoice)
+    public function view(User $user, GroundAgent $groundAgent)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [2],$user);
-    
+                return $this -> user_service -> verifyPermission("liste_des_chefs_de_vol", [2],$user);
     }
 
     /**
@@ -53,49 +50,41 @@ class InvoicePolicy
      */
     public function create(User $user)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [1],$user);
-    
+                return $this -> user_service -> verifyPermission("liste_des_chefs_de_vol", [1],$user);
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\GroundAgent  $groundAgent
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Invoice $invoice)
+    public function update(User $user, GroundAgent $groundAgent)
     {
-
-      
-            
-        return false;//$this -> user_service -> verifyPermission("liste_des_factures", [3],$user);
-    
+                return $this -> user_service -> verifyPermission("liste_des_chefs_de_vol", [3],$user);
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\GroundAgent  $groundAgent
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Invoice $invoice)
+    public function delete(User $user, GroundAgent $groundAgent)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [4],$user);
-    
+                return $this -> user_service -> verifyPermission("liste_des_chefs_de_vol", [4],$user);
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\GroundAgent  $groundAgent
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Invoice $invoice)
+    public function restore(User $user, GroundAgent $groundAgent)
     {
         //
     }
@@ -104,10 +93,10 @@ class InvoicePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\GroundAgent  $groundAgent
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Invoice $invoice)
+    public function forceDelete(User $user, GroundAgent $groundAgent)
     {
         //
     }

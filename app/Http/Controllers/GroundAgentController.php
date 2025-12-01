@@ -26,6 +26,9 @@ class GroundAgentController extends Controller
        */
       public function index(Request $request)  {
           
+        $this->authorize('viewAny',GroundAgent::class);
+
+
           $results = $request->results ? (int)$request->results : 10;
     
     
@@ -43,6 +46,8 @@ class GroundAgentController extends Controller
       public function create()
       {
           
+        $this->authorize('create',GroundAgent::class);
+
           $variables = $this->groundAgentService->getCreateVariables();
            
           return  $this->groundAgentService->getView('ground_agent.manage', $variables);
@@ -56,6 +61,9 @@ class GroundAgentController extends Controller
      */
     public function store(StoreGroundAgentRequest $request)
     {
+
+        $this->authorize('create',GroundAgent::class);
+
         $response =  $this->groundAgentService->create($request->validated() , $request);
 
         return $response;
@@ -80,6 +88,9 @@ class GroundAgentController extends Controller
      */
     public function edit(GroundAgent $groundAgent)
     {
+
+        $this->authorize('update',$groundAgent);
+
         $variables = $this->groundAgentService->getEditVariables($groundAgent);
            
         return  $this->groundAgentService->getView('ground_agent.manage', $variables);
@@ -94,6 +105,8 @@ class GroundAgentController extends Controller
      */
     public function update(UpdateGroundAgentRequest $request, GroundAgent $groundAgent)
     {
+        $this->authorize('update',$groundAgent);
+
         $response =  $this->groundAgentService->update($request->validated() , $groundAgent , $request );
 
         return $response;
@@ -107,6 +120,8 @@ class GroundAgentController extends Controller
      */
     public function destroy(GroundAgent $groundAgent)
     {
+        $this->authorize('delete',$groundAgent);
+
          $response =  $this->groundAgentService->deleteGroundAgent($groundAgent);
 
         return $response;

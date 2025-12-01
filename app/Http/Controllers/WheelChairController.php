@@ -25,6 +25,9 @@ class WheelChairController extends Controller
        * @return \Illuminate\Http\Response
        */
       public function index(Request $request)  {
+
+        $this->authorize('viewAny',WheelChair::class);
+
           
           $results = $request->results ? (int)$request->results : 10;
     
@@ -42,6 +45,8 @@ class WheelChairController extends Controller
      */
     public function create()
     {
+        $this->authorize('create',WheelChair::class);
+
         $variables = $this->wheelChairService->getCreateVariables();
            
         return  $this->wheelChairService->getView('wheel_chair.manage', $variables);
@@ -55,6 +60,8 @@ class WheelChairController extends Controller
      */
     public function store(StoreWheelChairRequest $request)
     {
+        $this->authorize('create',WheelChair::class);
+
         $response =  $this->wheelChairService->createWheelChair($request->validated());
 
         return $response;
@@ -79,6 +86,8 @@ class WheelChairController extends Controller
      */
     public function edit(WheelChair $wheelChair)
     {
+        $this->authorize('update',$wheelChair);
+
         $variables = $this->wheelChairService->getEditVariables($wheelChair);
            
         return  $this->wheelChairService->getView('wheel_chair.manage', $variables);
@@ -93,6 +102,8 @@ class WheelChairController extends Controller
      */
     public function update(UpdateWheelChairRequest $request, WheelChair $wheelChair)
     {
+        $this->authorize('update',$wheelChair);
+
         $response =  $this->wheelChairService->updateWheelChair($request->validated() , $wheelChair);
 
         return $response;
@@ -106,6 +117,8 @@ class WheelChairController extends Controller
      */
     public function destroy(WheelChair $wheelChair)
     {
+        $this->authorize('delete',$wheelChair);
+
         //
     }
 }

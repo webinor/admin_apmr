@@ -931,8 +931,8 @@ else{
     {
         try {
             DB::beginTransaction();
-            $assistance->is_active = false;
-            $assistance->save();
+            //$assistance->is_active = false;
+            $assistance->delete();
 
             //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
 

@@ -25,7 +25,7 @@ class EmployeePolicy
      */
     public function viewAny(User $user)
     {
-        return $this -> user_service -> verifyPermission(11, [2],$user);
+        return $this -> user_service -> verifyPermission("liste_du_personnel", [2],$user);
     }
 
     /**
@@ -37,7 +37,7 @@ class EmployeePolicy
      */
     public function view(User $user, Employee $employee)
     {
-        return $this -> user_service -> verifyPermission(11, [2],$user);
+        return $this -> user_service -> verifyPermission("liste_du_personnel", [2],$user);
     }
 
     /**
@@ -48,7 +48,7 @@ class EmployeePolicy
      */
     public function create(User $user)
     {
-        return $this -> user_service -> verifyPermission(11, [1],$user);
+        return $this -> user_service -> verifyPermission("liste_du_personnel", [1],$user);
     }
 
     /**
@@ -60,8 +60,8 @@ class EmployeePolicy
      */
     public function update(User $user, Employee $employee)
     {
-       // dd($this -> user_service -> verifyPermission(11, [3],$user));
-        return $this -> user_service -> verifyPermission(11, [3],$user);
+       // dd($this -> user_service -> verifyPermission("liste_du_personnel", [3],$user));
+        return $this -> user_service -> verifyPermission("liste_du_personnel", [3],$user);
     }
 
     /**
@@ -73,7 +73,7 @@ class EmployeePolicy
      */
     public function delete(User $user, Employee $employee)
     {
-        return $this -> user_service -> verifyPermission(11, [4],$user);
+        return $this -> user_service -> verifyPermission("liste_du_personnel", [4],$user);
     }
 
     /**

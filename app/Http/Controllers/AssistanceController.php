@@ -25,6 +25,7 @@ class AssistanceController extends Controller
         $this->assistance_service = $assistance_service;
 
         // $this->authorizeResource(Company::class, "employee");
+        //$this->authorizeResource(CommercialQuote::class);
     }
     /**
      * Display a listing of the resource.
@@ -33,6 +34,9 @@ class AssistanceController extends Controller
      */
     public function index(Request $request)
     {
+
+    $this->authorize('viewAny',Assistance::class);
+
         $results = $request->results ? (int) $request->results : 10;
 
         $variables = $this->assistance_service->getIndexVariables($request , $results);
@@ -50,6 +54,9 @@ class AssistanceController extends Controller
      */
     public function create()
     {
+
+    
+
         $variables = $this->assistance_service->getCreateVariables();
 
         return $this->assistance_service->getView(
@@ -541,6 +548,9 @@ elseif($params["file_type"] == "csv"){
      */
     public function edit(Assistance $assistance)
     {
+
+        $this->authorize('update',$assistance);
+
         $variables = $this->assistance_service->getEditVariables($assistance);
 
         return $this->assistance_service->getView(

@@ -2,19 +2,23 @@
 
 namespace App\Policies;
 
-use App\Models\Misc\Invoice;
+use App\Models\Operations\Assistance;
 use App\Models\User\User;
 use App\Services\User\UserService;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class InvoicePolicy
+class AssistancePolicy
 {
     use HandlesAuthorization;
 
-    protected  $user_service;
 
-    public function __construct(UserService $user_service) {
+    protected $user_service;
+
+    public function __construct(UserService $user_service)
+    {
         $this->user_service = $user_service;
+
+        // $this->authorizeResource(Company::class, "employee");
     }
 
     /**
@@ -25,24 +29,20 @@ class InvoicePolicy
      */
     public function viewAny(User $user)
     {
-            
-        //dd($this -> user_service -> verifyPermission("liste_des_factures", [2],$user));
-        return $this -> user_service -> verifyPermission("liste_des_factures", [2],$user);
-    
+                return $this->user_service->verifyPermission("liste_des_apmr_signées", [2],$user);
+
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Invoice $invoice)
+    public function view(User $user, Assistance $assistance)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [2],$user);
-    
+        //
     }
 
     /**
@@ -53,49 +53,42 @@ class InvoicePolicy
      */
     public function create(User $user)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [1],$user);
-    
+        //
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Invoice $invoice)
+    public function update(User $user, Assistance $assistance)
     {
-
-      
-            
-        return false;//$this -> user_service -> verifyPermission("liste_des_factures", [3],$user);
-    
+                return $this->user_service->verifyPermission("liste_des_apmr_signées", [3],$user);
+        
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Invoice $invoice)
+    public function delete(User $user, Assistance $assistance)
     {
-            
-        return $this -> user_service -> verifyPermission("liste_des_factures", [4],$user);
-    
+        return $this->user_service->verifyPermission("liste_des_apmr_signées", [4],$user);
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Invoice $invoice)
+    public function restore(User $user, Assistance $assistance)
     {
         //
     }
@@ -104,10 +97,10 @@ class InvoicePolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User\User  $user
-     * @param  \App\Models\Misc\Invoice  $invoice
+     * @param  \App\Models\Operations\Assistance  $assistance
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Invoice $invoice)
+    public function forceDelete(User $user, Assistance $assistance)
     {
         //
     }

@@ -142,8 +142,10 @@
                           <td>
                             <form>
 
-                              <a id="print_{{$wheel_chair->code}}" class="me-3 print" href="{{url('wheel-chair/'.$wheel_chair->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
+                           @can('update', $wheel_chair)
+                                  <a id="print_{{$wheel_chair->code}}" class="me-3 print" href="{{url('wheel-chair/'.$wheel_chair->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
 
+                           @endcan
 {{-- 
                               <a id="edit_{{$wheel_chair->code}}" class="me-3 edit" href="{{url('wheel-chair/'.$wheel_chair->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
  --}}
