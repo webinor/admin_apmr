@@ -368,7 +368,7 @@
                               @if ($loop->iteration == 1)
                                 <label>Nom(s) du bénéficiaire</label>
                               @endif
-                              <input type="text" name="beneficiary[]" value="{{ $assistance_line->beneficiary_name }}" class="form-control" placeholder="noms et prénoms">
+                              <input {{ $readonly ? "readonly" : "" }} type="text" name="beneficiary[]" value="{{ $assistance_line->beneficiary_name }}" class="form-control" placeholder="noms et prénoms">
                             </div>
                           </div>
           
@@ -378,7 +378,7 @@
                               @if ($loop->iteration == 1)
                                 <label>Type de chaise</label>
                               @endif
-                              <select class="form-control" name="wheel_chair[]">
+                              <select {{ $readonly ? "disabled" : "" }} class="form-control" name="wheel_chair[]">
                                 <option value="">Sélectionnez un type de chaise</option>
                                 @foreach ($wheel_chairs as $wheel_chair)
                                   <option value="{{ $wheel_chair->code }}" {{ $assistance_line->wheel_chair_id == $wheel_chair->id ? 'selected' : '' }}>
@@ -395,7 +395,7 @@
                               @if ($loop->iteration == 1)
                                 <label>Servant CAS</label>
                               @endif
-                              <select class="form-control" name="agent[]">
+                              <select {{ $readonly ? "disabled" : "" }} class="form-control" name="agent[]">
                                 <option value="">Sélectionnez le servant CAS</option>
                                 @foreach ($agents as $agent)
                                   <option value="{{ $agent->code }}" {{ $assistance_line->assistance_agent_id == $agent->id ? 'selected' : '' }}>
@@ -412,20 +412,23 @@
                               @if ($loop->iteration == 1)
                                 <label>Commentaire</label>
                               @endif
-                              <input type="text" name="comment[]" value="{{ $assistance_line->comment }}" placeholder="Commentaire" class="form-control" />
+                              <input {{ $readonly ? "readonly" : "" }} type="text" name="comment[]" value="{{ $assistance_line->comment }}" placeholder="Commentaire" class="form-control" />
                             </div>
                           </div>
 
                          
+                          @if (!$readonly)
+                              
                           <!-- Action -->
                           <div class="col-md-1">
                             <div class="form-group">
                               <a   data-bs-toggle="modal"
-                          data-bs-target="#delete-modal" data-model-to-delete="{{ $assistance_line->beneficiary_name }} => {{ $assistance_line->wheel_chair->slug }}" data-delete-link="{{ ('/api/assistance_line/'.($assistance_line->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                      
+                              data-bs-target="#delete-modal" data-model-to-delete="{{ $assistance_line->beneficiary_name }} => {{ $assistance_line->wheel_chair->slug }}" data-delete-link="{{ ('/api/assistance_line/'.($assistance_line->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                              
                             </div>
                           </div>
-          
+                          
+                          @endif
                           <!-- Action -->
                           <div class="col-md-1 d-none">
                             <div class="form-group">

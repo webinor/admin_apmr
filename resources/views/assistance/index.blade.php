@@ -258,15 +258,22 @@
                             <form>
 
                               
+                              @can('view', $assistance)
+                                  
+                               <a    id="print_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 print" href="{{url('assistance/'.$assistance->code)}}" ><i class="menu-icon mdi mdi-eye"></i></a>
+
+
+                              @endcan
                                   
                               
-                         {{--      <a    id="print_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 print" href="{{url('assistance/'.$assistance->code)}}" ><i class="menu-icon mdi mdi-eye"></i></a>
-
+                         {{--     
                               --}}
 
-                             
-                              <a    id="edit_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 edit" href="{{url('assistance/'.$assistance->code.'/edit')}}"><i class="menu-icon mdi mdi-eye"></i></a>
+                          @can('update', $assistance)
+                                 
+                              <a    id="edit_{{$assistance->code}}" class="assistance_{{$assistance->code }} me-3 edit" href="{{url('assistance/'.$assistance->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
                               
+                          @endcan
 
                                @can('delete', $assistance)  
                             
@@ -280,7 +287,7 @@
                                 </div>
                                 
                                 @endcan 
-                                
+
                             </form> 
                           </td>
 

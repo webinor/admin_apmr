@@ -671,77 +671,10 @@ else{
 
         return compact("city", "action", "disabled", "readonly");
     }
-    function getShowVariables($folder)
+    function getShowVariables($assistance)
     {
-        $folder->load([
-            "slip:id,code,identification,provider_id,user_id",
-            "slip.provider:id,code,name,provider_category_id",
-            "slip.provider.provider_category:id,code,name",
-            "invoices.remote_inserted",
-            "invoices.folder",
-            "invoices.invoice_lines.validation",
-            "invoices.invoice_lines.invoice.prestationable",
-            "invoices.invoice_lines.invoice.folder",
-            "invoices.prestationable",
-        ]);
-
-        //   dd($folder);
-
-        $previous = $folder->previous();
-        $next = $folder->next();
-
-        //  dd($previous);
-
-        //  dd($next);
-
-        $service_types = Assistance::select(
-            "id",
-            "code",
-            "name",
-            "fullname"
-        )->get();
-        $product_types = Assistance::select(
-            "id",
-            "code",
-            "name",
-            "fullname"
-        )->get();
-
-        //$current_user = Auth::user();
-
-        /*
-        if (!Seen::whereSeenableType(Folder::class)->whereSeenableId($folder->id)->whereUserId($current_user->id)->exists()) {
-            # code...
-            $view = new Seen();
-            $view->user_id = $current_user->id ;
-            $view->seenable_type = Folder::class ;
-            $view->seenable_id = $folder->id ;
-            $view->save() ;
-        }
-        */
-
-        $query_label = "Numero de bordereau";
-
-        $header_title = "Voulez-vous supprimer cette ligne ?";
-
-        $typeahead_url = url("/api/getInvoices?slip=" . $folder->slip->code);
-        $extractor_typeahead_url = url("/api/getPrestations");
-
-        return compact(
-            "folder",
-            "query_label",
-            "header_title",
-            "typeahead_url",
-            "extractor_typeahead_url",
-            "previous",
-            "next",
-            "service_types",
-            "product_types"
-        );
-    }
-    function getEditVariables($assistance)
-    {
-        $assistance = $assistance->load([
+        
+         $assistance = $assistance->load([
             "signature",
             "assistance_lines.assistance_agent",
             "assistance_lines.wheel_chair",
@@ -749,6 +682,13 @@ else{
         ]);
 
         //   dd($assistance);
+
+      //  /** @var \App\Models\User $user */
+        //$user= Auth::user();
+
+       // $canUpdateAssistance = $user->can('update' , $assistance);
+
+     
 
         $current_city_id = $assistance->ground_agent->company->city->id ?? null;
 
@@ -780,15 +720,64 @@ else{
             "agents",
             "action",
             "disabled",
-            "readonly"
+            "readonly",
+         //   "canUpdateAssistance"
         );
 
-        $assistance->load(["logo", "documents"]);
-        $action = "update";
-        $disabled = "";
-        $readonly = "";
+    }
+    function getEditVariables($assistance)
+    {
+        $assistance = $assistance->load([
+            "signature",
+            "assistance_lines.assistance_agent",
+            "assistance_lines.wheel_chair",
+            "ground_agent.company.ground_agents",
+        ]);
 
-        return compact("supplier", "action", "disabled", "readonly", "areas");
+        //   dd($assistance);
+
+      //  /** @var \App\Models\User $user */
+        //$user= Auth::user();
+
+       // $canUpdateAssistance = $user->can('update' , $assistance);
+
+     
+
+        $current_city_id = $assistance->ground_agent->company->city->id ?? null;
+
+        //dd($current_city_id);
+
+        $cities = City::orderBy("name")->get();
+        $companies = Company::orderBy("name")
+            ->whereCityId($current_city_id)
+            ->get();
+
+        //dd($companies);
+
+        $wheel_chairs = $assistance->ground_agent
+            ? $assistance->ground_agent->company->wheel_chairs
+            : [];
+        $agents = AssistanceAgent::whereCityId($current_city_id)->get();
+        $action = "update";
+        $disabled = $assistance->signature ? "disabled" : "";
+        $readonly = $assistance->signature ? "readonly" : "";
+        $apmr_url = $this->apmerServiceBaseUrl;
+
+        return compact(
+            "assistance",
+            "apmr_url",
+            "cities",
+            "companies",
+            "assistance",
+            "wheel_chairs",
+            "agents",
+            "action",
+            "disabled",
+            "readonly",
+         //   "canUpdateAssistance"
+        );
+
+      
     }
     function getView($view_name, $vars = [])
     {

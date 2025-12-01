@@ -42,7 +42,8 @@ class AssistancePolicy
      */
     public function view(User $user, Assistance $assistance)
     {
-        //
+                return $this->user_service->verifyPermission("liste_des_apmr_signées", [2],$user);
+        
     }
 
     /**

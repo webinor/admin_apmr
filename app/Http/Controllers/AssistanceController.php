@@ -537,7 +537,14 @@ elseif($params["file_type"] == "csv"){
      */
     public function show(Assistance $assistance)
     {
-        //
+         $this->authorize('view',$assistance);
+
+        $variables = $this->assistance_service->getShowVariables($assistance);
+
+        return $this->assistance_service->getView(
+            "assistance.manage",
+            $variables
+        );
     }
 
     /**
