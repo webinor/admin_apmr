@@ -48,13 +48,21 @@ ViewsResponder {
     {
        
 
-      //  /** @var \Illuminate\Pagination\LengthAwarePaginator $ground_agents */
+        /* @var \Illuminate\Pagination\LengthAwarePaginator $ground_agents *
         $ground_agents = GroundAgent::
         //has('company.city')
         with('company.city')->oldest()
         ->paginate($results)
         ->appends(request()->query());
         //->withQueryString();
+        */
+
+        $ground_agents = GroundAgent::with('company.city')
+    ->select('*')
+    ->selectRaw("CONCAT(first_name, ' ', last_name) AS full_name")
+    ->orderBy('full_name')      // tri par fullName
+    ->paginate($results)
+    ->appends(request()->query());
 
         $vars = compact("ground_agents");
 

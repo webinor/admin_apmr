@@ -195,21 +195,10 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
             ExtractionSettingController::class
         )->only(["store", "update", "destroy"]);
 
-        Route::apiResource("provider", ProviderController::class)->only([
-            "store",
-            "update",
-            "destroy",
-        ]);
+    
 
 
-        Route::apiResource("slip", SlipController::class)->only([
-            "store",
-            "destroy",
-        ]);
-
-        Route::apiResource("folder", FolderController::class)->only([
-            "destroy",
-        ]);
+      
 
         Route::apiResource("file", FileController::class)->only([
             "store",
@@ -217,23 +206,7 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
             "destroy",
         ]);
 
-        Route::apiResource("product", ProductController::class)->only([
-            "store",
-            "update",
-            "destroy",
-        ]);
-
-        Route::apiResource("service", ServiceController::class)->only([
-            "store",
-            "update",
-            "destroy",
-        ]);
-
-        Route::resource("therapeutic-class", TherapeuticClassController::class)->only([
-            "store",
-            "update",
-            "destroy",
-        ]);
+     
 
         Route::post("/therapeutic-class/import", [TherapeuticClassController::class, "import"])->name(
             "import"

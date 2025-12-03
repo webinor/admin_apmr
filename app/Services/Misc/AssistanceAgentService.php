@@ -45,9 +45,15 @@ ViewsResponder {
     {
        
 
-        $assistance_agents = AssistanceAgent::oldest()
+        /*$assistance_agents = AssistanceAgent::oldest()
         ->paginate($results)
-        ->withQueryString();
+        ->withQueryString();*/
+
+        $assistance_agents = AssistanceAgent::select('*')
+    ->selectRaw("CONCAT(first_name, ' ', last_name) AS full_name")
+    ->orderBy('full_name')    // tri par le nom complet
+    ->paginate($results)
+    ->withQueryString();
 
         $vars = compact("assistance_agents");
 

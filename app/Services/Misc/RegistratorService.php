@@ -50,9 +50,16 @@ ViewsResponder {
     {
        
 
-        $registrators = Registrator::oldest()
+        /*$registrators = Registrator::oldest()
         ->paginate(20)
-        ->withQueryString();
+        ->withQueryString();*/
+
+        $registrators = Registrator::select('*')
+    ->selectRaw("CONCAT(name, ' ', last_name) AS full_name")
+    ->orderBy('full_name')
+    ->paginate(20)
+    ->withQueryString();
+
 
         $vars = compact("registrators");
 
