@@ -369,6 +369,12 @@ $lines = [];
 $totals = array_fill_keys($wheelChairTypes, 0);
 $uniqueAgentIds = collect();
 
+// Calculer les agents uniques **globalement**
+$uniqueAgentIds = $filtered
+    ->pluck('assistance.assistance_lines.*.assistance_agent_id') // toutes les lignes
+    ->flatten()
+    ->unique();
+
 $benchmark->start("recap_lines_totals");
 
 foreach ($filtered as $index => $line) {
@@ -395,7 +401,7 @@ foreach ($filtered as $index => $line) {
 $totalAgents = $filtered->sum('nb_agents_unique');
 
 // Total général des agents uniques
-$totalAgents = 0;// $uniqueAgentIds->unique()->count();
+$totalAgents =  $uniqueAgentIds->count();
 
 $time = microtime(true) - $start;
 Log::info("Benchmark: Lignes et totaux construits en {$time} secondes");
