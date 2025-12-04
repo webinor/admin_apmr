@@ -111,6 +111,9 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         // 1️⃣ Récupération des données avec préchargement complet des relations
     $filtered = AssistanceLine::with([
         'wheel_chair',
+        'assistance' => function($q) {
+        $q->with('assistance_lines:assistance_id,assistance_agent_id'); // charge seulement les ids utiles
+    },
         'assistance.assistance_lines.assistance_agent',
         'assistance.ground_agent.company.wheel_chairs'
     ])

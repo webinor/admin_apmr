@@ -369,7 +369,6 @@ $benchmark->start("recap_lines_totals");
 $lines = [];
 $totals = array_fill_keys($wheelChairTypes, 0);
 $uniqueAgentIds = collect();
-$uniqueAgentIds = collect();
 
 foreach ($filtered as $index => $line) {
     // Comptage des agents pour cette ligne
