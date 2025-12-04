@@ -362,13 +362,29 @@ Log::info("Benchmark: WheelChair types calculés en {$time} secondes");
 
 // 4️⃣ Construction des lignes pour le Blade
 $start = microtime(true);
-$lines = $filtered->map(function($line, $index) use ($wheelChairTypes) {
+
+
+// Construction des lignes + calcul des totaux + agents uniques
+$lines = [];
+$totals = array_fill_keys($wheelChairTypes, 0);
+$uniqueAgentIds = collect();
+
+$benchmark->start("recap_lines_totals");
+
+foreach ($filtered as $index => $line) {
+    // Comptage agents de cette ligne
+    $agentIds = $line->assistance->assistance_lines->pluck('assistance_agent_id')->unique();
+    $uniqueAgentIds = $uniqueAgentIds->merge($agentIds);
+
+    // Compter les chaises
     $chairs = [];
-    foreach($wheelChairTypes as $type) {
-        $chairs[$type] = $line->wheel_chair->slug === $type ? 1 : 0;
+    foreach ($wheelChairTypes as $type) {
+        $count = $line->wheel_chair->slug === $type ? 1 : 0;
+        $chairs[$type] = $count;
+        $totals[$type] += $count;
     }
 
-    return [
+    $lines[] = [
         '#' => $index + 1,
         'date' => $line->created_at->format('d/m/Y'),
         'mission' => $line->assistance->reference,
@@ -376,27 +392,16 @@ $lines = $filtered->map(function($line, $index) use ($wheelChairTypes) {
         'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
         'flight_number' => $line->assistance->flight_number,
         'chairs' => $chairs,
-        'nb_agents' => $line->assistance->assistance_lines
-            ->pluck('assistance_agent_id')
-            ->unique()
-            ->count(),
+        'nb_agents' => $agentIds->count(),
     ];
-})->toArray();
-$time = microtime(true) - $start;
-Log::info("Benchmark: Lignes construites en {$time} secondes");
-
-// 5️⃣ Calcul des totaux
-$start = microtime(true);
-$totals = array_fill_keys($wheelChairTypes, 0);
-$totalAgents = 0;
-foreach($lines as $line) {
-    foreach($wheelChairTypes as $type) {
-        $totals[$type] += $line['chairs'][$type];
-    }
-    $totalAgents += $line['nb_agents'];
 }
+
+// Total général des agents uniques
+$totalAgents = $uniqueAgentIds->unique()->count();
+
 $time = microtime(true) - $start;
-Log::info("Benchmark: Totaux calculés en {$time} secondes");
+Log::info("Benchmark: Lignes et totaux construits en {$time} secondes");
+
 
 // 6️⃣ Génération PDF
 $start = microtime(true);
