@@ -328,6 +328,8 @@ elseif($params["file_type"] == "csv"){
 
 }
 
+ // Mesure CREATION recap PDF
+$benchmark->start("recap_creation");
 
 
         // dd($request->all());
@@ -339,8 +341,7 @@ $data = $export->array(); // même structure que Excel
 
        // dd($data);
 
-       // Mesure CREATION recap PDF
-$benchmark->start("recap_creation");
+      
       
 
         // ($filtered); save-remote
