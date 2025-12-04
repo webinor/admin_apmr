@@ -332,21 +332,36 @@ elseif($params["file_type"] == "csv"){
  
 $benchmark->start("recap_creation");
 
-// Instanciation du service / export
+Log::info("\n\n\n-----------------------------||-----------------------------------");
+
+// Début global
+$startGlobal = microtime(true);
+
+// 1️⃣ Instanciation du service / export
+$start = microtime(true);
 $export = new ApmrExport($request->all());
+$time = microtime(true) - $start;
+Log::info("Benchmark: Export instancié en {$time} secondes");
 
-// Récupération des lignes filtrées avec relations
+// 2️⃣ Récupération des lignes filtrées avec relations
+$start = microtime(true);
 $filtered = $export->get_filtered();
+$time = microtime(true) - $start;
+Log::info("Benchmark: Lignes filtrées récupérées en {$time} secondes");
 
-// WheelChair types dynamiques
+// 3️⃣ WheelChair types dynamiques
+$start = microtime(true);
 $wheelChairTypes = $filtered
     ->flatMap(fn($line) => $line->assistance->ground_agent->company->wheel_chairs->pluck('slug'))
     ->unique()
     ->values()
     ->toArray();
 $export->wheelChairTypes = $wheelChairTypes;
+$time = microtime(true) - $start;
+Log::info("Benchmark: WheelChair types calculés en {$time} secondes");
 
-// Construction des lignes pour le Blade
+// 4️⃣ Construction des lignes pour le Blade
+$start = microtime(true);
 $lines = $filtered->map(function($line, $index) use ($wheelChairTypes) {
     $chairs = [];
     foreach($wheelChairTypes as $type) {
@@ -367,19 +382,24 @@ $lines = $filtered->map(function($line, $index) use ($wheelChairTypes) {
             ->count(),
     ];
 })->toArray();
+$time = microtime(true) - $start;
+Log::info("Benchmark: Lignes construites en {$time} secondes");
 
-// Calcul des totaux
+// 5️⃣ Calcul des totaux
+$start = microtime(true);
 $totals = array_fill_keys($wheelChairTypes, 0);
 $totalAgents = 0;
-
 foreach($lines as $line) {
     foreach($wheelChairTypes as $type) {
         $totals[$type] += $line['chairs'][$type];
     }
     $totalAgents += $line['nb_agents'];
 }
+$time = microtime(true) - $start;
+Log::info("Benchmark: Totaux calculés en {$time} secondes");
 
-// Génération PDF
+// 6️⃣ Génération PDF
+$start = microtime(true);
 $pdf = Pdf::loadView('pdf.apmr_recap', [
     'companyImage' => $export->companyImage,
     'companyName' => $export->companyName,
@@ -393,6 +413,13 @@ $pdf = Pdf::loadView('pdf.apmr_recap', [
     'totals' => $totals,
     'totalAgents' => $totalAgents,
 ]);
+$time = microtime(true) - $start;
+Log::info("Benchmark: PDF généré en {$time} secondes");
+
+// Fin globale
+$totalTime = microtime(true) - $startGlobal;
+Log::info("Benchmark total: {$totalTime} secondes");
+
 
 $benchmark->end("recap_creation");
 
