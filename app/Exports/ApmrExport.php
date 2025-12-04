@@ -111,9 +111,6 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         // 1️⃣ Récupération des données avec préchargement complet des relations
     $filtered = AssistanceLine::with([
         'wheel_chair',
-        'assistance' => function($q) {
-        $q->with('assistance_lines:assistance_id,assistance_agent_id'); // charge seulement les ids utiles
-    },
         'assistance.assistance_lines.assistance_agent',
         'assistance.ground_agent.company.wheel_chairs'
     ])
@@ -130,6 +127,26 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
 
         return $filtered;
     }
+
+    public function get_filtered_chunks(int $chunkSize = 100, callable $callback)
+{
+    AssistanceLine::with([
+        'wheel_chair',
+        'assistance.assistance_lines.assistance_agent',
+        'assistance.ground_agent.company.wheel_chairs'
+    ])
+    ->whereHas('assistance.signature')
+    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) => 
+        $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
+    )
+    ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
+    ->when($this->filters['date_fin'] ?? null, fn($q, $end) => $q->whereDate('created_at', '<=', $end))
+    ->when($this->filters['agent'] ?? null, fn($q, $agent) => $q->whereHas('assistance_agent', fn($q2) => $q2->whereCode($agent)))
+    ->when($this->filters['city'] ?? null, fn($q, $city) => $q->whereHas('assistance_agent.city', fn($q2) => $q2->whereCode($city)))
+    ->when($this->filters['wheel_chair'] ?? null, fn($q, $wc) => $q->whereHas('wheel_chair', fn($q2) => $q2->whereCode($wc)))
+    ->chunk($chunkSize, $callback);
+}
+
 
     public function filter()
     {

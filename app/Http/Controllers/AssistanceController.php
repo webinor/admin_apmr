@@ -368,35 +368,43 @@ $benchmark->start("recap_lines_totals");
 // Construction des lignes + calcul des totaux + agents uniques
 $lines = [];
 $totals = array_fill_keys($wheelChairTypes, 0);
-$uniqueAgentIds = collect();
+$totalAgents = collect();
 
-foreach ($filtered as $index => $line) {
-    // Comptage des agents pour cette ligne
-    $agentIds = collect([]);// $line->assistance->assistance_lines->pluck('assistance_agent_id')->unique();
-    $uniqueAgentIds = 0;// $uniqueAgentIds->merge($agentIds);
+$export->get_filtered_chunks(50, function($chunk) use (&$lines, &$totals, &$totalAgents, $wheelChairTypes) {
+    foreach ($chunk as $line) {
+        // Calcul des chaises
+        $chairs = [];
+        foreach ($wheelChairTypes as $type) {
+            $count = $line->wheel_chair->slug === $type ? 1 : 0;
+            $chairs[$type] = $count;
+            $totals[$type] += $count;
+        }
 
-    // Compter les chaises
-    $chairs = [];
-    foreach ($wheelChairTypes as $type) {
-        $count = $line->wheel_chair->slug === $type ? 1 : 0;
-        $chairs[$type] = $count;
-        $totals[$type] += $count;
+        // Construction de la ligne
+        $lines[] = [
+            '#' => count($lines) + 1,
+            'date' => $line->created_at->format('d/m/Y'),
+            'mission' => $line->assistance->reference,
+            'beneficiary' => $line->beneficiary_name,
+            'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
+            'flight_number' => $line->assistance->flight_number,
+            'chairs' => $chairs,
+            'nb_agents' => $line->assistance->assistance_lines
+                ->pluck('assistance_agent_id')
+                ->unique()
+                ->count(),
+        ];
+
+        // Total agents
+        $totalAgents = $totalAgents->merge(
+            $line->assistance->assistance_lines->pluck('assistance_agent_id')
+        );
     }
-
-    $lines[] = [
-        '#' => $index + 1,
-        'date' => $line->created_at->format('d/m/Y'),
-        'mission' => $line->assistance->reference,
-        'beneficiary' => $line->beneficiary_name,
-        'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
-        'flight_number' => $line->assistance->flight_number,
-        'chairs' => $chairs,
-        'nb_agents' => $agentIds->count(),
-    ];
-}
+});
 
 // Total général des agents uniques
-$totalAgents =0;// $uniqueAgentIds->unique()->count();
+$totalAgents = $totalAgents->unique()->count();
+
 
 $time = microtime(true) - $start;
 Log::info("Benchmark: Lignes et totaux construits en {$time} secondes");
