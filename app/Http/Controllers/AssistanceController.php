@@ -370,6 +370,13 @@ $lines = [];
 $totals = array_fill_keys($wheelChairTypes, 0);
 $totalAgents = collect();
 
+$assistanceIds = $filtered->pluck('assistance_id')->unique();
+$agentCounts = AssistanceLine::whereIn('assistance_id', $assistanceIds)
+    ->select('assistance_id')
+    ->selectRaw('COUNT(DISTINCT assistance_agent_id) as nb_agents')
+    ->groupBy('assistance_id')
+    ->pluck('nb_agents', 'assistance_id');
+
 $export->get_filtered_chunks(10, function($chunk) use (&$lines, &$totals, &$totalAgents, $wheelChairTypes) {
     foreach ($chunk as $line) {
         // Calcul des chaises
@@ -389,10 +396,10 @@ $export->get_filtered_chunks(10, function($chunk) use (&$lines, &$totals, &$tota
             'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
             'flight_number' => $line->assistance->flight_number,
             'chairs' => $chairs,
-            'nb_agents' => $line->assistance->assistance_lines
+            'nb_agents' =>0/* $line->assistance->assistance_lines
                 ->pluck('assistance_agent_id')
                 ->unique()
-                ->count(),
+                ->count(),*/
         ];
 
         // Total agents
@@ -403,7 +410,7 @@ $export->get_filtered_chunks(10, function($chunk) use (&$lines, &$totals, &$tota
 });
 
 // Total général des agents uniques
-$totalAgents = $totalAgents->unique()->count();
+$totalAgents = $agentCounts;
 
 
 $time = microtime(true) - $start;
