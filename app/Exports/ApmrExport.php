@@ -136,9 +136,9 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         'assistance.ground_agent.company.wheel_chairs'
     ])
     ->whereHas('assistance.signature')
-    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) => 
-        $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
-    )
+    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) =>
+    $q->whereRelation('assistance.ground_agent.company', 'code', $comp)
+)
     ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
     ->when($this->filters['date_fin'] ?? null, fn($q, $end) => $q->whereDate('created_at', '<=', $end))
     ->when($this->filters['agent'] ?? null, fn($q, $agent) => $q->whereHas('assistance_agent', fn($q2) => $q2->whereCode($agent)))
