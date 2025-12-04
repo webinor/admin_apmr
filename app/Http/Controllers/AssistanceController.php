@@ -13,6 +13,7 @@ use App\Services\Misc\AssistanceService;
 use App\Models\Operations\AssistanceLine;
 use App\Http\Requests\StoreAssistanceRequest;
 use App\Http\Requests\UpdateAssistanceRequest;
+use App\Services\BenchmarkService;
 use Illuminate\Support\Facades\Log;
 use ZipArchive;
 
@@ -312,6 +313,7 @@ if (!empty($filters["wheel_chair"])) {
     return $this->filterData($request);
 }
 
+$benchmark = new BenchmarkService();
 
 
 if ($params["file_type"] == "excel" ) {
@@ -326,6 +328,8 @@ elseif($params["file_type"] == "csv"){
 
 }
 
+// Mesure CREATION recap PDF
+$benchmark->start("recap_creation");
 
         // dd($request->all());
         // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
@@ -398,8 +402,6 @@ elseif($params["file_type"] == "csv"){
         $lastLine = $data[count($data) - 1];
         $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
 
-        //dd($lines);
-        // return $totals;
 
         $pdf = Pdf::loadView("pdf.apmr_recap", [
             "companyImage" => $export->companyImage,
@@ -418,14 +420,34 @@ elseif($params["file_type"] == "csv"){
                     : $totalAgents, // idem
         ]);
 
+        $benchmark->end("recap_creation");
+
         switch ($params["action"]) {
             case "download-single":
-                return $pdf->download("APMR_RECAP_". date("d_m_Y_H_i_s").".pdf");
+                
+                $recapName = "APMR_RECAP_". date("d_m_Y_H_i_s");
+                    $benchmark->start("download_only");
+                    $response = $pdf->download("APMR_RECAP_". date("d_m_Y_H_i_s") . ".pdf");
+                    $benchmark->end("download_only");
+
+                    // Total
+                    $benchmark->start("total");
+                    $benchmark->end("total");
+
+                    // Sauvegarde DB
+                    $benchmark->save("download-single", [
+                        "fiche_recap"=>$recapName,
+                        "agent" => $export->agent,
+                        "count_lines" => count($lines),
+                    ]);
+
+                    return $response;
 
                 break;
 
             case "download-all":
-                $filtered = $export->get_filtered();
+
+             /*   $filtered = $export->get_filtered();
 
                 $codes = collect($filtered)
                     ->pluck("assistance.code")
@@ -458,6 +480,41 @@ elseif($params["file_type"] == "csv"){
             default:
                 # code...
                 break;
+
+                */
+
+
+    $benchmark->start("generation_individual");
+
+    $filtered = $export->get_filtered();
+    $codes = collect($filtered)->pluck("assistance.code")->unique()->values()->all();
+    $savedFiles = $this->save_remote_assistance($codes);
+
+    $benchmark->end("generation_individual");
+
+    $recapName = "recapitulatif_" . date("d_m_Y_H_i_s");
+    $recapPath = $this->savePdf($pdf, "fiches_apmr", $recapName);
+
+    // ZIP
+    $benchmark->start("zip");
+    $zipPath = $this->get_zip(array_merge([$recapPath], $savedFiles));
+    $benchmark->end("zip");
+
+    // Total process
+    $benchmark->start("total");
+    $benchmark->end("total");
+
+    // Sauvegarde DB
+    $benchmark->save("download-all", [
+        "fiche_recap"=>$recapName,
+        "agent" => $export->agent,
+        "nb_fiches" => count($savedFiles),
+        "count_lines" => count($lines),
+    ]);
+
+    return response()->download($zipPath)->deleteFileAfterSend(true);
+
+    break;
         }
     }
 
