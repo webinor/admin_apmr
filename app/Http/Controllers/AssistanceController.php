@@ -335,12 +335,8 @@ elseif($params["file_type"] == "csv"){
         $export = new ApmrExport($request->all());
         
 
-        $start = microtime(true);
 $data = $export->array(); // même structure que Excel
-$duration = microtime(true) - $start;
-dd([
-    'array_generation_seconds' => round($duration, 3),
-]);
+
 
        // dd($data);
 
