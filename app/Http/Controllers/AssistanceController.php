@@ -299,9 +299,201 @@ if (!empty($filters["wheel_chair"])) {
         return $savedFiles; // retourne la liste des fichiers PDF enregistrés
     }
 
+
+       public function export(Request $request)
+    {
+        $params = $request->all();
+        
+       // dd($request->has('export'));
+
+        if (!$request->has('export')) {
+
+          //  dd("ici");
+    return $this->filterData($request);
+}
+
+$benchmark = new BenchmarkService();
+
+
+if ($params["file_type"] == "excel" ) {
+   
+     return Excel::download(
+            new ApmrExport($params), // ici on passe le tableau des filtres
+            "apmr_export_" . date("Ymd_His") . ".xlsx"
+        );
+}
+
+elseif($params["file_type"] == "csv"){
+
+}
+
+ // Mesure CREATION recap PDF
+
+ 
+$benchmark->start("recap_creation");
+
+// Instanciation du service / export
+$export = new ApmrExport($request->all());
+
+// Récupération des lignes filtrées avec relations
+$filtered = $export->get_filtered();
+
+// WheelChair types dynamiques
+$wheelChairTypes = $filtered
+    ->flatMap(fn($line) => $line->assistance->ground_agent->company->wheel_chairs->pluck('slug'))
+    ->unique()
+    ->values()
+    ->toArray();
+$export->wheelChairTypes = $wheelChairTypes;
+
+// Construction des lignes pour le Blade
+$lines = $filtered->map(function($line, $index) use ($wheelChairTypes) {
+    $chairs = [];
+    foreach($wheelChairTypes as $type) {
+        $chairs[$type] = $line->wheel_chair->slug === $type ? 1 : 0;
+    }
+
+    return [
+        '#' => $index + 1,
+        'date' => $line->created_at->format('d/m/Y'),
+        'mission' => $line->assistance->reference,
+        'beneficiary' => $line->beneficiary_name,
+        'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
+        'flight_number' => $line->assistance->flight_number,
+        'chairs' => $chairs,
+        'nb_agents' => $line->assistance->assistance_lines
+            ->pluck('assistance_agent_id')
+            ->unique()
+            ->count(),
+    ];
+})->toArray();
+
+// Calcul des totaux
+$totals = array_fill_keys($wheelChairTypes, 0);
+$totalAgents = 0;
+
+foreach($lines as $line) {
+    foreach($wheelChairTypes as $type) {
+        $totals[$type] += $line['chairs'][$type];
+    }
+    $totalAgents += $line['nb_agents'];
+}
+
+// Génération PDF
+$pdf = Pdf::loadView('pdf.apmr_recap', [
+    'companyImage' => $export->companyImage,
+    'companyName' => $export->companyName,
+    'month' => $export->month,
+    'year' => $export->year,
+    'dateDebut' => $export->dateDebut,
+    'dateFin' => $export->dateFin,
+    'agent' => $export->agent,
+    'wheelChairTypes' => $wheelChairTypes,
+    'lines' => $lines,
+    'totals' => $totals,
+    'totalAgents' => $totalAgents,
+]);
+
+$benchmark->end("recap_creation");
+
+        switch ($params["action"]) {
+            case "download-single":
+                
+                $recapName = "APMR_RECAP_". date("d_m_Y_H_i_s");
+                    $benchmark->start("download_only");
+                    $response = $pdf->download("APMR_RECAP_". date("d_m_Y_H_i_s") . ".pdf");
+                    $benchmark->end("download_only");
+
+                    // Total
+                    $benchmark->start("total");
+                    $benchmark->end("total");
+
+                    // Sauvegarde DB
+                    $benchmark->save("download-single", [
+                        "fiche_recap"=>$recapName,
+                        "agent" => $export->agent,
+                        "count_lines" => count($lines),
+                    ]);
+
+                    return $response;
+
+                break;
+
+            case "download-all":
+
+             /*   $filtered = $export->get_filtered();
+
+                $codes = collect($filtered)
+                    ->pluck("assistance.code")
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                $savedFiles = $this->save_remote_assistance($codes);
+
+                $recapName = "recapitulatif_" . date("d_m_Y_H_i_s");
+
+                $recapPath = $this->savePdf($pdf, "fiches_apmr", $recapName);
+
+                // $allFiles = [];
+
+                $allFiles = array_merge([$recapPath], $savedFiles);
+
+                // array_push($savedFiles,  $recapPath);
+
+                //  dd($savedFiles);
+
+                $zipPath = $this->get_zip($allFiles);
+
+                // Retourne le ZIP pour téléchargement
+                return response()
+                    ->download($zipPath)
+                    ->deleteFileAfterSend(true);
+                break;
+
+            default:
+                # code...
+                break;
+
+                */
+
+
+    $benchmark->start("generation_individual");
+
+    $filtered = $export->get_filtered();
+    $codes = collect($filtered)->pluck("assistance.code")->unique()->values()->all();
+    $savedFiles = $this->save_remote_assistance($codes);
+
+    $benchmark->end("generation_individual");
+
+    $recapName = "recapitulatif_" . date("d_m_Y_H_i_s");
+    $recapPath = $this->savePdf($pdf, "fiches_apmr", $recapName);
+
+    // ZIP
+    $benchmark->start("zip");
+    $zipPath = $this->get_zip(array_merge([$recapPath], $savedFiles));
+    $benchmark->end("zip");
+
+    // Total process
+    $benchmark->start("total");
+    $benchmark->end("total");
+
+    // Sauvegarde DB
+    $benchmark->save("download-all", [
+        "fiche_recap"=>$recapName,
+        "agent" => $export->agent,
+        "nb_fiches" => count($savedFiles),
+        "count_lines" => count($lines),
+    ]);
+
+    return response()->download($zipPath)->deleteFileAfterSend(true);
+
+    break;
+        }
+    }
     
 
-    public function export(Request $request)
+    public function export_old_2(Request $request)
     {
         $params = $request->all();
         
