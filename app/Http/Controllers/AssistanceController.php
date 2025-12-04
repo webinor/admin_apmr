@@ -328,16 +328,24 @@ elseif($params["file_type"] == "csv"){
 
 }
 
-// Mesure CREATION recap PDF
-$benchmark->start("recap_creation");
+
 
         // dd($request->all());
         // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
         $export = new ApmrExport($request->all());
-        $data = $export->array(); // même structure que ton Excel
+        
+
+        $start = microtime(true);
+$data = $export->array(); // même structure que Excel
+$duration = microtime(true) - $start;
+dd([
+    'array_generation_seconds' => round($duration, 3),
+]);
 
        // dd($data);
 
+       // Mesure CREATION recap PDF
+$benchmark->start("recap_creation");
       
 
         // ($filtered); save-remote
