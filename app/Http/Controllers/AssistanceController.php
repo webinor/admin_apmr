@@ -370,7 +370,7 @@ $lines = [];
 $totals = array_fill_keys($wheelChairTypes, 0);
 $totalAgents = collect();
 
-$export->get_filtered_chunks(50, function($chunk) use (&$lines, &$totals, &$totalAgents, $wheelChairTypes) {
+$export->get_filtered_chunks(10, function($chunk) use (&$lines, &$totals, &$totalAgents, $wheelChairTypes) {
     foreach ($chunk as $line) {
         // Calcul des chaises
         $chairs = [];
