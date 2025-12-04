@@ -9,6 +9,7 @@ use App\Models\Operations\Assistance;
 use App\Models\Operations\AssistanceLine;
 use App\Models\WheelChair;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -111,8 +112,12 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         // 1️⃣ Récupération des données avec préchargement complet des relations
     $filtered = AssistanceLine::with([
         'wheel_chair',
-        'assistance' => function($q) {
-        $q->with('assistance_lines:assistance_id,assistance_agent_id'); // charge seulement les ids utiles
+            'assistance' => function($q) {
+        $q->withCount([
+            'assistance_lines as nb_unique_agents' => function($q2) {
+                $q2->select(DB::raw('COUNT(DISTINCT assistance_agent_id)'));
+            }
+        ]);
     },
         'assistance.assistance_lines.assistance_agent',
         'assistance.ground_agent.company.wheel_chairs'
