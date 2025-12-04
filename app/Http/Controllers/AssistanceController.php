@@ -405,22 +405,7 @@ $benchmark->start("recap_creation");
        
 
 
-            $pdf = Pdf::loadHTML("<h1>Test rapide</h1>", [
-            "companyImage" => $export->companyImage,
-            "companyName" => $export->companyName, // libellé déjà résolu
-            "month" => $export->month,
-            "year" => $export->year,
-            "dateDebut" => $export->dateDebut,
-            "dateFin" => $export->dateFin,
-            "agent" => $export->agent,
-            "wheelChairTypes" => $export->wheelChairTypes,
-            "lines" => $lines,
-            "totals" => $totals, // récupérés du calcul Excel
-            "totalAgents" =>
-                $_SERVER["SERVER_NAME"] != "127.0.0.1"
-                    ? "$totalAgents"
-                    : $totalAgents, // idem
-        ]);
+            $pdf = Pdf::loadHTML("<h1>Test rapide</h1>");
 
         /*
 
