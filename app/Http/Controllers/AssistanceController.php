@@ -363,6 +363,7 @@ Log::info("Benchmark: WheelChair types calculés en {$time} secondes");
 // 4️⃣ Construction des lignes pour le Blade
 $start = microtime(true);
 
+$benchmark->start("recap_lines_totals");
 
 // Construction des lignes + calcul des totaux + agents uniques
 $lines = [];
@@ -375,7 +376,6 @@ $uniqueAgentIds = $filtered
     ->flatten()
     ->unique();
 
-$benchmark->start("recap_lines_totals");
 
 foreach ($filtered as $index => $line) {
     $chairs = [];
