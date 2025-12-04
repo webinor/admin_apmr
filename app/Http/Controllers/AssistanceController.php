@@ -402,13 +402,10 @@ $benchmark->start("recap_creation");
         $lastLine = $data[count($data) - 1];
         $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
 
-        //$template_name = "pdf.apmr_recap";
-        $template_name = "<h1>Test rapide</h1>";
+       
 
 
-        
-
-        $pdf = Pdf::loadHTML($template_name, [
+            $pdf = Pdf::loadHTML("<h1>Test rapide</h1>", [
             "companyImage" => $export->companyImage,
             "companyName" => $export->companyName, // libellé déjà résolu
             "month" => $export->month,
@@ -424,6 +421,25 @@ $benchmark->start("recap_creation");
                     ? "$totalAgents"
                     : $totalAgents, // idem
         ]);
+
+        /*
+
+        $pdf = Pdf::loadView("pdf.apmr_recap", [
+            "companyImage" => $export->companyImage,
+            "companyName" => $export->companyName, // libellé déjà résolu
+            "month" => $export->month,
+            "year" => $export->year,
+            "dateDebut" => $export->dateDebut,
+            "dateFin" => $export->dateFin,
+            "agent" => $export->agent,
+            "wheelChairTypes" => $export->wheelChairTypes,
+            "lines" => $lines,
+            "totals" => $totals, // récupérés du calcul Excel
+            "totalAgents" =>
+                $_SERVER["SERVER_NAME"] != "127.0.0.1"
+                    ? "$totalAgents"
+                    : $totalAgents, // idem
+        ]);*/
 
         $benchmark->end("recap_creation");
 
