@@ -337,7 +337,6 @@ elseif($params["file_type"] == "csv"){
 
 $data = $export->array(); // même structure que Excel
 
-
        // dd($data);
 
        // Mesure CREATION recap PDF
@@ -409,9 +408,9 @@ $benchmark->start("recap_creation");
        
 
 
-            $pdf = Pdf::loadHTML("<h1>Test rapide</h1>");
+         //   $pdf = Pdf::loadHTML("<h1>Test rapide</h1>");
 
-        /*
+        /* */
 
         $pdf = Pdf::loadView("pdf.apmr_recap", [
             "companyImage" => $export->companyImage,
@@ -428,7 +427,7 @@ $benchmark->start("recap_creation");
                 $_SERVER["SERVER_NAME"] != "127.0.0.1"
                     ? "$totalAgents"
                     : $totalAgents, // idem
-        ]);*/
+        ]);/**/
 
         $benchmark->end("recap_creation");
 

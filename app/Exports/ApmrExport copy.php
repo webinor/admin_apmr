@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadings
+class ApmrExportOld implements FromArray //FromCollection//, WithMapping, WithHeadings
 {
     protected $filters;
     public $wheelChairTypes;
@@ -107,25 +107,82 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
 
     public function get_filtered()
     {
-        
-        // 1️⃣ Récupération des données avec préchargement complet des relations
-    $filtered = AssistanceLine::with([
-        'wheel_chair',
-        'assistance.assistance_lines.assistance_agent',
-        'assistance.ground_agent.company.wheel_chairs'
-    ])
-    ->whereHas('assistance.signature')
-    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) => 
-        $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
-    )
-    ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
-    ->when($this->filters['date_fin'] ?? null, fn($q, $end) => $q->whereDate('created_at', '<=', $end))
-    ->when($this->filters['agent'] ?? null, fn($q, $agent) => $q->whereHas('assistance_agent', fn($q2) => $q2->whereCode($agent)))
-    ->when($this->filters['city'] ?? null, fn($q, $city) => $q->whereHas('assistance_agent.city', fn($q2) => $q2->whereCode($city)))
-    ->when($this->filters['wheel_chair'] ?? null, fn($q, $wc) => $q->whereHas('wheel_chair', fn($q2) => $q2->whereCode($wc)))
-    ->get();
+        $query = AssistanceLine::query()
+            ->has("assistance.ground_agent.company.wheel_chairs")
+            ->with([
+                "assistance.ground_agent.company.wheel_chairs",
+                "assistance.registrator",
+                "assistance_agent.city",
+                //'wheel_chair',
+            ])
+            ->whereHas("assistance.signature") // s'assure que l'assistance a une signature
+            ->whereHas("assistance", function ($q) {
+                // Compagnie
+                if (!empty($this->filters["compagnie"])) {
+                    $q->whereHas("ground_agent.company", function ($qry) {
+                        $qry->whereCode($this->filters["compagnie"]);
+                    });
+                }
 
-        return $filtered;
+                // Période
+                if (!empty($this->filters["date_debut"])) {
+                    $q->whereDate(
+                        "created_at",
+                        ">=",
+                        $this->filters["date_debut"]
+                    );
+                }
+                if (!empty($this->filters["date_fin"])) {
+                    $q->whereDate(
+                        "created_at",
+                        "<=",
+                        $this->filters["date_fin"]
+                    );
+                }
+
+                // Enregistré par
+                if (!empty($this->filters["user"])) {
+                    $q->whereHas("registrator", function ($qry) {
+                        $qry->whereCode($this->filters["user"]);
+                    });
+                }
+
+                // Déjà facturées
+                if (!empty($this->filters["justificatifs"])) {
+                    $q->where("is_invoiced", true);
+                }
+
+                // Min / Max prix
+                if (!empty($this->filters["min-price"])) {
+                    $q->where("total", ">=", $this->filters["min-price"]);
+                }
+                if (!empty($this->filters["max-price"])) {
+                    $q->where("total", "<=", $this->filters["max-price"]);
+                }
+            });
+
+        // Filtre sur Agent (ligne d'assistance)
+        if (!empty($this->filters["agent"])) {
+            $query->whereHas("assistance_agent", function ($qry) {
+                $qry->whereCode($this->filters["agent"]);
+            });
+        }
+
+        // Filtre sur Ville (ligne d'assistance)
+        if (!empty($this->filters["city"])) {
+            $query->whereHas("assistance_agent.city", function ($qry) {
+                $qry->whereCode($this->filters["city"]);
+            });
+        }
+
+        // Filtre sur Type de chaise (ligne d'assistance)
+        if (!empty($this->filters["wheel_chair"])) {
+            $query->whereHas("wheel_chair", function ($qry) {
+                $qry->whereCode($this->filters["wheel_chair"]);
+            });
+        }
+
+        return $query->get();
     }
 
     public function filter()
@@ -144,10 +201,6 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
             ->unique()
             ->values()
             ->toArray();
-
-   
-
-            
 
         $this->wheelChairTypes = $wheelChairTypes;
 
