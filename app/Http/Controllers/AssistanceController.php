@@ -406,7 +406,9 @@ $benchmark->start("recap_creation");
         $template_name = "<h1>Test rapide</h1>";
 
 
-        $pdf = Pdf::loadView($template_name, [
+        
+
+        $pdf = Pdf::loadHTML($template_name, [
             "companyImage" => $export->companyImage,
             "companyName" => $export->companyName, // libellé déjà résolu
             "month" => $export->month,
