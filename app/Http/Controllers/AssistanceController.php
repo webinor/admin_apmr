@@ -369,15 +369,14 @@ $benchmark->start("recap_lines_totals");
 $lines = [];
 $totals = array_fill_keys($wheelChairTypes, 0);
 $uniqueAgentIds = collect();
-
-// Calculer les agents uniques **globalement**
-$uniqueAgentIds = $filtered
-    ->pluck('assistance.assistance_lines.*.assistance_agent_id') // toutes les lignes
-    ->flatten()
-    ->unique();
-
+$uniqueAgentIds = collect();
 
 foreach ($filtered as $index => $line) {
+    // Comptage des agents pour cette ligne
+    $agentIds = $line->assistance->assistance_lines->pluck('assistance_agent_id')->unique();
+    $uniqueAgentIds = $uniqueAgentIds->merge($agentIds);
+
+    // Compter les chaises
     $chairs = [];
     foreach ($wheelChairTypes as $type) {
         $count = $line->wheel_chair->slug === $type ? 1 : 0;
@@ -393,15 +392,12 @@ foreach ($filtered as $index => $line) {
         'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
         'flight_number' => $line->assistance->flight_number,
         'chairs' => $chairs,
-        'nb_agents' => $line->nb_agents_unique,
+        'nb_agents' => $agentIds->count(),
     ];
 }
 
-// Total général agents
-$totalAgents = $filtered->sum('nb_agents_unique');
-
 // Total général des agents uniques
-$totalAgents =  $uniqueAgentIds->count();
+$totalAgents = $uniqueAgentIds->unique()->count();
 
 $time = microtime(true) - $start;
 Log::info("Benchmark: Lignes et totaux construits en {$time} secondes");
