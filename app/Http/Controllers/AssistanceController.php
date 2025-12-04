@@ -402,8 +402,11 @@ $benchmark->start("recap_creation");
         $lastLine = $data[count($data) - 1];
         $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
 
+        //$template_name = "pdf.apmr_recap";
+        $template_name = "<h1>Test rapide</h1>";
 
-        $pdf = Pdf::loadView("pdf.apmr_recap", [
+
+        $pdf = Pdf::loadView($template_name, [
             "companyImage" => $export->companyImage,
             "companyName" => $export->companyName, // libellé déjà résolu
             "month" => $export->month,
