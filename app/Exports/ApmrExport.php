@@ -130,15 +130,16 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
 
     public function get_filtered_chunks(int $chunkSize = 100, callable $callback)
 {
-    AssistanceLine::with([
-        'wheel_chair',
-        'assistance.assistance_lines.assistance_agent',
-        'assistance.ground_agent.company.wheel_chairs'
-    ])
+    $filtered = AssistanceLine::with([
+    'wheel_chair:id,slug', // seulement les champs nécessaires
+    'assistance:id,reference,flight_type,flight_number,ground_agent_id',
+    'assistance.ground_agent:id,company_id',
+    'assistance.ground_agent.company:id,code,name'
+])
     ->whereHas('assistance.signature')
-    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) =>
-    $q->whereRelation('assistance.ground_agent.company', 'code', $comp)
-)
+    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) => 
+        $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
+    )
     ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
     ->when($this->filters['date_fin'] ?? null, fn($q, $end) => $q->whereDate('created_at', '<=', $end))
     ->when($this->filters['agent'] ?? null, fn($q, $agent) => $q->whereHas('assistance_agent', fn($q2) => $q2->whereCode($agent)))
