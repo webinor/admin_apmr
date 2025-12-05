@@ -94,7 +94,7 @@
                 <div class="card-body">
 
                   <div class=" mb-4 ">
-                    <form id="form-results" class="row" action="{{ url('/apmrs/export?type=pdf') }}" method="get">
+                    <form id="form-results" class="row" action="" method="get">
             
                       <div class="col-1">
                         <label for="results">Afficher</label>
