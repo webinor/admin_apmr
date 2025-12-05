@@ -322,6 +322,8 @@ if (!empty($filters["wheel_chair"])) {
     $export = new ApmrExport($request->all());
 
     $filtered = $export->get_filtered(); // ta méthode actuelle
+
+  //  return($filtered);
     $linesIds = $filtered->pluck('id')->toArray();
     $assistanceIds = $filtered->pluck('assistance_id')->unique()->toArray();
 

@@ -29,7 +29,8 @@ class ProcessLinesAndChairsJob implements ShouldQueue
         $linesOutput = [];
         $totals = array_fill_keys($this->wheelChairTypes, 0);
 
-        $lines = AssistanceLine::with(['assistance', 'wheel_chair'])
+        $lines = AssistanceLine::select('id','created_at' , 'assistance_agent_id' ,'assistance_id', 'code', 'wheel_chair_id' , 'beneficiary_name')->
+        with(['assistance:id,code,reference,ground_agent_id,flight_type,flight_number', 'wheel_chair:id,name,slug,code'])
                                ->whereIn('id', $this->lineIds)
                                ->get();
 

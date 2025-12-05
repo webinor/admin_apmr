@@ -109,10 +109,28 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
     {
         
         // 1️⃣ Récupération des données avec préchargement complet des relations
-    $filtered = AssistanceLine::with([
+    /*$filtered = AssistanceLine::with([
         'wheel_chair',
         'assistance.assistance_lines.assistance_agent',
         'assistance.ground_agent.company.wheel_chairs'
+    ])*/
+
+    /*$filtered = AssistanceLine::select('id','created_at' , 'assistance_agent_id' ,'assistance_id', 'code', 'wheel_chair_id' , 'beneficiary_name')->with([
+        'wheel_chair:id,name,slug,code',
+        'assistance:id,code,reference,ground_agent_id,flight_type,flight_number',
+        'assistance_agent:id,code,first_name,last_name,city_id',
+        'assistance.ground_agent:id,company_id,code',
+        'assistance.ground_agent.company:id,city_id,name,code',
+        'assistance.ground_agent.company.wheel_chairs:id,name,slug',
+    ])*/
+
+        $filtered = AssistanceLine::select('id' , 'assistance_agent_id' ,'assistance_id', 'wheel_chair_id')->with([
+        'wheel_chair:id,name,slug',
+        'assistance:id,ground_agent_id',
+        'assistance_agent:id,city_id',
+        'assistance.ground_agent:id,company_id',
+        'assistance.ground_agent.company:id,city_id',
+        'assistance.ground_agent.company.wheel_chairs:id,name,slug',
     ])
     ->whereHas('assistance.signature')
     ->when($this->filters['compagnie'] ?? null, fn($q, $comp) => 
