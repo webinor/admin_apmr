@@ -29,7 +29,7 @@ class ApmrPdfReady implements ShouldBroadcast
     public function __construct($exportId, $filePath, $type)
     {
         $this->exportId = $exportId;
-        $this->filePath = route('export.download', ['folder'=>$exportId,  'fileName' => basename($filePath)]);// $filePath;
+        $this->filePath = url("/download/export/{$exportId}/".basename($filePath));// route('export.download', ['folder'=>$exportId,  'fileName' => basename($filePath)]);// $filePath;
         $this->type = $type;
         $this->name = basename($filePath);
     }
