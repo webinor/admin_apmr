@@ -164,9 +164,22 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($lines as $line)
+
+            @php
+$perPage = 20;
+@endphp
+
+            @foreach($lines as $i => $line)
+
+              @php
+        $pageNumber = intdiv($i, $perPage) + 1;  // Page actuelle
+        $numberOnPage = ($i % $perPage) + 1;     // Numéro sur cette page
+        $globalNumber = $i + 1;                  // Numéro global
+    @endphp
+
                 <tr>
-                    <td>{{ strtoupper($line['#']) }}</td>
+                    {{-- <td>{{ strtoupper($line['#']) }}</td> --}}
+                    <td>{{ $globalNumber }}</td> {{-- ou $numberOnPage si on veux 1-20 par page --}}
                     <td>{{ strtoupper($line['date']) }}</td>
                     <td>{{ strtoupper($line['mission']) }}</td>
                     <td>{{ strtoupper($line['beneficiary']) }}</td>
