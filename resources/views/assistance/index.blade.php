@@ -523,15 +523,17 @@ console.log(data.exportId, data.message);
     .subscribed(() => console.log("SUBSCRIBED OK"))
     .error(e => console.error("SUBSCRIBE ERROR", e))
          .listen('.ApmrPdfReady', (e) => {
-        const url = `${e.filePath}`;
+        /*const url = `${e.filePath}`;
         const a = document.createElement('a');
         a.href = url;
         a.download =e.name;// e.type === 'single' ? 'APMR_RECAP.pdf' : 'APMR_ALL.zip';
         document.body.appendChild(a);
         a.click();
-        a.remove();
+        a.remove();*/
 
 
+          // Ouvrir dans un nouvel onglet
+        window.open(e.filePath, '_blank');
 
          exportLoader.classList.add('d-none');
       exportButton.classList.remove('d-none');
