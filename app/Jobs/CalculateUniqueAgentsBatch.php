@@ -29,7 +29,7 @@ class CalculateUniqueAgentsBatch implements ShouldQueue
         $globalAgents = collect();         // tous les agents uniques du batch
 
         // Charger ce batch de fiches + relations nécessaires
-        $assistances = Assistance::with('assistance_lines:id,assistance_id,assistance_agent_id')
+        $assistances = Assistance::select('id','code')->with('assistance_lines:id,assistance_id,assistance_agent_id')
                                   ->whereIn('id', $this->assistanceIds)
                                   ->get();
 
