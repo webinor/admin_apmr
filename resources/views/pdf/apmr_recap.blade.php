@@ -175,7 +175,9 @@
                     @foreach($wheelChairTypes as $type)
                         <td>{{ $line['chairs'][$type] ?? 0 }}</td>
                     @endforeach
-                    <td>{{ $line['nb_agents'] }}</td>
+                    {{-- <td>{{ $line['nb_agents'] }}</td> --}}
+                    <td>{{ $agents_per_assistance[$line['assistance_id']] }}</td>
+                    
                 </tr>
             @endforeach
         </tbody>

@@ -167,8 +167,13 @@ Route::middleware(["auth"])->group(function () {
         "show",
     ]);
 
+    Route::get('/download/export/{folder}/{fileName}', function ($folder, $fileName) {
+    $path = storage_path("app/exports/{$folder}/{$fileName}");
+    return response()->download($path);
+})->name('export.download');
+
     Route::get('/apmrs/export', [AssistanceController::class, 'export'])->name('apmrs.export');
-    Route::get('/apmrs/export-pdf', [AssistanceController::class, 'exportPdf'])->name('apmrs.exportPdf');
+    //Route::get('/apmrs/export-pdf', [AssistanceController::class, 'exportPdf'])->name('apmrs.exportPdf');
 
 
 

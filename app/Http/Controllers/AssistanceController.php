@@ -13,8 +13,15 @@ use App\Services\Misc\AssistanceService;
 use App\Models\Operations\AssistanceLine;
 use App\Http\Requests\StoreAssistanceRequest;
 use App\Http\Requests\UpdateAssistanceRequest;
+use App\Jobs\CalculateUniqueAgentsBatch;
+use App\Jobs\GenerateExportBatchJob;
+use App\Jobs\GenerateFinalPdfJob;
+use App\Jobs\ProcessLinesAndChairsJob;
+use App\Models\ExportData;
 use App\Services\BenchmarkService;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use ZipArchive;
 
 class AssistanceController extends Controller
@@ -300,6 +307,93 @@ if (!empty($filters["wheel_chair"])) {
     }
 
 
+    public function generateRecap(Request $request)
+{
+
+
+
+    $action = $request->get('action');
+
+    //Redis::setex("papa", 3600, json_encode(["papa"]));
+    
+    //dd(Redis::keys("*papa*"));
+   // dd(Redis::get("papa"));
+    // 1) Récupérer les IDs filtrés via ton export builder
+    $export = new ApmrExport($request->all());
+
+    $filtered = $export->get_filtered(); // ta méthode actuelle
+    $linesIds = $filtered->pluck('id')->toArray();
+    $assistanceIds = $filtered->pluck('assistance_id')->unique()->toArray();
+
+    // 2) Récupérer les wheel_chairs (déjà calculé dans ton code)
+    $wheelChairTypes  = $filtered
+    ->flatMap(fn($line) => $line->assistance->ground_agent->company->wheel_chairs->pluck('slug'))
+    ->unique()
+    ->values()
+    ->toArray();
+
+    // echo "--------------------------".json_encode($wheelChairTypes)."--------------------------\n\n";
+
+    // 3) Générer la clé finale du cache
+    $filtersHash =  Str::uuid();
+    $finalCacheKey = "export_batch_" . $filtersHash;
+
+    $exportData = ExportData::create([
+    'data' => json_encode($export),
+     'finalCacheKey' => $finalCacheKey,
+]);
+
+
+ // 4) Créer les jobs enfants
+    $batchJobs = [];
+
+    // Chunk des assistances
+    foreach (collect($assistanceIds)->chunk(20) as $i => $chunk) {
+        $batchJobs[] = new CalculateUniqueAgentsBatch(
+            $chunk->toArray(),
+            $finalCacheKey."_batch_agents_$i"
+        );
+    }
+
+    // Chunk des lignes
+    foreach (collect($linesIds)->chunk(20) as $j => $chunk) {
+        $batchJobs[] = new ProcessLinesAndChairsJob(
+            $chunk->toArray(),
+            $wheelChairTypes,
+            $finalCacheKey."_batch_lines_$j"
+        );
+    }
+
+    // 5) Lancer le batch avec callback finally
+    Bus::batch($batchJobs)
+        ->name("export_batch_{$exportData->id}")
+        ->finally(function ($batch) use ($finalCacheKey, $exportData, $wheelChairTypes,$action) {
+            // Job final pour assembler les données et générer le PDF
+            GenerateFinalPdfJob::dispatch($finalCacheKey, $exportData->id, $wheelChairTypes , $action);
+        })
+        ->dispatch();
+    
+
+    // 4) Lancer le batch orchestrateur
+    /*GenerateExportBatchJob::dispatch(
+        $assistanceIds,
+        $linesIds,
+        $wheelChairTypes,
+        $finalCacheKey,
+        $exportData->id
+    );*/
+
+  
+
+
+    return response()->json([
+        'message' => 'Génération de vos fichiers en cours...',
+        'exportId' => $exportData->id,
+      //  'cache_key' => $finalCacheKey
+    ]);
+}
+
+
        public function export(Request $request)
     {
         $params = $request->all();
@@ -329,7 +423,9 @@ elseif($params["file_type"] == "csv"){
 
  // Mesure CREATION recap PDF
 
+ return $this->generateRecap($request);
  
+
 $benchmark->start("recap_creation");
 
 Log::info("\n\n\n-----------------------------||-----------------------------------");
@@ -368,50 +464,47 @@ $benchmark->start("recap_lines_totals");
 // Construction des lignes + calcul des totaux + agents uniques
 $lines = [];
 $totals = array_fill_keys($wheelChairTypes, 0);
-$totalAgents = collect();
+$uniqueAgentIds = collect();
 
-$assistanceIds = $filtered->pluck('assistance_id')->unique();
-$agentCounts = AssistanceLine::whereIn('assistance_id', $assistanceIds)
-    ->select('assistance_id')
-    ->selectRaw('COUNT(DISTINCT assistance_agent_id) as nb_agents')
-    ->groupBy('assistance_id')
-    ->pluck('nb_agents', 'assistance_id');
+// Calculer les agents uniques **globalement**
+$assistancesIds = $filtered->pluck('assistance_id')->unique();
 
-$export->get_filtered_chunks(10, function($chunk) use (&$lines, &$totals, &$totalAgents, $wheelChairTypes) {
-    foreach ($chunk as $line) {
-        // Calcul des chaises
-        $chairs = [];
-        foreach ($wheelChairTypes as $type) {
-            $count = $line->wheel_chair->slug === $type ? 1 : 0;
-            $chairs[$type] = $count;
-            $totals[$type] += $count;
-        }
+$chunkSize = 50; // ou 10, 50, selon le volume
 
-        // Construction de la ligne
-        $lines[] = [
-            '#' => count($lines) + 1,
-            'date' => $line->created_at->format('d/m/Y'),
-            'mission' => $line->assistance->reference,
-            'beneficiary' => $line->beneficiary_name,
-            'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
-            'flight_number' => $line->assistance->flight_number,
-            'chairs' => $chairs,
-            'nb_agents' =>0/* $line->assistance->assistance_lines
-                ->pluck('assistance_agent_id')
-                ->unique()
-                ->count(),*/
-        ];
+$chunks = $assistancesIds->chunk($chunkSize);
 
-        // Total agents
-        $totalAgents = $totalAgents->merge(
-            $line->assistance->assistance_lines->pluck('assistance_agent_id')
-        );
+foreach ($chunks as $index => $chunk) {
+    $cacheKey = "unique_agents_batch_$index";
+
+  //  dispatch(new CalculateUniqueAgentsBatch($chunk->toArray(), $cacheKey));
+}
+
+
+foreach ($filtered as $index => $line) {
+    $chairs = [];
+    foreach ($wheelChairTypes as $type) {
+        $count = $line->wheel_chair->slug === $type ? 1 : 0;
+        $chairs[$type] = $count;
+        $totals[$type] += $count;
     }
-});
+
+    $lines[] = [
+        '#' => $index + 1,
+        'date' => $line->created_at->format('d/m/Y'),
+        'mission' => $line->assistance->reference,
+        'beneficiary' => $line->beneficiary_name,
+        'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
+        'flight_number' => $line->assistance->flight_number,
+        'chairs' => $chairs,
+        'nb_agents' =>0// $line->nb_agents_unique,
+    ];
+}
+
+// Total général agents
+//$totalAgents = $filtered->sum('nb_agents_unique');
 
 // Total général des agents uniques
-$totalAgents = $agentCounts;
-
+$totalAgents =0;// $agentCounts;// $uniqueAgentIds->count();
 
 $time = microtime(true) - $start;
 Log::info("Benchmark: Lignes et totaux construits en {$time} secondes");
@@ -467,41 +560,7 @@ $benchmark->end("recap_creation");
 
             case "download-all":
 
-             /*   $filtered = $export->get_filtered();
-
-                $codes = collect($filtered)
-                    ->pluck("assistance.code")
-                    ->unique()
-                    ->values()
-                    ->all();
-
-                $savedFiles = $this->save_remote_assistance($codes);
-
-                $recapName = "recapitulatif_" . date("d_m_Y_H_i_s");
-
-                $recapPath = $this->savePdf($pdf, "fiches_apmr", $recapName);
-
-                // $allFiles = [];
-
-                $allFiles = array_merge([$recapPath], $savedFiles);
-
-                // array_push($savedFiles,  $recapPath);
-
-                //  dd($savedFiles);
-
-                $zipPath = $this->get_zip($allFiles);
-
-                // Retourne le ZIP pour téléchargement
-                return response()
-                    ->download($zipPath)
-                    ->deleteFileAfterSend(true);
-                break;
-
-            default:
-                # code...
-                break;
-
-                */
+           
 
 
     $benchmark->start("generation_individual");
@@ -539,232 +598,6 @@ $benchmark->end("recap_creation");
     }
     
 
-    public function export_old_2(Request $request)
-    {
-        $params = $request->all();
-        
-       // dd($request->has('export'));
-
-        if (!$request->has('export')) {
-
-          //  dd("ici");
-    return $this->filterData($request);
-}
-
-$benchmark = new BenchmarkService();
-
-
-if ($params["file_type"] == "excel" ) {
-   
-     return Excel::download(
-            new ApmrExport($params), // ici on passe le tableau des filtres
-            "apmr_export_" . date("Ymd_His") . ".xlsx"
-        );
-}
-
-elseif($params["file_type"] == "csv"){
-
-}
-
- // Mesure CREATION recap PDF
-$benchmark->start("recap_creation");
-
-
-        // dd($request->all());
-        // tu peux réutiliser ton ApmrExport ou construire un service "ApmrService"
-        $export = new ApmrExport($request->all());
-        
-
-$data = $export->array(); // même structure que Excel
-
-       // dd($data);
-
-      
-      
-
-        // ($filtered); save-remote
-        // $codes = collect($filtered)->pluck('assistance.code')->unique()->values()->all();
-
-        // $savedFiles = $this->save_remote_assistance($codes);
-
-        $lines = [];
-
-        // On prépare un tableau de totaux initialisés à 0
-        $totals = [];
-        foreach ($export->wheelChairTypes as $type) {
-            $totals[$type] = 0;
-        }
-        $totalAgents = 0;
-        $seenMissions = [];
-        // On commence à partir de l’index où se trouvent les vraies données
-        // Ici d’après ton dump, les données commencent à l’index 4 avec l’en-tête
-        for ($i = 4; $i < count($data); $i++) {
-            $row = $data[$i];
-
-            // Ignore les lignes de totaux ou vides
-            if (empty($row[0]) && empty($row[1])) {
-                continue;
-            }
-
-            $chairs = [];
-            foreach ($export->wheelChairTypes as $index => $type) {
-                // On suppose que les colonnes du Excel commencent à l'index 6 pour les chaises
-                $colIndex = 6 + $index;
-                $chairs[$type] = $row[$colIndex] ?? 0;
-            }
-
-            $lines[] = [
-                "#" => $row[0] ?? null,
-                "date" => $row[1] ?? null,
-                "mission" => $row[2] ?? null,
-                "beneficiary" => $row[3] ?? null,
-                "flight_type" => $row[4] ?? null,
-                "flight_number" => $row[5] ?? null,
-                "chairs" => $chairs,
-                "nb_agents" => $row[6 + count($export->wheelChairTypes)] ?? 0, // dernière colonne pour nb_agents
-            ];
-        }
-
-        // On additionne
-        foreach ($lines as $line) {
-            foreach ($export->wheelChairTypes as $type) {
-                // return $line;
-                // return
-                /*$totals[$type] += $line
-            ['chairs']
-            [$type] ?? 0;*/
-
-                $value = $line["chairs"][$type] ?? 0;
-                $totals[$type] = ($totals[$type] ?? 0) + (int) $value;
-            }
-        }
-
-        // return $data;
-
-        $lastLine = $data[count($data) - 1];
-        $totalAgents = $lastLine[6 + count($export->wheelChairTypes)] ?? 0; // index correspondant à 'Nb d'agents'
-
-       
-
-
-         //   $pdf = Pdf::loadHTML("<h1>Test rapide</h1>");
-
-        /* */
-
-        $pdf = Pdf::loadView("pdf.apmr_recap", [
-            "companyImage" => $export->companyImage,
-            "companyName" => $export->companyName, // libellé déjà résolu
-            "month" => $export->month,
-            "year" => $export->year,
-            "dateDebut" => $export->dateDebut,
-            "dateFin" => $export->dateFin,
-            "agent" => $export->agent,
-            "wheelChairTypes" => $export->wheelChairTypes,
-            "lines" => $lines,
-            "totals" => $totals, // récupérés du calcul Excel
-            "totalAgents" =>
-                $_SERVER["SERVER_NAME"] != "127.0.0.1"
-                    ? "$totalAgents"
-                    : $totalAgents, // idem
-        ]);/**/
-
-        $benchmark->end("recap_creation");
-
-        switch ($params["action"]) {
-            case "download-single":
-                
-                $recapName = "APMR_RECAP_". date("d_m_Y_H_i_s");
-                    $benchmark->start("download_only");
-                    $response = $pdf->download("APMR_RECAP_". date("d_m_Y_H_i_s") . ".pdf");
-                    $benchmark->end("download_only");
-
-                    // Total
-                    $benchmark->start("total");
-                    $benchmark->end("total");
-
-                    // Sauvegarde DB
-                    $benchmark->save("download-single", [
-                        "fiche_recap"=>$recapName,
-                        "agent" => $export->agent,
-                        "count_lines" => count($lines),
-                    ]);
-
-                    return $response;
-
-                break;
-
-            case "download-all":
-
-             /*   $filtered = $export->get_filtered();
-
-                $codes = collect($filtered)
-                    ->pluck("assistance.code")
-                    ->unique()
-                    ->values()
-                    ->all();
-
-                $savedFiles = $this->save_remote_assistance($codes);
-
-                $recapName = "recapitulatif_" . date("d_m_Y_H_i_s");
-
-                $recapPath = $this->savePdf($pdf, "fiches_apmr", $recapName);
-
-                // $allFiles = [];
-
-                $allFiles = array_merge([$recapPath], $savedFiles);
-
-                // array_push($savedFiles,  $recapPath);
-
-                //  dd($savedFiles);
-
-                $zipPath = $this->get_zip($allFiles);
-
-                // Retourne le ZIP pour téléchargement
-                return response()
-                    ->download($zipPath)
-                    ->deleteFileAfterSend(true);
-                break;
-
-            default:
-                # code...
-                break;
-
-                */
-
-
-    $benchmark->start("generation_individual");
-
-    $filtered = $export->get_filtered();
-    $codes = collect($filtered)->pluck("assistance.code")->unique()->values()->all();
-    $savedFiles = $this->save_remote_assistance($codes);
-
-    $benchmark->end("generation_individual");
-
-    $recapName = "recapitulatif_" . date("d_m_Y_H_i_s");
-    $recapPath = $this->savePdf($pdf, "fiches_apmr", $recapName);
-
-    // ZIP
-    $benchmark->start("zip");
-    $zipPath = $this->get_zip(array_merge([$recapPath], $savedFiles));
-    $benchmark->end("zip");
-
-    // Total process
-    $benchmark->start("total");
-    $benchmark->end("total");
-
-    // Sauvegarde DB
-    $benchmark->save("download-all", [
-        "fiche_recap"=>$recapName,
-        "agent" => $export->agent,
-        "nb_fiches" => count($savedFiles),
-        "count_lines" => count($lines),
-    ]);
-
-    return response()->download($zipPath)->deleteFileAfterSend(true);
-
-    break;
-        }
-    }
 
     /**
      * Sauvegarde un PDF et retourne le chemin complet

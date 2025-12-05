@@ -94,7 +94,7 @@
                 <div class="card-body">
 
                   <div class=" mb-4 ">
-                    <form id="form-results" class="row" action="" method="get">
+                    <form id="form-results" class="row" action="{{ url('/apmrs/export?type=pdf') }}" method="get">
             
                       <div class="col-1">
                         <label for="results">Afficher</label>
@@ -344,9 +344,18 @@
 
 @section('custom_js')
 
+<script src="{{ asset('js/app.js') }}" ></script>
+
 <script>
 
 document.addEventListener('DOMContentLoaded', function () {
+
+
+
+
+  
+
+
 
 
   
@@ -388,6 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 const filterButton = document.getElementById('filter-button');
+const cancelButton = document.getElementById('cancel-button');
 const filterLoader = document.getElementById('filter-loader');
 
 const exportButton = document.getElementById('export-button');
@@ -411,7 +421,12 @@ function getFilters() {
 // Fonction pour mettre à jour le nombre de résultats
 async function updateCount() {
   const filters = getFilters();
-  filterLoader.classList.remove('d-none');
+  filterLoader.classList.remove('d-none');  
+  
+  /*exportButton.classList.add('d-none');
+   filterButton.classList.add('d-none');
+   cancelButton.classList.add('d-none');
+   exportLoader.classList.remove('d-none');*/
 
   try {
     const params = new URLSearchParams(filters);
@@ -433,6 +448,11 @@ async function updateCount() {
     console.error(error);
   } finally {
     filterLoader.classList.add('d-none');
+
+      /*  exportLoader.classList.add('d-none');
+      exportButton.classList.remove('d-none');
+      cancelButton.classList.remove('d-none');
+      filterButton.classList.remove('d-none');*/
   }
 }
 
@@ -444,6 +464,13 @@ form.querySelectorAll('.filter').forEach(input => {
 
 // Si tu veux, tu peux déclencher un filtre direct au clic du bouton
 filterButton.addEventListener('click', async function () {
+
+
+   exportButton.classList.add('d-none');
+   filterButton.classList.add('d-none');
+   cancelButton.classList.add('d-none');
+   exportLoader.classList.remove('d-none');
+  
 
    form.action = "/assistance";
   form.querySelector('input[name="export"]')?.remove();
@@ -461,25 +488,62 @@ exportButton.addEventListener('click', async function () {
 
     form.appendChild(input);
 
-  form.submit(); // Soumet le formulaire normalement
+  //form.submit(); // Soumet le formulaire normalement
 
-  /*
+  /**/
    // Afficher loader
+   exportButton.classList.add('d-none');
    filterButton.classList.add('d-none');
-   filterLoader.classList.remove('d-none');
+   cancelButton.classList.add('d-none');
+   exportLoader.classList.remove('d-none');
 
     // Récupérer les données du formulaire
     const formData = new FormData(form);
-    const action = form.action;
+    const action = form.getAttribute("action");   // ← PROPRE
 
     try {
-      const response = await fetch(action, {
+      const params = new URLSearchParams();
+
+for (let [key, value] of formData.entries()) {
+    params.append(key, value);
+}
+
+const response = await fetch(`${action}?${params.toString()}`, {
         method: 'GET', // ou POST selon ton endpoint
-        body: formData,
+     //   body: formData,
       });
 
       if (!response.ok) throw new Error('Erreur lors de l\'export');
 
+
+      const data = await response.json();
+console.log(data.exportId, data.message);
+
+         Echo.private(`export.${data.exportId}`)
+    .subscribed(() => console.log("SUBSCRIBED OK"))
+    .error(e => console.error("SUBSCRIBE ERROR", e))
+         .listen('.ApmrPdfReady', (e) => {
+        const url = `${e.filePath}`;
+        const a = document.createElement('a');
+        a.href = url;
+        a.download =e.name;// e.type === 'single' ? 'APMR_RECAP.pdf' : 'APMR_ALL.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+
+
+         exportLoader.classList.add('d-none');
+      exportButton.classList.remove('d-none');
+      cancelButton.classList.remove('d-none');
+      filterButton.classList.remove('d-none');
+      
+      
+      
+      });
+      
+
+      /*
       // Si c'est un fichier à télécharger
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -494,18 +558,20 @@ exportButton.addEventListener('click', async function () {
       a.download = `${type}-export.${type === 'excel' ? 'xlsx' : type}`;
       document.body.appendChild(a);
       a.click();
-      a.remove();
+      a.remove();*/
 
     } catch (error) {
       console.error(error);
       alert('Une erreur est survenue lors de l\'export.');
     } finally {
       // Masquer loader
-      filterLoader.classList.add('d-none');
-      filterButton.classList.remove('d-none');
+      //exportLoader.classList.add('d-none');
+      //exportButton.classList.remove('d-none');
+      //cancelButton.classList.remove('d-none');
+      //filterButton.classList.remove('d-none');
     }
 
-    */
+  /*  */
 
 });
 });

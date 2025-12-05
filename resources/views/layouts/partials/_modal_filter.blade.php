@@ -125,7 +125,7 @@
   <label for="file_type" class="form-label">Type de fichier</label>
   <select id="file_type" name="file_type" class="form-control">
     <option value="pdf" selected>PDF</option>
-    <option value="excel" >Excel</option>
+    {{-- <option value="excel" >Excel</option> --}}
     {{-- <option value="csv">CSV</option> --}}
   </select>
 </div>
@@ -145,6 +145,10 @@
       </div>
       <div class="modal-footer">
 
+          <div id="export-loader" class="d-none d-flex justify-content-start">
+              <div class="inner-loading dot-flashing"></div>
+            </div>
+
       <div class="menu_button">
         
 
@@ -161,14 +165,13 @@
 
           <button id="export-button" type="button" class="text-white w-100 btn btn-block btn-primary font-weight-medium auth-form-btn">
             <span id="export-button-text">Exporter</span>
-            <div id="export-loader" class="d-none d-flex justify-content-start">
-              <div class="inner-loading dot-flashing"></div>
-            </div>
           </button>
         </div>
         <div class="menu_button">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button id="cancel-button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
         </div> 
+
+        
       </div>
     </div>
   </div>

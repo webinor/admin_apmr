@@ -17,10 +17,11 @@ class PusherController extends Controller
         $user = auth()->user();
         $socket_id = $request["socket_id"]; //"138468.39263933" ;
         $channel_name = $request["channel_name"]; //;"private-posts"
-        $key = getenv("PUSHER_APP_KEY");
-        $secret = getenv("PUSHER_APP_SECRET");
-        $app_id = getenv("PUSHER_APP_ID");
+        $key = config('broadcasting.connections.pusher.key');// getenv("PUSHER_APP_KEY");
+        $secret = config('broadcasting.connections.pusher.secret');// getenv("PUSHER_APP_SECRET");
+        $app_id = config('broadcasting.connections.pusher.app_id');// getenv("PUSHER_APP_ID");
 
+//dd(config('broadcasting.connections.pusher.secret'));
         if ($user) {
             //$string=($socket_id.":".$channel_name);
 
