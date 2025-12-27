@@ -401,6 +401,9 @@ function renderItems(items) {
     tbody.innerHTML = '';
 
     items.forEach(item => {
+
+      if (!item.is_mensual_fee) {
+
         tbody.innerHTML += `
             <tr>
                 <td>${item.label}</td>
@@ -409,6 +412,18 @@ function renderItems(items) {
                 <td class="text-end fw-bold">${formatMoney(item.amount)}</td>
             </tr>
         `;
+        
+      } else {
+
+        tbody.innerHTML += `
+            <tr>
+                <td colspan="3">${item.label}</td>
+                <td class="text-end fw-bold">${formatMoney(item.amount)}</td>
+            </tr>
+        `;
+        
+      }
+        
     });
 }
 
