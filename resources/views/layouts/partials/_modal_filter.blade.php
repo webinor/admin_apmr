@@ -16,8 +16,8 @@
 
               <!-- Compagnie -->
               <div class="mb-3 border-bottom">
-                <label for="compagnie" class="form-label">Compagnie</label>
-                <select id="compagnie" name="compagnie" class="form-control filter">
+                <label for="company" class="form-label">Compagnie</label>
+                <select id="company" name="company" class="form-control filter">
                   <option value="">-- Toutes --</option>
                   @foreach($companies as $compagnie)
                     <option value="{{ $compagnie->code }}">{{ $compagnie->name }}</option>
