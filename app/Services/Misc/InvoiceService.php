@@ -30,13 +30,34 @@ use App\Addons\Misc\ShowVariablesResponder;
 use App\Addons\Misc\IndexVariablesResponder;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use App\Addons\Misc\CreateVariablesResponder;
+use App\Models\Company;
 use App\Models\Operations\Folder;
 use App\Models\Prestations\ProductType;
 use App\Models\Prestations\ServiceType;
+use Illuminate\Http\Request;
 
 class InvoiceService 
 {
     use DataConstructor , FileUploadHandler  ;
+
+     function getIndexVariables(Request $request)
+    {
+
+        $companies = Company::orderBy("name")->get();
+          $invoices = [];
+
+         $vars = compact(
+            "companies","invoices"
+        );
+
+        return $vars;
+
+    }
+
+      function getView($view_name, $vars = [])
+    {
+        return view($view_name, $vars);
+    }
 
 
     public function update_reference($invoice_data){

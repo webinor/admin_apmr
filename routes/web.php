@@ -181,7 +181,8 @@ Route::middleware(["auth"])->group(function () {
     Route::post("validate-invoices", [FolderController::class, "validate_invoices"]);
     
 
-    Route::get("invoce", [InvoiceController::class, "preview"])->name('invoices.preview');
+    // Route::get("invoce", [InvoiceController::class, "preview"])->name('invoices.preview');
+    Route::get("invoce", [InvoiceController::class, "generate"])->name('invoices.generate');
    
 
     Route::get("/filter", [HomeController::class, "filter"]);

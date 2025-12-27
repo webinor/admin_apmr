@@ -536,7 +536,6 @@ class AssistanceService implements
     }
     function getIndexVariables(Request $request ,  $results)
     {
-        /**/
 
         $filters = $request->all();
 

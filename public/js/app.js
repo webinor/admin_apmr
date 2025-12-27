@@ -22760,7 +22760,7 @@ Pusher.logToConsole = false;
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   // namespace : "App\\Events\\Sales",
   broadcaster: 'pusher',
-  key: "c5c8e491d19b3f9ba285",
+  key: "158018dade48359696ea",
   cluster: "eu",
   forceTLS: false,
   authEndpoint: "/pusher/auth"

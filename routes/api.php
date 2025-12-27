@@ -11,6 +11,7 @@ use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\ExtractionSettingController;
 use App\Http\Controllers\GroundAgentController;
 use App\Http\Controllers\HumanResource\EmployeeController;
+use App\Http\Controllers\InvoicePreviewController;
 use App\Http\Controllers\Misc\FileController;
 use App\Http\Controllers\Misc\FreeSearchController;
 use App\Http\Controllers\Misc\InvoiceController;
@@ -165,6 +166,9 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
 
 
         Route::get("count-filtered-results", [AssistanceController::class, "countFiltered"]);
+
+        Route::get("preview", [InvoicePreviewController::class, "preview"]);
+
 
         
 

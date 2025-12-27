@@ -60,9 +60,22 @@
             font-size: 11px;
             margin-top: 20px;
         }
+
+        .watermark {
+    position: fixed;
+    top: 45%;
+    left: 10%;
+    font-size: 90px;
+    color: rgba(0,0,0,0.08);
+    transform: rotate(-30deg);
+    z-index: 0;
+}
     </style>
 </head>
 <body>
+    @if($watermark ?? false)
+    <div class="watermark">APERÇU</div>
+@endif
     <!-- Header -->
     <div class="header">
         <table width="100%">
@@ -87,33 +100,19 @@
     </table> --}}
 
     <table class="details">
-        <tr>
-            <td><strong>Facture n° :</strong> {{ $invoice->number }}</td>
-        </tr>
-        <tr>
-            <td><strong>Du :</strong> {{ $invoice->date }}</td>
-        </tr>
-        <tr>
-            <td><strong>Boîte Postale :</strong> {{ $invoice->po_box }}</td>
-        </tr>
-        <tr>
-            <td><strong>Ville :</strong> {{ $invoice->city_name }}</td>
-        </tr>
-        <tr>
-            <td><strong>Identifiant Unique :</strong> {{ $invoice->unique_id }}</td>
-        </tr>
-        <tr>
-            <td><strong>RC :</strong> {{ $invoice->rc }}</td>
-        </tr>
-        <tr>
-            <td colspan="2"><strong>Réf :</strong> {{ $invoice->reference }}</td>
-        </tr>
+       {!! displayInvoiceRow('Facture n°', $invoice->number) !!}
+{!! displayInvoiceRow('Du', $invoice->date) !!}
+{!! displayInvoiceRow('Boîte Postale', $invoice->po_box) !!}
+{!! displayInvoiceRow('Ville', $invoice->city_name) !!}
+{!! displayInvoiceRow('Identifiant Unique', $invoice->unique_id) !!}
+{!! displayInvoiceRow('RC', $invoice->rc) !!}
+{!! displayInvoiceRow('Réf', $invoice->reference, 2) !!}
     </table>
 
     <!-- Mission -->
     <div class="mission">
         Assistance aux passagers à mobilité réduite à l’Aéroport International de {{ $invoice->airport }}
-        durant le mois de {{ $invoice->month }}
+         {{ $invoice->period }}
     </div>
 
     <!-- Tableau -->
@@ -128,12 +127,26 @@
         </thead>
         <tbody>
             @foreach($invoice->items as $item)
+
+               @if (!$item['is_mensual_fee'])
+                   
                 <tr>
                     <td>{{ $item['label'] }}</td>
                     <td>{{ $item['qty'] }}</td>
                     <td class="right">{{ number_format((float)$item['pu'], 0, ',', ' ') }}</td>
                     <td class="right">{{ number_format((float)$item['amount'], 0, ',', ' ') }}</td>
                 </tr>
+
+               @else
+
+                <tr>
+                    <td colspan="3" >{{ $item['label'] }}</td>
+                    <td class="right">{{ number_format((float)$item['amount'], 0, ',', ' ') }}</td>
+                </tr>
+                   
+               @endif
+
+
             @endforeach
         </tbody>
     </table>

@@ -18,6 +18,12 @@ class Invoice extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+         "code" ,
+                "invoice_number" ,
+                "created_by",
+    ];
+
 /*
    /**
  * Retrieve the model for a bound value.
@@ -80,16 +86,7 @@ public function resolveRouteBinding($value, $field = null)
         return $this->hasMany(InvoiceLine::class);
     }
    
-      /**
-       * Get the service_type that owns the Invoice
-       *
-       * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-       */
-      public function service_type(): BelongsTo
-      {
-          return $this->belongsTo(ServiceType::class);
-      }  
-
+     
 
       /**
      * Get the parent prestationable model (user or post).
@@ -99,16 +96,6 @@ public function resolveRouteBinding($value, $field = null)
         return $this->morphTo();
     }
 
-
-    /**
-     * Get the folder that owns the Invoice
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function folder(): BelongsTo
-    {
-        return $this->belongsTo(Folder::class,);
-    }
 
       
 

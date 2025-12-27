@@ -96,7 +96,7 @@ class AssistanceController extends Controller
         $filters = $request->all();
 
            $query = Assistance::query()
-    ->has("signature") // assistance doit être signée
+   // ->has("signature") // assistance doit être signée
     ->whereHas("ground_agent.company.wheel_chairs") // filtre compagnie
     ->with([
         "ground_agent.company.wheel_chairs",
@@ -162,11 +162,29 @@ if (!empty($filters["wheel_chair"])) {
 }
 
 
-// Comptage exact des lignes filtrées
-        $totalFiches = $query->count();
+//  $totalFiches = (clone $query)->count();
+
+// $totalFichesSignees = (clone $query)
+//     ->has('signature')
+//     ->count();
+
+// $totalFichesNonSignees = (clone $query)
+//     ->doesntHave('signature')
+//     ->count();
+
+$totalFiches = (clone $query)->count();
+
+$totalFichesSignees = (clone $query)
+    ->has('signature')
+    ->count();
+
+$totalFichesNonSignees = $totalFiches - $totalFichesSignees;
+
 
         return response()->json([
-            "count" => $totalFiches,
+            "count_signed" =>  $totalFichesSignees,
+            "count_unsigned" =>  $totalFichesNonSignees,
+            "count_total"=>$totalFiches
         ]);
 
 

@@ -95,7 +95,7 @@
 
                   <div class=" mb-4 ">
                     <form id="form-results" class="row" action="" method="get">
-            
+        
                       <div class="col-1">
                         <label for="results">Afficher</label>
                       </div>
@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const fileTypeSelect = document.getElementById('file_type');
     const form = document.getElementById('form_filter');
-
+ 
         function toggleActionDiv(actionDiv) {
         if (fileTypeSelect.value === 'pdf') {
             actionDiv.style.display = 'block';
@@ -441,8 +441,8 @@ async function updateCount() {
     const data = await response.json();
 
     // Affiche le nombre de résultats sur le bouton
-    filterButton.querySelector('#filter-button-text').textContent = `Filtrer (${data?.count})`;
-    exportButton.querySelector('#export-button-text').textContent = `Exporter (${data?.count})`;
+    filterButton.querySelector('#filter-button-text').textContent = `Filtrer (${data?.count_signed})`;
+    exportButton.querySelector('#export-button-text').textContent = `Exporter (${data?.count_signed})`;
 
   } catch (error) {
     console.error(error);

@@ -10,7 +10,6 @@
         <form id="form_filter" class="pt-0" novalidate method="GET" action="{{ url('apmrs/export?type=pdf') }}">
           @csrf
           <input id="filter_url" type="hidden" value="{{ ('/api/count-filtered-results') }}">
-          <input id="slip" name="slip" class="form-control" type="hidden" value="">
 
           <div class="row">
             <div class="col-md-12">
