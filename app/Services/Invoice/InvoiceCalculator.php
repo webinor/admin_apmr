@@ -156,8 +156,9 @@ foreach ($company->wheel_chairs as $wc) {
         // Formatter en "Mois Année"
         //   $formatted = $carbon->translatedFormat("F Y");
 
-        //dd($company);
+        // dd($company);
         return (object) [
+             "company" => $company,
             "allAssistanceIds"=>$allAssistanceIds,
             "logo_provider" => asset("images/LOGO_CAMEROUN_ASSIST.png"),
             "logo_customer" => $company->image_path

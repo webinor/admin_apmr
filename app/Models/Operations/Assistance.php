@@ -22,6 +22,8 @@ class Assistance extends Model
 
 
 
+   
+
     public function flight_type_text()  {
         
         return  Str::substr($this->flight_type, 0, 3);

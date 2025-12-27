@@ -44,7 +44,9 @@ class InvoiceService
     {
 
         $companies = Company::orderBy("name")->get();
-          $invoices = [];
+          $invoices = Invoice::with(['company:id,name,city_id','invoicer'])->get();
+
+        //   dd($invoices);
 
          $vars = compact(
             "companies","invoices"

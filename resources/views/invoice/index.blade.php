@@ -123,6 +123,10 @@ tfoot .total-row td:not(:last-child) {
                           <th>
                             generée le
                           </th>
+
+                          <th>
+                            Periode
+                          </th>
                          <th>Action</th>
                           
                         </tr>
@@ -137,14 +141,14 @@ tfoot .total-row td:not(:last-child) {
                             {{$invoice->image_url}}
                           </td>--}}
                           <td>
-                            {{$invoice->name}}
+                            {{$invoice->company->name}}
                           </td>
 
                           <td>
 
-                            @if ($invoice->admin && $invoice->admin->employee)
+                            @if ($invoice->invoicer && $invoice->invoicer->employee)
                            
-                            {{$invoice->admin->employee->first_name}}   {{$invoice->admin->employee->last_name}}
+                            {{$invoice->invoicer->employee->full_name()}}
                                 
                             @endif
 
@@ -152,7 +156,12 @@ tfoot .total-row td:not(:last-child) {
                           </td>
                           <td>
                             {{$invoice->created_at}}
-                            
+                          </td>
+
+                           <td>
+                            {{ \Carbon\Carbon::parse($invoice->start_date)->format('d/m/Y') }} 
+-> 
+{{ \Carbon\Carbon::parse($invoice->end_date)->format('d/m/Y') }}
                           </td>
                           
                           <td>

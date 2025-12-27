@@ -3,11 +3,14 @@
 namespace App\Models\Misc;
 
 use App\Addons\Scopes\Misc\InvoiceScope;
+use App\Models\Company;
 use App\Models\Misc\Resource;
 use App\Models\Misc\InvoiceLine;
+use App\Models\Operations\Assistance;
 use App\Models\Operations\Folder;
 use App\Models\Service;
 use App\Models\Prestations\ServiceType;
+use App\Models\User\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,6 +25,10 @@ class Invoice extends Model
          "code" ,
                 "invoice_number" ,
                 "created_by",
+                "company_id",
+                "start_date",
+                "end_date"
+
     ];
 
 /*
@@ -39,21 +46,36 @@ public function resolveRouteBinding($value, $field = null)
 }
  */
 
- /**
-  * Get the remote_inserted associated with the Invoice
-  *
-  * @return \Illuminate\Database\Eloquent\Relations\HasOne
-  */
-  public function remote_inserted(): HasOne
-  {
-      return $this->hasOne(RemoteInserted::class);
-  }
+/**
+ * Get all of the assistnces for the Invoice
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\HasMany
+ */
+public function assistances(): HasMany
+{
+    return $this->hasMany(Assistance::class);
+}
 
-  public function is_invoice_validated_remote(): bool
-  {
-    //dd($this->remote_inserted);
-      return $this->remote_inserted && $this->remote_inserted->is_validated_in_remote;
-  }
+/**
+ * Get the company that owns the Invoice
+ *
+ * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+ */
+public function company(): BelongsTo
+{
+    return $this->belongsTo(Company::class,);
+}
+
+ /**
+     * Get the invoicer that owns the Assistance
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function invoicer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
 
 
  public function get_amount(): int

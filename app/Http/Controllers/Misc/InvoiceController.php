@@ -64,6 +64,8 @@ class InvoiceController extends Controller
             Carbon::parse($request->date_fin),true
         );
 
+        // dd($data->company->id);
+
         $action = $request->action;
 
         /* ===========================
@@ -76,7 +78,10 @@ class InvoiceController extends Controller
 
               $invoice = Invoice::create([
                 "code" => Str::random(10),
+                "company_id"=>$data->company->id,
                 "invoice_number" => Str::upper(Str::random(8)),
+                     'start_date'=>Carbon::parse($request->date_debut),
+        'end_date'=>Carbon::parse($request->date_fin),
                 "created_by" => auth()->id(),
             ]);
 
@@ -94,10 +99,12 @@ class InvoiceController extends Controller
             );
 
              Assistance::whereIn('id', $data->allAssistanceIds)
-        ->update(['invoice_id' => $invoice->id, 'invoiced_at' => now(),
-        'start_date'=>Carbon::parse($request->date_debut),
-        'end_date'=>Carbon::parse($request->date_fin),
-    'invoiced_by' => auth()->id(),]);
+        ->update(['invoice_id' => $invoice->id,
+        //  'invoiced_at' => now(),
+    //     'start_date'=>Carbon::parse($request->date_debut),
+    //     'end_date'=>Carbon::parse($request->date_fin),
+    // 'invoiced_by' => auth()->id(),
+]);
 
             DB::commit();
           } catch (\Throwable $th) {
