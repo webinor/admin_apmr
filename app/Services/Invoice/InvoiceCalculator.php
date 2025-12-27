@@ -16,16 +16,16 @@ class InvoiceCalculator
     {
         $company = Company::with('wheel_chairs')->where('code', $companyCode)->firstOrFail();
         
-        $assistances = Assistance::has('signature')
-            ->whereHas('ground_agent.company', function ($q) use ($company) {
-                $q->whereCompanyId($company->id);
-            })
+        $assistances = Assistance::select('id')->has('signature')
+            // ->whereHas('ground_agent.company', function ($q) use ($company) {
+            //     $q->whereCompanyId($company->id);
+            // })
             ->whereBetween('flight_date', [$startDate, $endDate])
             ->get();
 
             //dd($assistances);
 
-        $lines = AssistanceLine::whereIn('assistance_id', $assistances->pluck('id'))->get();
+        $lines = AssistanceLine::select('id' , 'assistance_agent_id' ,'assistance_id', 'wheel_chair_id')->whereIn('assistance_id', $assistances->pluck('id'))->get();
 
         // 🧮 LIGNES FACTURABLES
         $items = $company->wheel_chairs->map(function ($wc) use ($lines) {
