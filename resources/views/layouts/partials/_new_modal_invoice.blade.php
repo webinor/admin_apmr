@@ -86,7 +86,7 @@
               {{-- <button type="button" class="btn btn-primary float-end" data-bs-target="#step2" data-bs-toggle="pill">
                 Suivant <i class="bi bi-arrow-right-circle ms-1"></i>
               </button> --}}
-              <button type="button" class="btn btn-primary float-end" data-go="step2">
+              <button type="button" class="invoice-button btn btn-primary float-end" data-go="step2">
     Suivant <i class="bi bi-arrow-right-circle ms-1"></i>
 </button>
             </form>
@@ -162,11 +162,11 @@
               Suivant <i class="bi bi-arrow-right-circle ms-1"></i>
             </button> --}}
 
-            <button type="button" class="btn btn-secondary" data-back="step1">
+            <button type="button" class="invoice-button btn btn-secondary" data-back="step1">
     <i class="bi bi-arrow-left-circle me-1"></i> Précédent
 </button>
 
-<button type="button" class="btn btn-primary float-end" data-go="step3">
+<button type="button" class="invoice-button btn btn-primary float-end" data-go="step3">
     Suivant <i class="bi bi-arrow-right-circle ms-1"></i>
 </button>
           </div>
@@ -217,15 +217,21 @@
 </button>
 
 
-             <button type="button" data-action="final" class="generateBtn btn btn-success float-end ">
+             <button type="button" data-action="final" class="invoice-button generateBtn btn btn-success float-end ">
               <i class="bi bi-file-earmark-pdf me-1"></i> Générer Facture
             </button>
 
-            <button type="button" data-action="preview" class="generateBtn btn btn-primary float-end  me-2">
+            <button type="button" data-action="preview" class="invoice-button generateBtn btn btn-primary float-end  me-2">
               <i class="bi bi-file-earmark-pdf me-1"></i> Apercu de la Facture
             </button>
 
+           
+
           </div>
+
+           <div id="invoice-loader" class="d-none d-flex justify-content-center">
+              <div class="inner-loading dot-flashing"></div>
+            </div>
         </div>
       </div>
 

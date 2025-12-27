@@ -331,6 +331,11 @@ function getFilters() {
 }
 
 async function updateCount() {
+
+  $(".invoice-button").addClass("d-none");
+  $("#invoice-loader").removeClass("d-none");
+
+
   const filters = getFilters();
 
   try {
@@ -348,6 +353,9 @@ async function updateCount() {
       throw new Error('Erreur lors du chargement des statistiques');
     }
 
+
+      $(".invoice-button").removeClass("d-none");
+  $("#invoice-loader").addClass("d-none");
 
 
     const data = await response.json();
