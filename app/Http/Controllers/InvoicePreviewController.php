@@ -32,7 +32,7 @@ class InvoicePreviewController extends Controller
     $filters = $request->all();
 
            $query = Assistance::query()
-   // ->has("signature") // assistance doit être signée
+    ->has("signature") // assistance doit être signée
     ;
 
 // Compagnie
@@ -50,18 +50,18 @@ if (!empty($filters["date_fin"])) {
     $query->whereDate("created_at", "<=", $filters["date_fin"]);
 }
 
-$totalFiches = (clone $query)->count();
+$totalFichesSignees = (clone $query)->count();
 
-$totalFichesSignees = (clone $query)
-    ->has('signature')
+$totalFichesSigneesFacturees = (clone $query)
+    ->whereNotNull('invoice_id')
     ->count();
 
-$totalFichesNonSignees = $totalFiches - $totalFichesSignees;
+$totalFichesSigneesNonFacturees = $totalFichesSignees - $totalFichesSigneesFacturees;
 
     return response()->json([
-        'count_total'    => $totalFiches,//$data['stats']['total'],
-        'count_signed'   => $totalFichesSignees,//$data['stats']['signed'],
-        'count_unsigned' => $totalFichesNonSignees,//$data['stats']['unsigned'],
+        'count_total_signed'    => $totalFichesSignees,//$data['stats']['total'],
+        'count_signed_invoiced'   => $totalFichesSigneesFacturees,//$data['stats']['signed'],
+        'count_signed_uninvoiced' => $totalFichesSigneesNonFacturees,//$data['stats']['unsigned'],
         'items'          => $data['items'],
         'totals'         => $data['totals'],
         'company'=>$data['company'],

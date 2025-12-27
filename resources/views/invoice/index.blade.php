@@ -357,24 +357,26 @@ async function updateCount() {
       $(".invoice-button").removeClass("d-none");
   $("#invoice-loader").addClass("d-none");
 
+  resetInvoicePreview();
+
 
     const data = await response.json();
 
   //  console.log(!data.count_signed);
     
-        if (data.count_signed) {
+        if (data.count_signed_uninvoiced) {
    
     
 
     // ✅ Mise à jour des compteurs
-    document.getElementById('count-total').textContent =
-      data.count_total ?? 0;
+    document.getElementById('count-total-signed').textContent =
+      data.count_total_signed ?? 0;
 
-    document.getElementById('count-signed').textContent =
-      data.count_signed ?? 0;
+    document.getElementById('count-signed-invoiced').textContent =
+      data.count_signed_invoiced ?? 0;
 
-    document.getElementById('count-unsigned').textContent =
-      data.count_unsigned ?? 0;
+    document.getElementById('count-signed-uninvoiced').textContent =
+      data.count_signed_uninvoiced ?? 0;
 
     document.getElementById('compagny_name').textContent = data.company.name;
 
@@ -445,6 +447,29 @@ function renderFooter(totals) {
         </tr>
     `;
 }
+
+function resetInvoicePreview() {
+    // Réinitialiser les compteurs
+    document.getElementById('count-total-signed').textContent = 0;
+    document.getElementById('count-signed-invoiced').textContent = 0;
+    document.getElementById('count-signed-uninvoiced').textContent = 0;
+
+    // Réinitialiser le nom de la compagnie et la période
+    document.getElementById('compagny_name').textContent = '-';
+    document.getElementById('period').textContent = '-';
+
+    // Réinitialiser le total
+    document.getElementById('total').textContent = '0';
+
+    // Réinitialiser le tableau des items
+    const tbody = document.getElementById('items');
+    if (tbody) tbody.innerHTML = '';
+
+    // Réinitialiser le footer du tableau
+    const tfoot = document.querySelector('#items').closest('table')?.querySelector('tfoot');
+    if (tfoot) tfoot.innerHTML = '';
+}
+
 
 function formatMoney(amount) {
     return amount > 0 ? new Intl.NumberFormat('fr-FR').format(amount) + '' : '';

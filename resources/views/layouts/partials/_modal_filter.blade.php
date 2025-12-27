@@ -25,6 +25,17 @@
                 </select>
               </div>
 
+              <!-- acturation -->
+              <div class="mb-3 border-bottom">
+                <label for="invoiced" class="form-label">Facturation</label>
+                <select id="invoiced" name="invoiced" class="form-control filter">
+                  <option value="">-- Facturees et non facturees --</option>
+                  <option value="y">-- Facturees --</option>
+                  <option value="n">-- Non facturees --</option>
+               
+                </select>
+              </div>
+
               <!-- Agent -->
               <div class="mb-3 border-bottom">
                 <label for="agent" class="form-label">Agent CAS</label>

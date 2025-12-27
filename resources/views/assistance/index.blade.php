@@ -331,9 +331,9 @@
 
 @section('custom_modal')
 
-@include('layouts.partials._modal_invoice')
 
-@include('layouts.partials._new_modal_invoice')
+
+
 
 @include('layouts.partials._modal_filter') 
 

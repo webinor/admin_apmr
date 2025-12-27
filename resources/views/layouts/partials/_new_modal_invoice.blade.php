@@ -98,20 +98,20 @@
             <div class="row text-center">
               <div class="col-md-3">
                 <div class="card border-0 shadow-sm p-3">
-                  <h4 class="text-primary" id="count-total">0</h4>
-                  <p class="mb-0">Fiches APMR</p>
+                  <h4 class="text-primary" id="count-total-signed">0</h4>
+                  <p class="mb-0">Fiches Signées</p>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card border-0 shadow-sm p-3">
-                  <h4 class="text-success" id="count-signed">0</h4>
-                  <p class="mb-0">Signées</p>
+                  <h4 class="text-success" id="count-signed-invoiced">0</h4>
+                  <p class="mb-0">Fiches Signées & Facturées</p>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card border-0 shadow-sm p-3">
-                  <h4 class="text-danger" id="count-unsigned">0</h4>
-                  <p class="mb-0">Non Signées</p>
+                  <h4 class="text-danger" id="count-signed-uninvoiced">0</h4>
+                  <p class="mb-0">Fiches Signées & Non Facturées</p>
                 </div>
               </div>
               {{-- <div class="col-md-3">

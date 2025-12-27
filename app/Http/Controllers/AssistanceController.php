@@ -126,10 +126,17 @@ if (!empty($filters["user"])) {
         $qry->whereCode($filters["user"]);
     });
 }
+   
 
 // Déjà facturées
-if (!empty($filters["justificatifs"])) {
-    $query->where("is_invoiced", true);
+if (!empty($filters["invoiced"]) && $filters['invoiced'] == "y") {
+    //dd($filters['invoiced']);
+    $query->whereNotNull("invoice_id");
+}
+
+//Non facturées
+if (!empty($filters["invoiced"]) && $filters['invoiced'] == "n") {
+    $query->whereNull("invoice_id");
 }
 
 // Min / Max prix

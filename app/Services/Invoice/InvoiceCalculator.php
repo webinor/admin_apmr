@@ -24,50 +24,74 @@ class InvoiceCalculator
             ->where("code", $companyCode)
             ->firstOrFail();
 
-        $quantities = AssistanceLine::query()
-    ->select('wheel_chair_id', DB::raw('COUNT(*) as qty'))
+    //     $quantities = AssistanceLine::query()
+    // ->select('wheel_chair_id', DB::raw('COUNT(*) as qty'))
+    // ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate) {
+    //     $q->has('signature')
+    //       ->whereBetween('flight_date', [$startDate, $endDate])
+    //       ->whereNull('invoice_id') ;
+    // })
+    // ->groupBy('wheel_chair_id')
+    // ->pluck('qty', 'wheel_chair_id'); // [wheel_chair_id => qty]
+
+    $quantities = AssistanceLine::query()
+    ->select(
+        'wheel_chair_id',
+        DB::raw('COUNT(*) as qty'),
+        DB::raw('GROUP_CONCAT(DISTINCT assistance_id) as assistance_ids')
+    )
     ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate) {
         $q->has('signature')
-          ->whereBetween('flight_date', [$startDate, $endDate]);
+          ->whereBetween('flight_date', [$startDate, $endDate])
+          ->whereNull('invoice_id');
     })
     ->groupBy('wheel_chair_id')
-    ->pluck('qty', 'wheel_chair_id'); // [wheel_chair_id => qty]
+    ->get()
+    ->mapWithKeys(function ($row) {
+        return [
+            $row->wheel_chair_id => [
+                'qty' => (int) $row->qty,
+                'assistance_ids' => explode(',', $row->assistance_ids), // transforme en tableau
+            ]
+        ];
+    });
 
-        $items = collect();
 
-foreach ($company->wheel_chairs as $wc) {
-    $qty = $quantities[$wc->id] ?? 0;
-
-    if ($qty === 0) {
-        continue;
-    }
-
-    $items->push([
-        'is_mensual_fee' => false,
-        'label'  => $wc->name,
-        'qty'    => $qty,
-        'pu'     => $wc->pivot->price,
-        'amount' => $qty * $wc->pivot->price,
-    ]);
-}
 
         //dd($assistances);
 
         $items = collect();
 
-foreach ($company->wheel_chairs as $wc) {
-    $qty = $quantities[$wc->id] ?? 0;
+// foreach ($company->wheel_chairs as $wc) {
+//     $qty = $quantities[$wc->id] ?? 0;
 
-    if ($qty === 0) {
+//     if ($qty === 0) {
+//         continue;
+//     }
+
+//     $items->push([
+//         'is_mensual_fee' => false,
+//         'label'  => $wc->name,
+//         'qty'    => $qty,
+//         'pu'     => $wc->pivot->price,
+//         'amount' => $qty * $wc->pivot->price,
+//     ]);
+// }
+
+foreach ($company->wheel_chairs as $wc) {
+    $data = $quantities[$wc->id] ?? null;
+
+    if (!$data || $data['qty'] === 0) {
         continue;
     }
 
     $items->push([
         'is_mensual_fee' => false,
         'label'  => $wc->name,
-        'qty'    => $qty,
+        'qty'    => $data['qty'],
         'pu'     => $wc->pivot->price,
-        'amount' => $qty * $wc->pivot->price,
+        'amount' => $data['qty'] * $wc->pivot->price,
+        'assistance_ids' => $data['assistance_ids'], // optionnel, si tu veux garder les IDs
     ]);
 }
       
@@ -118,6 +142,9 @@ foreach ($company->wheel_chairs as $wc) {
             NumberFormatter::ROUND_HALFUP
         );
 
+        $allAssistanceIds = array_merge(...array_map(fn($v) => $v['assistance_ids'], $quantities->toArray()));
+
+
         $str_ttc = $formatter->format($ttc);
 
         // Créer un objet date
@@ -131,6 +158,7 @@ foreach ($company->wheel_chairs as $wc) {
 
         //dd($company);
         return (object) [
+            "allAssistanceIds"=>$allAssistanceIds,
             "logo_provider" => asset("images/LOGO_CAMEROUN_ASSIST.png"),
             "logo_customer" => $company->image_path
                 ? asset("storage/company_images/" . $company->image_path)
