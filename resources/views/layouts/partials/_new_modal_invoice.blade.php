@@ -217,9 +217,9 @@
 </button>
 
 
-             <button type="button" data-action="final" class="invoice-button generateBtn btn btn-success float-end ">
+             {{-- <button type="button" data-action="final" class="invoice-button generateBtn btn btn-success float-end ">
               <i class="bi bi-file-earmark-pdf me-1"></i> Générer Facture
-            </button>
+            </button> --}}
 
             <button type="button" data-action="preview" class="invoice-button generateBtn btn btn-primary float-end  me-2">
               <i class="bi bi-file-earmark-pdf me-1"></i> Apercu de la Facture
