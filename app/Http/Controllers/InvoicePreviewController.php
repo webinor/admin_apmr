@@ -36,9 +36,9 @@ class InvoicePreviewController extends Controller
     ;
 
 // Compagnie
-if (!empty($filters["compagny"])) {
+if (!empty($filters["company"])) {
     $query->whereHas("ground_agent.company", function ($qry) use ($filters) {
-        $qry->whereCode($filters["compagny"]);
+        $qry->whereCode($filters["company"]);
     });
 }
 

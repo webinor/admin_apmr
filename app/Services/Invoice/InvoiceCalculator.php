@@ -38,7 +38,7 @@ class InvoiceCalculator
     //     $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
     // )
 
-    $quantities = AssistanceLine::query()
+    $instances = AssistanceLine::query()
     ->select(
         'wheel_chair_id',
         DB::raw('COUNT(*) as qty'),
@@ -46,15 +46,20 @@ class InvoiceCalculator
     )
      
     ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate) {
-        $q->has('signature')
+          $q->has('signature')
           ->whereBetween('flight_date', [$startDate, $endDate])
           ->whereNull('invoice_id')
-           ->whereHas('ground_agent.company', function ($q2) use ($company) {
-              $q2->where('id', $company->id);
-          });
+          ->when($company->code ?? null, fn($q, $comp) => 
+        $q->whereHas('ground_agent.company', fn($q2) => $q2->whereCode($comp))
+    );
+        //   ->whereCompanyId($company->id);
     })
     ->groupBy('wheel_chair_id')
-    ->get()
+    ->get();
+
+    // dd($instances);
+
+    $quantities = $instances
     ->mapWithKeys(function ($row) {
         return [
             $row->wheel_chair_id => [
@@ -64,6 +69,11 @@ class InvoiceCalculator
         ];
     });
 
+    // dd($quantities);
+
+
+
+    
 
 
         //dd($assistances);
