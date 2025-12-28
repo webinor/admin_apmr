@@ -14,8 +14,11 @@ class InvoicePreviewController extends Controller
     public function preview(Request $request, InvoiceCalculator $calculator)
 {
     $company = $request->company;
-    $start   = Carbon::parse($request->date_debut);
-    $end     = Carbon::parse($request->date_fin);
+    // $start   = Carbon::parse($request->date_debut);
+    // $end     = Carbon::parse($request->date_fin);
+
+    $start = Carbon::parse($request->date_debut)->startOfDay();
+$end   = Carbon::parse($request->date_fin)->endOfDay();
 
     if (!$company) {
        

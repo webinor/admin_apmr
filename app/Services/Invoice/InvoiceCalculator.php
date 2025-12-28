@@ -47,7 +47,10 @@ class InvoiceCalculator
      
     ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate) {
           $q->has('signature')
-          ->whereBetween('flight_date', [$startDate, $endDate])
+        //   ->whereBetween('flight_date', [$startDate, $endDate])
+        ->whereDate('flight_date', '>=', $startDate)
+        ->whereDate('flight_date', '<=',  $endDate)
+
           ->whereNull('invoice_id')
           ->when($company->code ?? null, fn($q, $comp) => 
         $q->whereHas('ground_agent.company', fn($q2) => $q2->whereCode($comp))
