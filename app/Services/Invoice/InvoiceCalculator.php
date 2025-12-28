@@ -142,7 +142,9 @@ foreach ($company->wheel_chairs as $wc) {
             NumberFormatter::ROUND_HALFUP
         );
 
-        $allAssistanceIds = array_merge(...array_map(fn($v) => $v['assistance_ids'], $quantities->toArray()));
+        // $allAssistanceIds = array_merge(...array_map(fn($v) => $v['assistance_ids'], $quantities->toArray()));
+
+        $allAssistanceIds = array_merge(...array_map(fn($v) => array_values($v['assistance_ids']), $quantities->toArray()));
 
 
         $str_ttc = $formatter->format($ttc);
