@@ -63,9 +63,9 @@
 
         .watermark {
     position: fixed;
-    top: 45%;
-    left: 10%;
-    font-size: 90px;
+    top: 40%;
+    left: 20%;
+    font-size: 100px;
     color: rgba(0,0,0,0.08);
     transform: rotate(-30deg);
     z-index: 0;
