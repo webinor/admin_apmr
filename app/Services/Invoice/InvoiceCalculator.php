@@ -34,19 +34,24 @@ class InvoiceCalculator
     // ->groupBy('wheel_chair_id')
     // ->pluck('qty', 'wheel_chair_id'); // [wheel_chair_id => qty]
 
+    // ->when($company->code ?? null, fn($q, $comp) => 
+    //     $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
+    // )
+
     $quantities = AssistanceLine::query()
     ->select(
         'wheel_chair_id',
         DB::raw('COUNT(*) as qty'),
         DB::raw('GROUP_CONCAT(DISTINCT assistance_id) as assistance_ids')
     )
-     ->when($company->code ?? null, fn($q, $comp) => 
-        $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
-    )
+     
     ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate) {
         $q->has('signature')
           ->whereBetween('flight_date', [$startDate, $endDate])
-          ->whereNull('invoice_id');
+          ->whereNull('invoice_id')
+           ->whereHas('ground_agent.company', function ($q2) use ($company) {
+              $q2->where('id', $company->id);
+          });
     })
     ->groupBy('wheel_chair_id')
     ->get()
