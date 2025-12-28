@@ -40,6 +40,9 @@ class InvoiceCalculator
         DB::raw('COUNT(*) as qty'),
         DB::raw('GROUP_CONCAT(DISTINCT assistance_id) as assistance_ids')
     )
+     ->when($company->code ?? null, fn($q, $comp) => 
+        $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
+    )
     ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate) {
         $q->has('signature')
           ->whereBetween('flight_date', [$startDate, $endDate])
