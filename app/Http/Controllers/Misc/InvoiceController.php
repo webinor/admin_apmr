@@ -67,19 +67,23 @@ class InvoiceController extends Controller
         // dd($data->company->id);
 
         $action = $request->action;
+        $invoice_number = Str::upper(Str::random(8));
 
         /* ===========================
          |  MODE FINAL (PDF + DB)
          =========================== */
         // DB::transaction(function () use (&$invoice, $data) {
 
+        if ($action == "final") {
+            # code...
+        
           try {
             DB::beginTransaction();
 
               $invoice = Invoice::create([
                 "code" => Str::random(10),
                 "company_id"=>$data->company->id,
-                "invoice_number" => Str::upper(Str::random(8)),
+                "invoice_number" => $invoice_number,
                      'start_date'=>Carbon::parse($request->date_debut),
         'end_date'=>Carbon::parse($request->date_fin),
                 "created_by" => auth()->id(),
@@ -111,6 +115,8 @@ class InvoiceController extends Controller
             DB::rollBack();
             throw $th;
           }
+
+        }
        
 
         $pdf = Pdf::loadView("invoice.template", [
@@ -119,8 +125,8 @@ class InvoiceController extends Controller
         ]);
 
         $filename = $action == "preview"
-            ? "aperçu-facture-{$invoice->invoice_number}.pdf"
-            : "facture-{$invoice->invoice_number}.pdf";
+            ? "aperçu-facture-{$invoice_number}.pdf"
+            : "facture-{$invoice_number}.pdf";
 
         return $pdf->download($filename);
     }
