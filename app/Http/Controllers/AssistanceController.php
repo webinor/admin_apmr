@@ -346,6 +346,8 @@ $totalFichesNonSignees = $totalFiches - $totalFichesSignees;
     // 1) Récupérer les IDs filtrés via ton export builder
     $export = new ApmrExport($request->all());
 
+   // return $request->all();
+
     $filtered = $export->get_filtered(); // ta méthode actuelle
 
   //  return($filtered);
@@ -451,6 +453,15 @@ elseif($params["file_type"] == "csv"){
  // Mesure CREATION recap PDF
 
  return $this->generateRecap($request);
+
+
+
+
+
+
+
+
+
  
 
 $benchmark->start("recap_creation");

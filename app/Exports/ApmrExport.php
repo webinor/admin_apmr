@@ -32,8 +32,8 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         $this->filters = $filters;
 
         // Compagnie : si un ID est passé, on va chercher le libellé
-        if (!empty($filters["compagny"])) {
-            $company = Company::whereCode($filters["compagny"])->first();
+        if (!empty($filters["company"])) {
+            $company = Company::whereCode($filters["company"])->first();
             $this->companyImage = $company->image_path
                 ? asset("storage/company_images/" . $company->image_path)
                 : null;
@@ -133,7 +133,7 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         'assistance.ground_agent.company.wheel_chairs:id,name,slug',
     ])
     ->whereHas('assistance.signature')
-    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) => 
+    ->when($this->filters['company'] ?? null, fn($q, $comp) => 
         $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
     )
     ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
@@ -155,7 +155,7 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
     'assistance.ground_agent.company:id,code,name'
 ])
     ->whereHas('assistance.signature')
-    ->when($this->filters['compagnie'] ?? null, fn($q, $comp) => 
+    ->when($this->filters['company'] ?? null, fn($q, $comp) => 
         $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
     )
     ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
