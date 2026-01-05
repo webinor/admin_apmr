@@ -32,8 +32,8 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         $this->filters = $filters;
 
         // Compagnie : si un ID est passé, on va chercher le libellé
-        if (!empty($filters["compagnie"])) {
-            $company = Company::whereCode($filters["compagnie"])->first();
+        if (!empty($filters["compagny"])) {
+            $company = Company::whereCode($filters["compagny"])->first();
             $this->companyImage = $company->image_path
                 ? asset("storage/company_images/" . $company->image_path)
                 : null;
