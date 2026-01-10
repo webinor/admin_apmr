@@ -378,7 +378,7 @@
                               @if ($loop->iteration == 1)
                                 <label>Type de chaise</label>
                               @endif
-                              <select {{ $readonly ? "disabled" : "" }} class="form-control" name="wheel_chair[]">
+                              <select {{ $readonly ? "" : "" }} class="form-control" name="wheel_chair[]">
                                 <option value="">Sélectionnez un type de chaise</option>
                                 @foreach ($wheel_chairs as $wheel_chair)
                                   <option value="{{ $wheel_chair->code }}" {{ $assistance_line->wheel_chair_id == $wheel_chair->id ? 'selected' : '' }}>
@@ -712,7 +712,7 @@
 
                                $('#form-container').on('change', 'input, select', function () {
 
-                                return null;
+                                //return null;
 
                                           checkBeneficiaries(false);
 
