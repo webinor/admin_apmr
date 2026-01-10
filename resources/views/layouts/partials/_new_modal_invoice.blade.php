@@ -217,13 +217,13 @@
 </button>
 
 
-           @if (!app()->isProduction())
+           {{-- @if (!app()->isProduction()) --}}
 
              <button id="invoice-button" type="button" data-action="final" class="invoice-button d-none generateBtn btn btn-success float-end ">
               <i class="bi bi-file-earmark-pdf me-1"></i> Générer Facture
             </button>
                
-           @endif
+           {{-- @endif --}}
 
             <button id="preview-button" type="button" data-action="preview" class="invoice-button d-none generateBtn btn btn-primary float-end  me-2">
               <i class="bi bi-file-earmark-pdf me-1"></i> Apercu de la Facture
