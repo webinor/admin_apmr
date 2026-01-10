@@ -17,6 +17,7 @@ use App\Models\Supplier\Supplier;
 use App\Models\Supplier\Transfert;
 use Illuminate\Support\Facades\Route;
 use App\Models\HumanResource\Employee;
+use App\Models\Misc\Invoice;
 use App\Models\Misc\Payment;
 use App\Models\Operations\Assistance;
 use App\Models\Operations\AssistanceLine;
@@ -130,6 +131,10 @@ class RouteServiceProvider extends ServiceProvider
 
          Route::bind('assistance_line', function ($value) {
             return AssistanceLine::where('code', $value)->first();
+        });
+
+            Route::bind('invoice', function ($value) {
+            return Invoice::where('code', $value)->first();
         });
 
 

@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use NumberFormatter;
 
@@ -42,6 +43,22 @@ class InvoiceController extends Controller
         return $this->invoice_service->getView("invoice.index", $variables);
     }
 
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Misc\Invoice  $category
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Request $request, Invoice $invoice)
+    {
+        $this->authorize("update", $invoice);
+
+        $variables = $this->invoice_service->getEditVariables($request , $invoice);
+
+        return $this->invoice_service->getView("invoice.manage", $variables);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -56,18 +73,22 @@ class InvoiceController extends Controller
         return $this->invoice_service->update_reference($request->validated());
     }
 
-    public function generate(Request $request, InvoiceCalculator $calculator)
+    public function old_generate(Request $request, InvoiceCalculator $calculator)
     {
-        $data = $calculator->calculate(
+
+         $action = $request->action;
+         
+         $data = $calculator->calculate(
             $request->company,
             Carbon::parse($request->date_debut),
-            Carbon::parse($request->date_fin),true
+            Carbon::parse($request->date_fin),true,
+            $action != "final" ? true : false
         );
-
+        
+        $invoice_number = $data->number;
         // dd($data->company->id);
 
-        $action = $request->action;
-        $invoice_number = Str::upper(Str::random(8));
+       
 
         /* ===========================
          |  MODE FINAL (PDF + DB)
@@ -130,6 +151,85 @@ class InvoiceController extends Controller
 
         return $pdf->download($filename);
     }
+
+
+
+    public function generate(Request $request, InvoiceCalculator $calculator)
+{
+    $action = $request->action;
+
+    $data = $calculator->calculate(
+        $request->company,
+        Carbon::parse($request->date_debut),
+        Carbon::parse($request->date_fin),
+        true,
+        $action !== "final"
+    );
+
+    $invoice = null;
+
+    if ($action === "final") {
+        DB::transaction(function () use ($request, $data, &$invoice) {
+            $invoice = Invoice::create([
+                "code"           => Str::random(10),
+                "company_id"     => $data->company->id,
+                "invoice_number" => $data->number,
+                "start_date"     => Carbon::parse($request->date_debut),
+                "end_date"       => Carbon::parse($request->date_fin),
+                "created_by"     => auth()->id(),
+            ]);
+
+            $invoice->invoice_lines()->createMany(
+                collect($data->items)->map(fn ($i) => [
+                    "designation" => $i["label"],
+                    "quantity"    => $i["qty"],
+                    "unit_price"  => $i["pu"],
+                    "amount"      => $i["amount"],
+                ])->toArray()
+            );
+
+            Assistance::whereIn('id', $data->allAssistanceIds)
+                ->update(['invoice_id' => $invoice->id]);
+        });
+    }
+
+    // Génération PDF
+    $pdf = Pdf::loadView("invoice.template", [
+        "invoice"   => $data,
+        "watermark"=> $action === "preview",
+    ]);
+
+    $filename = ($action === "preview"
+        ? "preview-invoice-{$data->number}.pdf"
+        : "invoice-{$data->number}.pdf"
+    );
+
+    // Stockage
+    $path = "invoices/{$filename}";
+    // Storage::put($path, $pdf->output());
+    Storage::disk('public')->put($path, $pdf->output());
+
+    return response()->json([
+    "success" => true,
+    // "url"     => Storage::url($path),
+    "url" => Storage::disk('public')->url($path),
+
+    "invoice" => $invoice ? [
+        "id"           => $invoice->id,
+        "code"         => $invoice->code,
+        "company_name" => $invoice->company->name,
+
+        "generated_by" => optional(
+            optional($invoice->invoicer)->employee
+        )->full_name(),
+
+        "created_at"   => $invoice->created_at->toDateTimeString(),
+        "start_date"   => $invoice->start_date->toDateString(),
+        "end_date"     => $invoice->end_date->toDateString(),
+    ] : null
+]);
+}
+
 
     public function preview(Request $request)
     {
@@ -471,5 +571,20 @@ class InvoiceController extends Controller
             DB::rollback();
             throw $th;
         }
+    }
+
+
+     /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Misc\Invoice  $invoice
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Invoice $invoice)
+    {
+        // return $invoice;
+        $response = $this->invoice_service->deleteInvoice($invoice);
+
+        return $response;
     }
 }

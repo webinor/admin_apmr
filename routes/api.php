@@ -155,6 +155,12 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
             "destroy",
         ]);
 
+         Route::apiResource("invoice", InvoiceController::class)->only([
+            "store",
+            "update",
+            "destroy",
+        ]);
+
         
 
        

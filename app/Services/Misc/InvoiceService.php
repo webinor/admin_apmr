@@ -56,6 +56,37 @@ class InvoiceService
 
     }
 
+        function getEditVariables(Request $request , Invoice $invoice)
+    {
+
+       
+        $invoice->load(['invoice_lines','company.wheel_chairs']);
+
+        $companies = Company::orderBy("name")
+            ->get();
+
+       
+       
+        $action = "update";
+        $disabled =  "";
+        $readonly =  "";
+        $invoice_url = "";
+
+        //   dd($invoices);
+
+         $vars = compact(
+        "invoice",
+        "invoice_url",
+        "companies",
+        "action",
+        "disabled",
+        "readonly"
+        );
+
+        return $vars;
+
+    }
+
       function getView($view_name, $vars = [])
     {
         return view($view_name, $vars);
@@ -100,6 +131,28 @@ class InvoiceService
 
     public function preview($data){
 
+    }
+
+
+        public function deleteInvoice(Invoice $invoice)
+    {
+        try {
+            DB::beginTransaction();
+            //$invoice->is_active = false;
+            $invoice->delete();
+
+            //////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\/////////////////////////////
+
+            DB::commit();
+
+            return [
+                "status" => true,
+                //"data" => $invoice,
+            ];
+        } catch (\Throwable $th) {
+            DB::rollback();
+            throw $th;
+        }
     }
 
 }

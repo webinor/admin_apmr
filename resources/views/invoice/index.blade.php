@@ -173,17 +173,22 @@ tfoot .total-row td:not(:last-child) {
                               
                               @endcan
 
-{{--                               <a id="edit_{{$invoice->code}}" class="me-3 edit" href="{{url('invoice/'.$invoice->code.'/edit')}}"><i class="menu-icon mdi mdi-table-edit"></i></a>
- --}}
+                              {{-- <a id="edit_{{$invoice->code}}" class="me-3 edit" href="{{url('invoice/'.$invoice->code.'/edit')}}"><i class="menu-icon mdi mdi-eye"></i></a> --}}
+
                               @can('delete', $invoice)
 
-                              <a id="delete_{{$invoice->code}}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
-                              <input id="input_{{$invoice->code}}" type="hidden" value="{{$invoice->code}}">
-                              <div id="loader" class="d-none d-flex justify-content-center mt-3">
-            
-                              <div class="inner-loading dot-flashing"></div>
+                           
                               
-                              </div> 
+                              
+                               <a   data-bs-toggle="modal" data-bs-target="#delete-modal" data-model-to-delete="{{ $invoice->company->name}} Du  {{ \Carbon\Carbon::parse($invoice->start_date)->format('d/m/Y') }} 
+-Au
+{{ \Carbon\Carbon::parse($invoice->end_date)->format('d/m/Y') }}" data-delete-link="{{ ('/api/invoice/'.($invoice->code)) }}" class="delete" href="#"><i class="menu-icon mdi mdi-close-circle"></i></a>
+                               
+                               <div id="loader" class="invoice_{{$invoice->code }}  d-none d-flex justify-content-center mt-3">
+                                 
+                                 <div class="inner-loading dot-flashing"></div>
+                                 
+                                </div>
                               @endcan
                              
                             </form> 
@@ -295,31 +300,141 @@ $(document).ready(function () {
      
 
   
-    document.querySelectorAll('.generateBtn').forEach(btn => {
-  btn.addEventListener('click', function () {
+//     document.querySelectorAll('.generateBtn').forEach(btn => {
+//   btn.addEventListener('click', function () {
 
-    const action = this.dataset.action; // preview | final
+//     const action = this.dataset.action; // preview | final
 
-    const company     = document.getElementById('company').value;
-    const date_debut  = document.getElementById('date_debut').value;
-    const date_fin    = document.getElementById('date_fin').value;
+//     const company     = document.getElementById('company').value;
+//     const date_debut  = document.getElementById('date_debut').value;
+//     const date_fin    = document.getElementById('date_fin').value;
+
+//     if (!company || !date_debut || !date_fin) {
+//       alert("Veuillez sélectionner la compagnie ainsi que les dates de début et de fin !");
+//       return;
+//     }
+
+//     // Construction de l’URL avec action
+//     const url = `{{ route('invoices.generate') }}`
+//       + `?company=${encodeURIComponent(company)}`
+//       + `&date_debut=${encodeURIComponent(date_debut)}`
+//       + `&date_fin=${encodeURIComponent(date_fin)}`
+//       + `&action=${encodeURIComponent(action)}`;
+
+//     // Ouvre le PDF (aperçu ou définitif)
+//     window.open(url, '_blank');
+//   });
+// });
+
+document.querySelectorAll('.generateBtn').forEach(btn => {
+  btn.addEventListener('click', async function () {
+
+    const action     = this.dataset.action;
+    const company    = document.getElementById('company').value;
+    const date_debut = document.getElementById('date_debut').value;
+    const date_fin   = document.getElementById('date_fin').value;
 
     if (!company || !date_debut || !date_fin) {
-      alert("Veuillez sélectionner la compagnie et les dates de début et de fin !");
+      alert("Veuillez remplir tous les champs !");
       return;
     }
 
-    // Construction de l’URL avec action
-    const url = `{{ route('invoices.generate') }}`
-      + `?company=${encodeURIComponent(company)}`
-      + `&date_debut=${encodeURIComponent(date_debut)}`
-      + `&date_fin=${encodeURIComponent(date_fin)}`
-      + `&action=${encodeURIComponent(action)}`;
+    $(".invoice-button").addClass("d-none");
+    $("#fullscreen-loader-neon").fadeIn();
 
-    // Ouvre le PDF (aperçu ou définitif)
-    window.open(url, '_blank');
+    const response = await fetch("{{ route('invoices.generate') }}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({
+        company,
+        date_debut,
+        date_fin,
+        action
+      })
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+      $(".invoice-button").removeClass("d-none");
+      $("#fullscreen-loader-neon").fadeOut();
+      alert("Erreur lors de la génération");
+      return;
+    }
+
+    // ✅ Ouvrir le PDF
+    window.open(data.url, "_blank");
+
+    // ✅ Mise à jour UI
+    if (action === "final") {
+      // addInvoiceRow(data.invoice); // ou reload()
+      location.reload();
+    }
+    else{
+      $(".invoice-button").removeClass("d-none");
+      $("#fullscreen-loader-neon").fadeOut();
+    }
   });
 });
+
+
+function addInvoiceRow(invoice) {
+
+  const tbody = document.querySelector('.instances_lines tbody');
+  if (!tbody) return;
+
+  const createdAt = new Date(invoice.created_at).toLocaleString();
+  const startDate = new Date(invoice.start_date).toLocaleDateString();
+  const endDate   = new Date(invoice.end_date).toLocaleDateString();
+
+  const row = `
+    <tr>
+      <td>${invoice.company_name}</td>
+
+      <td>
+        ${invoice.generated_by ?? ''}
+      </td>
+
+      <td>
+        ${createdAt}
+      </td>
+
+      <td>
+        ${startDate} → ${endDate}
+      </td>
+
+      <td>
+        <form>
+          <a class="me-3 print" 
+             href="/invoice/${invoice.code}/edit">
+             <i class="menu-icon mdi mdi-eye"></i>
+          </a>
+
+          <a class="delete"
+             href="#"
+             data-bs-toggle="modal"
+             data-bs-target="#delete-modal"
+             data-model-to-delete="${invoice.company_name} du ${startDate} au ${endDate}"
+             data-delete-link="/api/invoice/${invoice.code}">
+             <i class="menu-icon mdi mdi-close-circle"></i>
+          </a>
+
+          <div class="invoice_${invoice.code} d-none d-flex justify-content-center mt-3">
+            <div class="inner-loading dot-flashing"></div>
+          </div>
+        </form>
+      </td>
+    </tr>
+  `;
+
+  // 🔥 Ajout en haut du tableau
+  tbody.insertAdjacentHTML('afterbegin', row);
+}
+
+
 
   const form = document.getElementById('invoiceFormStep1');
   const filterUrl = document.getElementById('filter_url').value;
@@ -375,6 +490,9 @@ async function updateCount() {
     
         if (data.count_signed_uninvoiced) {
    
+
+              $("#invoice-button").removeClass("d-none");
+        $("#preview-button").removeClass("d-none");
     
 
     // ✅ Mise à jour des compteurs
@@ -386,6 +504,9 @@ async function updateCount() {
 
     document.getElementById('count-signed-uninvoiced').textContent =
       data.count_signed_uninvoiced ?? 0;
+
+
+
 
     document.getElementById('compagny_name').textContent = data.company.name;
 
@@ -400,6 +521,16 @@ async function updateCount() {
     renderItems(data.items);
     renderFooter(data.totals);
 
+        }
+
+        else{
+
+
+
+         $("#invoice-button").addClass("d-none");
+        $("#preview-button").addClass("d-none");
+
+      
         }
 
   } catch (error) {

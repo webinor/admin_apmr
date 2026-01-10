@@ -22,10 +22,15 @@
             font-size: 16px;
             text-transform: uppercase;
         }
+        
         .details {
-            margin: 15px 0;
+            /* margin: 15px 0; */
             width: 100%;
             border-collapse: collapse;
+             margin-left: auto;
+    margin-right: 0;
+    width: 30%; 
+
         }
         .details td {
             padding: 4px;
@@ -70,6 +75,12 @@
     transform: rotate(-30deg);
     z-index: 0;
 }
+
+.footer-info {
+    font-size: 10px;
+    text-align: center;
+    margin-top: 15px;
+}
     </style>
 </head>
 <body>
@@ -80,8 +91,9 @@
     <div class="header">
         <table width="100%">
             <tr>
-                <td align="left"><img src="{{ $invoice->logo_provider }}" alt="Logo 1"></td>
-                <td align="right"><img src="{{ $invoice->logo_customer }}" alt="Logo 2"></td>
+                {{-- <td align="right"><img src="{{ $invoice->logo_customer }}" alt="Logo 2"></td> --}}
+                <td align="left"><img src="{{ $invoice->logo_iso }}" alt="Logo 2"></td>
+                <td align="right"><img src="{{ $invoice->logo_provider }}" alt="Logo 1"></td>
             </tr>
         </table>
     </div>
@@ -100,14 +112,29 @@
     </table> --}}
 
     <table class="details">
-       {!! displayInvoiceRow('Facture n°', $invoice->number) !!}
-{!! displayInvoiceRow('Du', $invoice->date) !!}
+       {{-- {!! displayInvoiceRow('Facture n°', $invoice->number) !!} --}}
+{{-- {!! displayInvoiceRow('Du', $invoice->date) !!} --}}
 {!! displayInvoiceRow('Boîte Postale', $invoice->po_box) !!}
 {!! displayInvoiceRow('Ville', $invoice->city_name) !!}
 {!! displayInvoiceRow('Identifiant Unique', $invoice->unique_id) !!}
 {!! displayInvoiceRow('RC', $invoice->rc) !!}
-{!! displayInvoiceRow('Réf', $invoice->reference, 2) !!}
+{!! displayInvoiceRow('V/Réf', $invoice->reference, 2) !!}
     </table>
+
+
+    <table  style="margin-top:5px; width:50%; border-collapse:collapse;">
+    <tr>
+        <td><strong>Facture n°</strong></td>
+        <td style="border:1px solid #000; padding:6px; text-align:center;">
+            {{ $invoice->number }}
+        </td>
+        <td style="padding-left:10px;"><strong>du</strong></td>
+        <td style="border:1px solid #000; padding:6px; text-align:center;">
+            {{ $invoice->date }}
+        </td>
+    </tr>
+</table>
+
 
     <!-- Mission -->
     <div class="mission">
@@ -167,7 +194,7 @@
         </tr>
     </table>
 
-    <p><em>Facture arrêtée à la somme de FCFA {{ $invoice->amount_letters }}</em></p>
+    <p style="font-weight: bold;"><em>Facture arrêtée à la somme de FCFA {{ $invoice->amount_letters }}</em></p>
 
     <!-- Conditions -->
     <div class="conditions">
@@ -177,5 +204,39 @@
         Code banque : {{ $invoice->code_banque }} - Guichet : {{ $invoice->guichet }} <br>
         N° Cpte : {{ $invoice->compte }} - IBAN : {{ $invoice->iban }} - BIC : {{ $invoice->bic }}
     </div>
+
+
+    <table width="100%" class="footer-info" style="margin-top:15px; font-size:10px; border-collapse:collapse;">
+       <tr>
+      
+        <td style="padding:5px; text-align:center;">
+            Tél. H24 : (237) 233 42 14 14 • 233 42 15 15 • 233 42 20 20 • 233 42 48 91 • 233 43 91 91<br>
+            Fax : (237) 233 42 00 79 • 233 43 30 30<br>
+            Email : administration@assistance.com • commercial@assistance.com<br>
+            www.cwas-assistance.com
+        </td>
+    </tr>
+    <tr>
+        <td  style="padding-top:6px; text-align:center;">
+            S.A. au capital de <strong>100 000 000 FCFA</strong> – RC/DLA/1987/B/04790 – CM/Emi. 56133/01 – NUI : M12880000469U<br>
+            Autorisation Arrêté Ministériel N° <strong>1992/MINATD/SG/DOST/SDSP</strong> du 07 juin 2010
+        </td>
+    </tr>
+
+</table>
+
+
+  <table width="25%" class="footer-info"
+       style="margin:15px auto; text-align:center; font-size:10px; border-collapse:collapse;">
+    <tr>
+        <td style="border:1px solid #000; padding:5px; font-weight:bold;">
+            Certificat N°<br>
+            Qual/2003/1357
+        </td>
+    </tr>
+</table>
+
+
+   
 </body>
 </html>

@@ -70,7 +70,7 @@ class InvoicePolicy
 
       
             
-        return false;//$this -> user_service -> verifyPermission("liste_des_factures", [3],$user);
+        return $this -> user_service -> verifyPermission("liste_des_factures", [3],$user);
     
     }
 

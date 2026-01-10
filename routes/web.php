@@ -182,7 +182,7 @@ Route::middleware(["auth"])->group(function () {
     
 
     // Route::get("invoce", [InvoiceController::class, "preview"])->name('invoices.preview');
-    Route::get("invoce", [InvoiceController::class, "generate"])->name('invoices.generate');
+    Route::post("invoce", [InvoiceController::class, "generate"])->name('invoices.generate');
    
 
     Route::get("/filter", [HomeController::class, "filter"]);

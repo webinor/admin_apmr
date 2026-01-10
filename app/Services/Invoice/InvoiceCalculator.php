@@ -18,7 +18,8 @@ class InvoiceCalculator
         string $companyCode,
         Carbon $startDate,
         Carbon $endDate,
-        $is_generate = false
+        $is_generate = false,
+        $is_preview = true
     ) {
         $company = Company::with("wheel_chairs")
             ->where("code", $companyCode)
@@ -189,10 +190,11 @@ foreach ($company->wheel_chairs as $wc) {
              "company" => $company,
             "allAssistanceIds"=>$allAssistanceIds,
             "logo_provider" => asset("images/LOGO_CAMEROUN_ASSIST.png"),
+            "logo_iso" => asset("images/LOGO_ISO_CAMEROUN_ASSIST.png"),
             "logo_customer" => $company->image_path
                 ? asset("storage/company_images/" . $company->image_path)
                 : "",
-            "number" => $company->prefix . "-" . Carbon::now()->format("d/m/Y"),
+            "number" => $company->prefix."-".str_pad(nextInvoiceNumber("" , $is_preview), 3, '0', STR_PAD_LEFT),// $company->prefix . "-" . Carbon::now()->format("d/m/Y"),
             "date" => Carbon::now()->format("d/m/Y"), //'19/08/2025',
             "reference" => Str::upper($company->billing_address),
             "airport" => Str::upper($company->city->name),

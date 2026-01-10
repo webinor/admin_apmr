@@ -77,6 +77,8 @@ public function company(): BelongsTo
     }
 
 
+   
+
 
  public function get_amount(): int
  {

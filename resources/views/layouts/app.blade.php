@@ -77,11 +77,82 @@ select.form-control{
     }
     .cover_image{
       background-color: #48e2433d;
-    } 
+    }
+
+
+
+#fullscreen-loader-neon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(3px);
+  background-color: rgba(226, 226, 226, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  display: none;
+}
+
+.loader-neon {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.loader-neon .circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 6px solid transparent;
+  border-top-color: #3498db;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spinNeon 1.6s linear infinite;
+  box-shadow: 0 0 20px rgba(52, 152, 219, 0.8);
+  width: 120px;
+  height: 120px;
+}
+
+.loader-neon .neon2 {
+  width: 90px;
+  height: 90px;
+  border-top-color: #e74c3c;
+  animation-duration: 1.2s;
+  animation-direction: reverse;
+  box-shadow: 0 0 20px rgba(231, 76, 60, 0.8);
+}
+
+.loader-neon .neon3 {
+  width: 60px;
+  height: 60px;
+  border-top-color: #f1c40f;
+  animation-duration: 0.9s;
+  box-shadow: 0 0 20px rgba(241, 196, 15, 0.8);
+}
+
+@keyframes spinNeon {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
   </style>
 </head>
 
 <body class="sidebar-dark">
+
+  <!-- Loader Fullscreen Ultra Premium Neon -->
+<div id="fullscreen-loader-neon">
+  <div class="loader-neon">
+    <div class="circle neon1"></div>
+    <div class="circle neon2"></div>
+    <div class="circle neon3"></div>
+  </div>
+</div>
+
+
   <div class="container-scroller">
     <!-- partial -->
     <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
