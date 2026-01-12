@@ -201,6 +201,7 @@ foreach ($company->wheel_chairs as $wc) {
             // "month" => $formatted,
             "period" => "Du $startFormatted Au $endFormatted",
             "items" => $items,
+            "end" => $endFormatted,
             "total_ht" => $totalHT,
             "tva" => $tva,
             "ttc" => $ttc,

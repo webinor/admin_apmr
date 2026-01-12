@@ -130,7 +130,7 @@
         </td>
         <td style="padding-left:10px;"><strong>du</strong></td>
         <td style="border:1px solid #000; padding:6px; text-align:center;">
-            {{ $invoice->date }}
+            {{ $invoice->end }}
         </td>
     </tr>
 </table>
