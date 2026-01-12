@@ -136,8 +136,22 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
     ->when($this->filters['company'] ?? null, fn($q, $comp) => 
         $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
     )
-    ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
-    ->when($this->filters['date_fin'] ?? null, fn($q, $end) => $q->whereDate('created_at', '<=', $end))
+    // ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
+    // ->when($this->filters['date_fin'] ?? null, fn($q, $end) => $q->whereDate('created_at', '<=', $end))
+      ->when(
+        ($this->filters['date_debut'] ?? null) || ($this->filters['date_fin'] ?? null),
+        function ($q) {
+            $q->whereHas('assistance', function ($qa) {
+                if ($this->filters['date_debut'] ?? null) {
+                    $qa->whereDate('created_at', '>=', $this->filters['date_debut']);
+                }
+
+                if ($this->filters['date_fin'] ?? null) {
+                    $qa->whereDate('created_at', '<=', $this->filters['date_fin']);
+                }
+            });
+        }
+    )
     ->when($this->filters['agent'] ?? null, fn($q, $agent) => $q->whereHas('assistance_agent', fn($q2) => $q2->whereCode($agent)))
     ->when($this->filters['city'] ?? null, fn($q, $city) => $q->whereHas('assistance_agent.city', fn($q2) => $q2->whereCode($city)))
     ->when($this->filters['wheel_chair'] ?? null, fn($q, $wc) => $q->whereHas('wheel_chair', fn($q2) => $q2->whereCode($wc)))
