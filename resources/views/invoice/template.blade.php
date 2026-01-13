@@ -211,34 +211,44 @@
     </div>
 
 
-    <table width="100%" class="footer-info" style="margin-top:90px; font-size:8px; border-collapse:collapse;">
+    <table width="100%" class="footer-info" style="margin-top:180px; font-size:8px; border-collapse:collapse;">
        <tr>
+
+         <td >
+            <span style="border:1px solid #000; padding:5px; font-weight:bold;height: 10px;">Certificat N° Qual/2003/1357</span>
+        </td>
       
         <td style="padding:5px; text-align:center;">
-            Tél. H24 : (237) 233 42 14 14 • 233 42 15 15 • 233 42 20 20 • 233 42 48 91 • 233 43 91 91<br>
-            Fax : (237) 233 42 00 79 • 233 43 30 30<br>
-            Email : administration@assistance.com • commercial@assistance.com<br>
+            BP : 2265 DOUALA CAMEROUN, RUE BERTAUT BALI <br> Tél. H24 : (237) 233 42 14 14 • 233 42 15 15 • 233 42 20 20 • 233 42 48 91 • 233 43 91 91<br>
+            Fax : (237) 233 42 00 79 • 233 43 30 30 •  Email : administration@assistance.com • commercial@assistance.com<br>
             www.cwas-assistance.com
+
+              S.A. au capital de <strong>100 000 000 FCFA</strong> – RC/DLA/1987/B/04790 – CM/Emi. 56133/01 – NUI : M12880000469U<br>
+            Autorisation Arrêté Ministériel N° <strong>1992/MINATD/SG/DOST/SDSP</strong> du 07 juin 2010
+        </td>
+
+        <td  style="padding-top:6px; text-align:center;">
+          
         </td>
     </tr>
-    <tr>
+    {{-- <tr>
         <td  style="padding-top:6px; text-align:center;">
             S.A. au capital de <strong>100 000 000 FCFA</strong> – RC/DLA/1987/B/04790 – CM/Emi. 56133/01 – NUI : M12880000469U<br>
             Autorisation Arrêté Ministériel N° <strong>1992/MINATD/SG/DOST/SDSP</strong> du 07 juin 2010
         </td>
-    </tr>
+    </tr> --}}
 
 </table>
 
 
-  <table width="25%" class="footer-info"
+  {{-- <table width="25%" class="footer-info"
        style="margin:15px auto; text-align:center; font-size:8px; border-collapse:collapse;">
     <tr>
         <td style="border:1px solid #000; padding:5px; font-weight:bold;">
             Certificat N° Qual/2003/1357
         </td>
     </tr>
-</table>
+</table> --}}
 
 
    
