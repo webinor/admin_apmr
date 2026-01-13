@@ -119,8 +119,8 @@
 {!! displayInvoiceRow($invoice->city_name." le", $invoice->date_of_day , "" , 'both') !!}
 {!! displayInvoiceRow("", $invoice->airport , "" , 'value') !!}
 {!! displayInvoiceRow("", $invoice->reference , "" , 'none') !!}
-{!! displayInvoiceRow('', $invoice->po_box , ":" , 'none') !!}
-{!! displayInvoiceRow('', $invoice->city_name , "" , 'none') !!}
+{!! displayInvoiceRow('', $invoice->po_box , "" , 'none') !!}
+{{-- {!! displayInvoiceRow('', $invoice->city_name , "" , 'none') !!} --}}
 {!! displayInvoiceRow('NIU', $invoice->unique_id,":",'none') !!}
 {!! displayInvoiceRow('RC', $invoice->rc , ":", 'none') !!}
 {!! displayInvoiceRow('V/Réf', $invoice->city_name, ":" , 'both') !!}
