@@ -4,24 +4,41 @@ use Illuminate\Support\Facades\DB;
 
 if (! function_exists('displayInvoiceRow')) {
     /**
-     * Affiche une ligne de facture seulement si la valeur est différente de "N/A"
-     *
      * @param string $label
      * @param string $value
-     * @param int $colspan
-     * @return string
+     * @param int    $colspan
+     * @param string $separator
+     * @param string $bold  label|value|both|none
      */
-    function displayInvoiceRow(string $label, $value, int $colspan = 1)
-    {
+    function displayInvoiceRow(
+        string $label,
+        $value,
+        string $separator = ':',
+        string $bold = 'label',
+        int $colspan = 1
+    ) {
         if ($value === 'N/A' || empty($value)) {
             return '';
         }
 
         $colspanAttr = $colspan > 1 ? ' colspan="'.$colspan.'"' : '';
 
-        return '<tr><td'.$colspanAttr.'><strong>'.$label.' :</strong> '.$value.'</td></tr>';
+        // Préparation du label
+        $labelHtml = in_array($bold, ['label', 'both'])
+            ? '<strong>'.$label.'</strong>'
+            : $label;
+
+        // Préparation de la valeur
+        $valueHtml = in_array($bold, ['value', 'both'])
+            ? '<strong>'.$value.'</strong>'
+            : $value;
+
+        return '<tr><td'.$colspanAttr.'>'
+            .$labelHtml.' '.$separator.' '.$valueHtml
+            .'</td></tr>';
     }
 }
+
 
 
 

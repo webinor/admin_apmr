@@ -30,6 +30,7 @@
              margin-left: auto;
     margin-right: 0;
     width: 30%; 
+    font-size: 10px;
 
         }
         .details td {
@@ -63,7 +64,7 @@
         }
         .conditions {
             font-size: 11px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .watermark {
@@ -98,7 +99,7 @@
         </table>
     </div>
 
-    <div class="title">FACTURE</div>
+    {{-- <div class="title">FACTURE</div> --}}
 
     <!-- Infos facture -->
     {{-- <table class="details">
@@ -114,11 +115,14 @@
     <table class="details">
        {{-- {!! displayInvoiceRow('Facture n°', $invoice->number) !!} --}}
 {{-- {!! displayInvoiceRow('Du', $invoice->date) !!} --}}
-{!! displayInvoiceRow('Boîte Postale', $invoice->po_box) !!}
-{!! displayInvoiceRow('Ville', $invoice->city_name) !!}
-{!! displayInvoiceRow('Identifiant Unique', $invoice->unique_id) !!}
-{!! displayInvoiceRow('RC', $invoice->rc) !!}
-{!! displayInvoiceRow('V/Réf', $invoice->reference, 2) !!}
+
+{!! displayInvoiceRow($invoice->city_name." le", $invoice->date_of_day , "" , 'both') !!}
+{!! displayInvoiceRow("", $invoice->airport , "" , 'value') !!}
+{!! displayInvoiceRow('Boîte Postale', $invoice->po_box , ":" , 'none') !!}
+{!! displayInvoiceRow('', $invoice->city_name , "" , 'none') !!}
+{!! displayInvoiceRow('NIU', $invoice->unique_id,":",'none') !!}
+{!! displayInvoiceRow('RC', $invoice->rc , ":", 'none') !!}
+{!! displayInvoiceRow('V/Réf', $invoice->city_name, ":" , 'both') !!}
     </table>
 
 
@@ -194,7 +198,7 @@
         </tr>
     </table>
 
-    <p style="font-weight: bold;"><em>Facture arrêtée à la somme de FCFA {{ $invoice->amount_letters }}</em></p>
+    <p style="border:1px solid #000; padding:5px; font-weight:bold;"><em>Facture arrêtée à la somme de FCFA {{ $invoice->amount_letters }}</em></p>
 
     <!-- Conditions -->
     <div class="conditions">
@@ -206,7 +210,7 @@
     </div>
 
 
-    <table width="100%" class="footer-info" style="margin-top:15px; font-size:10px; border-collapse:collapse;">
+    <table width="100%" class="footer-info" style="margin-top:70px; font-size:10px; border-collapse:collapse;">
        <tr>
       
         <td style="padding:5px; text-align:center;">
@@ -230,8 +234,7 @@
        style="margin:15px auto; text-align:center; font-size:10px; border-collapse:collapse;">
     <tr>
         <td style="border:1px solid #000; padding:5px; font-weight:bold;">
-            Certificat N°<br>
-            Qual/2003/1357
+            Certificat N° Qual/2003/1357
         </td>
     </tr>
 </table>

@@ -181,6 +181,7 @@ foreach ($company->wheel_chairs as $wc) {
 
         $startFormatted = $startDate->translatedFormat("d F Y");
         $endFormatted = $endDate->translatedFormat("d F Y");
+        $todayFormatted = now()->translatedFormat("d F Y");
 
         // Formatter en "Mois Année"
         //   $formatted = $carbon->translatedFormat("F Y");
@@ -194,10 +195,11 @@ foreach ($company->wheel_chairs as $wc) {
             "logo_customer" => $company->image_path
                 ? asset("storage/company_images/" . $company->image_path)
                 : "",
-            "number" => $company->prefix."-".str_pad(nextInvoiceNumber("" , $is_preview), 3, '0', STR_PAD_LEFT),// $company->prefix . "-" . Carbon::now()->format("d/m/Y"),
+            "number" => $company->prefix."-".str_pad(nextInvoiceNumber("" , $is_preview), 4, '0', STR_PAD_LEFT),// $company->prefix . "-" . Carbon::now()->format("d/m/Y"),
             "date" => Carbon::now()->format("d/m/Y"), //'19/08/2025',
             "reference" => Str::upper($company->billing_address),
-            "airport" => Str::upper($company->city->name),
+            "date_of_day" => Str::title($todayFormatted),
+            "airport" => Str::upper($company->name),
             // "month" => $formatted,
             "period" => "Du $startFormatted Au $endFormatted",
             "items" => $items,
