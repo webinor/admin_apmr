@@ -211,7 +211,7 @@
     </div>
 
 
-    <table width="100%" class="footer-info" style="margin-top:70px; font-size:10px; border-collapse:collapse;">
+    <table width="100%" class="footer-info" style="margin-top:90px; font-size:8px; border-collapse:collapse;">
        <tr>
       
         <td style="padding:5px; text-align:center;">
@@ -232,7 +232,7 @@
 
 
   <table width="25%" class="footer-info"
-       style="margin:15px auto; text-align:center; font-size:10px; border-collapse:collapse;">
+       style="margin:15px auto; text-align:center; font-size:8px; border-collapse:collapse;">
     <tr>
         <td style="border:1px solid #000; padding:5px; font-weight:bold;">
             Certificat N° Qual/2003/1357
