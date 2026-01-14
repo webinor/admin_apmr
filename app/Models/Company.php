@@ -14,6 +14,12 @@ class Company extends Model
     use HasFactory;
 
 
+
+    protected $fillable = [
+    'name',
+    'alias',
+    // autres champs
+];
     /**
      * Get the city that owns the Company
      *

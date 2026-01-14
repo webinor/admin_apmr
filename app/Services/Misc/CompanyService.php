@@ -117,7 +117,7 @@ ViewsResponder {
                 }
                     
                         $company= new Company();    
-                        $columns = ['name','prefix','billing_address','mensual_fee','post_box','uni','rc' , 'email'];
+                        $columns = ['name','alias','prefix','billing_address','mensual_fee','post_box','uni','rc' , 'email'];
                 
                         foreach ($columns as  $column) {
                             array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : null ;
@@ -218,7 +218,7 @@ ViewsResponder {
 
                 }*/
                 
-                $columns = ['name','prefix','billing_address','mensual_fee','post_box','uni','rc','email'];
+                $columns = ['name','alias','prefix','billing_address','mensual_fee','post_box','uni','rc','email'];
     
             foreach ($columns as  $column) {
                 array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : null ;

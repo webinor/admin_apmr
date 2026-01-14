@@ -25,11 +25,12 @@ class StoreCompanyRequest extends FormRequest
     {
         return [
             "name"=>"required|string",
+            "alias"=>"required|string",
             "prefix"=>"required|string",
             "mensual_fee"=>"required|numeric",
             "city"=>"required|string",
             'billing_address'=>'required|string',
-            'email' => 'required|email|unique:companies,email',
+            'email' => 'nullable|email|unique:companies,email',
             'post_box'=>'nullable|string',
             'uni'=>'nullable|string',
             'rc'=>'nullable|string',

@@ -192,6 +192,7 @@ foreach ($company->wheel_chairs as $wc) {
             "allAssistanceIds"=>$allAssistanceIds,
             "logo_provider" => asset("images/LOGO_CAMEROUN_ASSIST.png"),
             "logo_iso" => asset("images/LOGO_ISO_CAMEROUN_ASSIST.png"),
+            // "invoice_name" => $company->image_path,
             "logo_customer" => $company->image_path
                 ? asset("storage/company_images/" . $company->image_path)
                 : "",
@@ -199,7 +200,7 @@ foreach ($company->wheel_chairs as $wc) {
             "date" => Carbon::now()->format("d/m/Y"), //'19/08/2025',
             "reference" => Str::upper($company->billing_address),
             "date_of_day" => Str::title($todayFormatted),
-            "airport" => Str::upper($company->name),
+            "airport" => Str::upper($company->alias),
             // "month" => $formatted,
             "period" => "Du $startFormatted Au $endFormatted",
             "items" => $items,

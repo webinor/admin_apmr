@@ -27,12 +27,13 @@ class UpdateCompanyRequest extends FormRequest
         return [
             'company'=>'required|string',
             'name'=>'required|string',
+            "alias"=>"required|string",
             'city'=>'required|string',
             'prefix'=>'required|string',
             "mensual_fee"=>"required|numeric",
             'billing_address'=>'required|string',
             'email' => [
-                'required',
+                'nullable',
                 'email',
                 Rule::unique('companies', 'email')->ignore($this->route('company')),
                  // $this->user correspond au paramètre {user} de ta route
