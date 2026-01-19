@@ -93,8 +93,13 @@
         <table width="100%">
             <tr>
                 {{-- <td align="right"><img src="{{ $invoice->logo_customer }}" alt="Logo 2"></td> --}}
-                <td align="left"><img src="{{ $invoice->logo_iso }}" alt="Logo 2"></td>
-                <td align="right"><img src="{{ $invoice->logo_provider }}" alt="Logo 1"></td>
+                <td align="left">
+                     <img src="{{ $invoice->logo_iso }}" alt="Logo 2" style="display:block; margin:auto;height: 50px;">
+           
+                     <div style="text-align:left; font-size:8px; margin-top:4px;">ASSISTANCE AUX PERSONNES - TRANSPORTS MEDICALISES - EVACUATIONS SANITAIRES</div>
+
+                </td>
+                <td align="right"><img src="{{ $invoice->logo_provider }}" style="height: 130px;" alt="Logo 1"></td>
             </tr>
         </table>
     </div>
@@ -143,8 +148,8 @@
 
     <!-- Mission -->
     <div class="mission">
-        Assistance aux passagers à mobilité réduite à l’Aéroport International de {{ $invoice->airport }}
-         {{ $invoice->period }}
+        Assistance aux passagers à mobilité réduite à l’Aéroport International de {{ $invoice->city_name }}
+        , {{ $invoice->period }}
     </div>
 
     <!-- Tableau -->
@@ -199,32 +204,43 @@
         </tr>
     </table>
 
-    <p style="border:1px solid #000; padding:5px; font-weight:bold;"><em>Facture arrêtée à la somme de FCFA {{ $invoice->amount_letters }}</em></p>
+    <p style="border:1px solid #000; padding:5px; font-weight:bold;"><em>Facture arrêtée à la somme de {{ $invoice->amount_letters }} FCFA</em></p>
 
     <!-- Conditions -->
     <div class="conditions">
-        <strong>Conditions de paiement :</strong> En espèces, par chèque ou virement sur le compte de <br>
-        <strong>{{ $invoice->bank_name }}</strong> <br>
-        Banque : {{ $invoice->bank }} <br>
+        <strong>Conditions de paiement :</strong> <br>
+        {{-- En espèces, par chèque ou virement sur le compte de <br> --}}
+        A 30 Jours date de réception de la facture <br>
+        Par chèque ou virement au compte de <strong>{{ $invoice->bank_name }}</strong> indiqué ci-dessous <br> 
+
+        SOCIETE GENERALE DES BANQUES CAMEROUN <br>
+          Code Banque  : 10003 <br>
+          Code Agence  : Douala Joss <br>
+          Code Guichet : 00100<br>
+          N° Compte    : 05 01 0224449-19<br>
+          IBAN         : CM21 10003 00100 05010224449 19
+
+        {{-- Banque : {{ $invoice->bank }} <br>
         Code banque : {{ $invoice->code_banque }} - Guichet : {{ $invoice->guichet }} <br>
-        N° Cpte : {{ $invoice->compte }} - IBAN : {{ $invoice->iban }} - BIC : {{ $invoice->bic }}
+        N° Cpte : {{ $invoice->compte }} - IBAN : {{ $invoice->iban }} - BIC : {{ $invoice->bic }} --}}
     </div>
 
 
-    <table width="100%" class="footer-info" style="margin-top:180px; font-size:8px; border-collapse:collapse;">
+    <table width="100%" class="footer-info" style="margin-top:50px; font-size:8px; border-collapse:collapse;">
        <tr>
 
-         <td >
-            <span style="border:1px solid #000; padding:5px; font-weight:bold;height: 10px;">Certificat N° Qual/2003/1357</span>
+          <td  style="border:1px solid #000; padding:5px; font-weight:bold;height: 10px;">
+            <span>Certificat N° <br>
+             Qual/2003/1357</span>
         </td>
       
         <td style="padding:5px; text-align:center;">
-            BP : 2265 DOUALA CAMEROUN, RUE BERTAUT BALI <br> Tél. H24 : (237) 233 42 14 14 • 233 42 15 15 • 233 42 20 20 • 233 42 48 91 • 233 43 91 91<br>
+            BP : 2265 DOUALA CAMEROUN, 645 RUE BERTAUT BALI <br> Tél. H24 : (237) 233 42 14 14 • 233 42 15 15 • 233 42 20 20 • 233 42 48 91 • 233 43 91 91<br>
             Fax : (237) 233 42 00 79 • 233 43 30 30 •  Email : administration@assistance.com • commercial@assistance.com<br>
-            www.cwas-assistance.com
+            www.cas-assistance.com
 
-              S.A. au capital de <strong>100 000 000 FCFA</strong> – RC/DLA/1987/B/04790 – CM/Emi. 56133/01 – NUI : M12880000469U<br>
-            Autorisation Arrêté Ministériel N° <strong>1992/MINATD/SG/DOST/SDSP</strong> du 07 juin 2010
+              S.A. au capital de <strong>100 000 000 FCFA</strong> – RC/DLA/1987/B/04790 – N° Empl.5613301 A – NIU : M128800000469U<br>
+            Autorisation Arrêté Ministériel N° <strong>1982/A/MINSANTE/SG/DOSTS/SDSSP</strong> du 07 juin 2010
         </td>
 
         <td  style="padding-top:6px; text-align:center;">

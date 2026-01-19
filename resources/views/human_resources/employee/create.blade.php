@@ -630,16 +630,6 @@ $(`#${form} #${input.id}`).removeClass('is-invalid');
 });
 
 if (form == "form_user_access") {
- /* var searchIDs = $(`#${form} .actions_input:checked`).map(function(){
-      return $(this).val();
-    }).get(); // <----
- //   console.log(searchIDs);
-
-    searchIDs = searchIDs.filter((value, index, self) =>
-  index === self.findIndex((t) => (
-    t === value 
-  ))
-)*/
 
 let searchIDs = [];
 
@@ -650,9 +640,6 @@ $(`#${form} .actions_input:checked`).each(function () {
         searchIDs.push(val);
     }
 });
-
-console.log(searchIDs);
-
 
   data_send['authorize_actions']= JSON.stringify(searchIDs);
 }

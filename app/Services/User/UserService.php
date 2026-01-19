@@ -92,7 +92,7 @@ class UserService
 
                 $user = $response["user"];
 
-                $user->notify(new PasswordRequest());
+                // $user->notify(new PasswordRequest());
             }
 
             $user_permission_service = new UserPermissionService();
