@@ -177,14 +177,14 @@ foreach ($company->wheel_chairs as $wc) {
         $str_ttc = $formatter->format($ttc);
 
         // Créer un objet date
-        //   $carbon = \Carbon\Carbon::parse($month);
+        $carbon = \Carbon\Carbon::parse($endDate);
 
         $startFormatted = $startDate->translatedFormat("d F Y");
         $endFormatted = $endDate->translatedFormat("d F Y");
         $todayFormatted = now()->translatedFormat("d F Y");
 
         // Formatter en "Mois Année"
-        //   $formatted = $carbon->translatedFormat("F Y");
+        $formatted = $carbon->translatedFormat("F Y");
 
         // dd($company);
         return (object) [
@@ -201,7 +201,7 @@ foreach ($company->wheel_chairs as $wc) {
             "reference" => Str::upper($company->billing_address),
             "date_of_day" => Str::title($todayFormatted),
             "airport" => Str::upper($company->alias),
-            // "month" => $formatted,
+            "month" => $formatted,
             "period" => "Du $startFormatted Au $endFormatted",
             "items" => $items,
             "end" => $endFormatted,

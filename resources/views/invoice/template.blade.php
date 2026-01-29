@@ -3,10 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <style>
+
+
+        @page {
+    /* margin: 5px 50px 5px 5px; top/bottom – left/right */
+    margin-top: -10px;
+    margin-bottom: -100px;
+}
+
         body { 
             font-family: DejaVu Sans, sans-serif;
             font-size: 12px;
             color: #000;
+
+            /* margin-bottom: 0;
+            padding-bottom: 0; */
         }
         .header, .footer {
             width: 100%;
@@ -149,7 +160,7 @@
     <!-- Mission -->
     <div class="mission">
         Assistance aux passagers à mobilité réduite à l’Aéroport International de {{ $invoice->city_name }}
-        , {{ $invoice->period }}
+        , au courant du mois de  {{ $invoice->month }}
     </div>
 
     <!-- Tableau -->
@@ -226,7 +237,7 @@
     </div>
 
 
-    <table width="100%" class="footer-info" style="margin-top:50px; font-size:8px; border-collapse:collapse;">
+    <table width="100%" class="footer-info" style="margin-top:180px; font-size:8px; border-collapse:collapse;">
        <tr>
 
           <td  style="border:1px solid #000; padding:5px; font-weight:bold;height: 10px;">
