@@ -247,7 +247,7 @@
       
         <td style="padding:5px; text-align:center;">
             BP : 2265 DOUALA CAMEROUN, 645 RUE BERTAUT BALI <br> Tél. H24 : (237) 233 42 14 14 • 233 42 15 15 • 233 42 20 20 • 233 42 48 91 • 233 43 91 91<br>
-            Fax : (237) 233 42 00 79 • 233 43 30 30 •  Email : administration@assistance.com • commercial@assistance.com<br>
+            Fax : (237) 233 42 00 79 • 233 43 30 30 •  Email : administration@cas-assistance.com • commercial@cas-asistance.com<br>
             www.cas-assistance.com
 
               S.A. au capital de <strong>100 000 000 FCFA</strong> – RC/DLA/1987/B/04790 – N° Empl.5613301 A – NIU : M128800000469U<br>
