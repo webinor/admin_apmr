@@ -31,7 +31,7 @@ class UpdateCompanyRequest extends FormRequest
             'city'=>'required|string',
             'prefix'=>'required|string',
             "mensual_fee"=>"required|numeric",
-            'billing_address'=>'required|string',
+            'billing_address'=>'nullable|string',
             'email' => [
                 'nullable',
                 'email',

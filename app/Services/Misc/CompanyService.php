@@ -120,7 +120,7 @@ ViewsResponder {
                         $columns = ['name','alias','prefix','billing_address','mensual_fee','post_box','uni','rc' , 'email'];
                 
                         foreach ($columns as  $column) {
-                            array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : null ;
+                            array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : $company->{$column} = null ;
                         }
                     
             /* if (Reception::where('name', $details['name'])->first()) {
@@ -221,7 +221,9 @@ ViewsResponder {
                 $columns = ['name','alias','prefix','billing_address','mensual_fee','post_box','uni','rc','email'];
     
             foreach ($columns as  $column) {
-                array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : null ;
+                            
+                array_key_exists($column, $details ) ? $company->{$column} = $details[$column] : $company->{$column} = null ;
+                
             }
         
 

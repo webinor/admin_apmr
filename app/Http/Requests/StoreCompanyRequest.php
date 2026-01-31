@@ -29,7 +29,7 @@ class StoreCompanyRequest extends FormRequest
             "prefix"=>"required|string",
             "mensual_fee"=>"required|numeric",
             "city"=>"required|string",
-            'billing_address'=>'required|string',
+            'billing_address'=>'nullable|string',
             'email' => 'nullable|email|unique:companies,email',
             'post_box'=>'nullable|string',
             'uni'=>'nullable|string',
