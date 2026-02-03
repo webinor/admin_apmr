@@ -8,7 +8,7 @@
         @page {
     /* margin: 5px 50px 5px 5px; top/bottom – left/right */
     margin-top: -10px;
-    margin-bottom: 100px;
+    margin-bottom: -100px;
 }
 
         body { 
@@ -93,17 +93,6 @@
     text-align: center;
     margin-top: 15px;
 }
-
-.footer-info-fixed {
-    position: fixed;
-    bottom: 0;        /* Toujours en bas de la page */
-    left: 0;
-    width: 100%;
-    font-size: 8px;
-    border-collapse: collapse;
-    z-index: 1000;    /* Pour être sûr qu’il reste au-dessus */
-}
-
     </style>
 </head>
 <body>
@@ -151,9 +140,6 @@
 {!! displayInvoiceRow('NIU', $invoice->unique_id,":",'none') !!}
 {!! displayInvoiceRow('RC', $invoice->rc , ":", 'none') !!}
 {!! displayInvoiceRow('V/Réf', $invoice->city_name, ":" , 'both') !!}
-
-
-
     </table>
 
 
@@ -251,8 +237,7 @@
     </div>
 
 
-    {{-- <table  width="100%" class="footer-info" style="margin-top:180px; font-size:8px; border-collapse:collapse;"> --}}
-        <table class="footer-info-fixed">
+    <table width="100%" class="footer-info" style="margin-top:180px; font-size:8px; border-collapse:collapse;">
        <tr>
 
           <td  style="border:1px solid #000; padding:5px; font-weight:bold;height: 10px;">
