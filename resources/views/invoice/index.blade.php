@@ -191,7 +191,7 @@ tfoot .total-row td:not(:last-child) {
     data-end="{{ $invoice->end_date }}"
     data-invoice-number="{{ $invoice->invoice_number }}"
     data-total="{{ number_format($invoice->get_amount(), 0, ',', ' ') }}"
-    title="Régénérer la facture"
+    title="Vérifier ou Régénérer la facture"
 >
     <i class="mdi mdi-refresh"></i>
 </button>
