@@ -206,7 +206,7 @@
             <ul class="list-group mb-3">
               <li class="list-group-item"><strong>Compagnie :</strong> <span id="compagny_name"></span> </li>
               <li class="list-group-item"><strong>Période :</strong>  <span id="period"></span></li>
-              <li class="list-group-item"><strong>Total HT estimé :</strong> <span id="total"></span></li>
+              <li class="list-group-item"><strong>Total HT :</strong> <span id="total"></span></li>
             </ul>
             {{-- <button type="button" class="btn btn-secondary" data-bs-target="#step2" data-bs-toggle="pill">
               <i class="bi bi-arrow-left-circle me-1"></i> Précédent

@@ -635,12 +635,7 @@ async function updateCount() {
 
   //  console.log(!data.count_signed);
     
-        if (data.count_signed_uninvoiced >= 0) {
    
-
-              $("#invoice-button").removeClass("d-none");
-        $("#preview-button").removeClass("d-none");
-    
 
     // ✅ Mise à jour des compteurs
     document.getElementById('count-total-signed').textContent =
@@ -660,8 +655,14 @@ async function updateCount() {
     document.getElementById('period').textContent = data.period;
 
 
-    document.getElementById('total').textContent = data.totals.ht;
+    document.getElementById('total').textContent = data.count_signed_uninvoiced ? data.totals.ht : 0;
 
+         if (data.count_signed_uninvoiced > 0) {
+   
+
+              $("#invoice-button").removeClass("d-none");
+        $("#preview-button").removeClass("d-none");
+    
 
 
           // Table
