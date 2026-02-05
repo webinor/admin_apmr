@@ -14,6 +14,15 @@ tfoot .total-row td:not(:last-child) {
     border-left: none !important;
     border-right: none !important;
 } */
+
+.icon-warning { color: #f0ad4e; }
+.icon-primary { color: #0d6efd; }
+.icon-success { color: #198754; }
+.icon-danger  { color: #dc3545; }
+
+.icon-btn:hover {
+    background: rgba(0,0,0,0.05);
+}
     </style>
 @endsection
 
@@ -168,18 +177,78 @@ tfoot .total-row td:not(:last-child) {
                             <form>
 
                               @can('update', $invoice)
+
+    {{-- Voir / éditer --}}
+    <a 
+        id="print_{{ $invoice->code }}"
+        href="{{ url('invoice/'.$invoice->code.'/edit') }}"
+        class="btn btn-outline-primary btn-icon me-2"
+        title="Voir la facture"
+    >
+        <i class="mdi mdi-eye fs-6"></i>
+    </a>
+
+        {{-- Télécharger --}}
+    <a 
+        id="download_{{ $invoice->code }}"
+        href="{{ $invoice->download_link() }}"
+        class="btn btn-outline-success btn-icon me-2"
+        title="Télécharger la facture"
+        target="_blank"
+    >
+        <i class="mdi mdi-download fs-6"></i>
+    </a>
+
+    {{-- Vérifier / Régénérer --}}
+    <button 
+        type="button"
+        class="btn btn-outline-warning btn-icon me-2 regenerate-invoice"
+        data-url="{{ url('api/invoice/'.$invoice->code.'/regenerate') }}"
+        data-code="{{ $invoice->code }}"
+        data-company="{{ $invoice->company->name }}"
+        data-start="{{ $invoice->start_date }}"
+        data-end="{{ $invoice->end_date }}"
+        data-period="{{ $invoice->get_period() }}"
+        data-invoice-number="{{ $invoice->invoice_number }}"
+        data-total="{{ number_format($invoice->get_amount(), 0, ',', ' ') }}"
+        title="Vérifier ou régénérer la facture"
+    >
+        <i class="mdi mdi-refresh fs-6"></i>
+    </button>
+
+
+
+@endcan
+
+
+@can('delete', $invoice)
+
+    {{-- Supprimer --}}
+    <a
+        href="#"
+        class="btn btn-outline-danger btn-icon"
+        data-bs-toggle="modal"
+        data-bs-target="#delete-modal"
+        data-model-to-delete="{{ $invoice->company->name }} Du {{ \Carbon\Carbon::parse($invoice->start_date)->format('d/m/Y') }} - Au {{ \Carbon\Carbon::parse($invoice->end_date)->format('d/m/Y') }}"
+        data-delete-link="{{ '/api/invoice/'.$invoice->code }}"
+        title="Supprimer la facture"
+    >
+        <i class="mdi mdi-close-circle fs-6"></i>
+    </a>
+
+    {{-- Loader --}}
+    <div id="loader" class="invoice_{{ $invoice->code }} d-none d-flex justify-content-center mt-2">
+        <div class="inner-loading dot-flashing"></div>
+    </div>
+
+@endcan
+
+{{-- 
+                              @can('update', $invoice)
                                   
                               <a id="print_{{$invoice->code}}" class="me-3 print" href="{{url('invoice/'.$invoice->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
                               
-                                {{-- Régénérer la facture --}}
-    {{-- <button 
-        type="button"
-        class="btn btn-sm btn-outline-warning regenerate-invoice"
-        data-url="{{ url('api/invoice/'.$invoice->code.'/regenerate') }}"
-        title="Régénérer la facture"
-    >
-        <i class="mdi mdi-refresh"></i>
-    </button> --}}
+     
 
     <button 
     type="button"
@@ -198,9 +267,11 @@ tfoot .total-row td:not(:last-child) {
 </button>
 
 
+                              <a id="edit_{{$invoice->code}}" class="me-3 edit" href="{{$invoice->download_link()}}"><i class="menu-icon mdi mdi-download"></i></a>
+
+
                               @endcan
 
-                              {{-- <a id="edit_{{$invoice->code}}" class="me-3 edit" href="{{url('invoice/'.$invoice->code.'/edit')}}"><i class="menu-icon mdi mdi-eye"></i></a> --}}
 
                               @can('delete', $invoice)
 
@@ -217,7 +288,7 @@ tfoot .total-row td:not(:last-child) {
                                  
                                 </div>
                               @endcan
-                             
+                              --}}
                             </form> 
                           </td>
 

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Storage;
 
 class Invoice extends Model
 {
@@ -119,6 +120,18 @@ public function company(): BelongsTo
     public function invoice_lines(): HasMany
     {
         return $this->hasMany(InvoiceLine::class);
+    }
+
+      public function download_link(): string
+    {
+        $filename = "invoice-{$this->invoice_number}.pdf";
+
+        $path = "invoices/{$filename}";
+
+
+       /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+        $disk = Storage::disk('public');
+        return  $disk->url($path);
     }
    
 
