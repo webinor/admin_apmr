@@ -65,7 +65,7 @@
           Annuler
         </button>
         <button id="invoice-preview-button" type="button" class="btn btn-primary reGenerateBtn" data-action="preview">
-          <i class="bi bi-file-earmark-pdf me-1"></i> Aperçu de la Facture regénéréé
+          <i class="bi bi-file-earmark-pdf me-1"></i> Aperçu de la Facture regénérée
         </button>
         <button id="final-invoice-button" type="button" class="btn btn-success reGenerateBtn" data-action="final">
           <i class="bi bi-file-earmark-pdf me-1"></i> Régénérer la Facture
