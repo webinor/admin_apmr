@@ -122,7 +122,7 @@
               </div> --}}
             </div>
 
-            <div class="mt-4  mb-3">
+            <div class="mt-4  mb-3 table-responsive">
               <table class="table table-sm table-bordered">
                 <thead class="table-light">
                   <tr>
