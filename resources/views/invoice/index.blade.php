@@ -635,7 +635,7 @@ async function updateCount() {
 
   //  console.log(!data.count_signed);
     
-        if (data.count_signed_uninvoiced) {
+        if (data.count_signed_uninvoiced >= 0) {
    
 
               $("#invoice-button").removeClass("d-none");
