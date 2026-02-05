@@ -189,6 +189,7 @@ tfoot .total-row td:not(:last-child) {
     data-company="{{ $invoice->company->name }}"
     data-start="{{ $invoice->start_date }}"
     data-end="{{ $invoice->end_date }}"
+    data-period="{{ $invoice->get_period() }}"
     data-invoice-number="{{ $invoice->invoice_number }}"
     data-total="{{ number_format($invoice->get_amount(), 0, ',', ' ') }}"
     title="Vérifier ou Régénérer la facture"
@@ -335,6 +336,7 @@ $(document).on('click', '.regenerate-invoice', function() {
     const company   = button.data('company');
     const start     = button.data('start');
     const end       = button.data('end');
+    const period       = button.data('period');
     const total     = button.data('total');
     const invoiceCode = button.data('code');
     const apiUrl    = button.data('url');
@@ -344,8 +346,9 @@ $(document).on('click', '.regenerate-invoice', function() {
 
     // Remplir les champs du modal
     $('.inv-number').text(invoiceNumber);
-    $('.regenerateDetails #compagny').text(company);
+    $('.regenerateDetails #compagny').text(company);//period
     $('.regenerateDetails #invoice_period').text(start + ' → ' + end);
+    $('.regenerateDetails #invoice_period').text(period);
     $('.regenerateDetails #total_invoice').text(total + ' FCFA');
 
     // Reset checkbox

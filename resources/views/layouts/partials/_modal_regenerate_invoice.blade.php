@@ -18,7 +18,7 @@
         <ul class="regenerateDetails list-group mb-3">
           <li class="list-group-item"><strong>Numéro de la facture :</strong> <span class="inv-number"></span></li>
           <li class="list-group-item"><strong>Compagnie :</strong> <span id="compagny"></span></li>
-          <li class="list-group-item"><strong>Période :</strong> <span id="invoice_period"></span></li>
+          <li class="list-group-item"><strong>Période allant :</strong> <span id="invoice_period"></span></li>
           <li class="list-group-item"><strong>Total :</strong> <span id="total_invoice"></span></li>
         </ul>
 
@@ -26,7 +26,7 @@
         <form id="invoiceOptionsForm">
           
             <div class="mb-3">
-  <label for="new_invoice_number" class="form-label">Voulez-vous générer un nouveau numéro de facture ?</label>
+  <label for="new_invoice_number" class="form-label">Sélectionnez une des options ci-dessous ?</label>
   <select id="new_invoice_number" name="new_invoice_number" class="form-select">
     <option value="" selected>Voulez-vous générer un nouveau numéro de facture ?</option>
     <option value="0" >Non, Conserver le numéro actuel</option>
