@@ -141,7 +141,7 @@ tfoot .total-row td:not(:last-child) {
                             {{$invoice->image_url}}
                           </td>--}}
                           <td>
-                            {{$invoice->company->name}}
+                            {{Str::upper($invoice->company->name)}}
                           </td>
 
                           <td>
