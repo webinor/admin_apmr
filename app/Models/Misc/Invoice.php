@@ -77,14 +77,24 @@ public function company(): BelongsTo
     }
 
 
-   
+//    public function total()
+// {
+//     // Somme de toutes les lignes (quantité * prix unitaire)
+//     return $this->lines->sum(function($line) {
+//         return $line->quantity * $line->unit_price;
+//     });
+// }
 
 
  public function get_amount(): int
  {
      $amount = 0;
 
+     
+
      foreach ($this->invoice_lines as $invoice_line) {
+
+        //  dd($invoice_line->get_amount());
          $amount +=$invoice_line->get_amount();// (int)$invoice_line->quantity*(int)$invoice_line->price;
      }
 

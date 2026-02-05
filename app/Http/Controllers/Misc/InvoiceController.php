@@ -10,7 +10,11 @@ use App\Models\Misc\Invoice;
 use App\Models\Misc\InvoiceLine;
 use App\Models\Operations\Assistance;
 use App\Models\Operations\AssistanceLine;
+use App\Services\Invoice\InvoiceCalculationService;
 use App\Services\Invoice\InvoiceCalculator;
+use App\Services\Invoice\InvoicePdfService;
+use App\Services\Invoice\InvoicePersistenceService;
+use App\Services\Invoice\InvoiceResponseService;
 use App\Services\Misc\InvoiceService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -24,10 +28,22 @@ use NumberFormatter;
 class InvoiceController extends Controller
 {
     protected $invoice_service;
+    protected $invoiceCalculationService;
+    protected $invoicePersistenceService;
+    protected $invoicePdfService;
+    protected $invoiceResponseService;
 
-    public function __construct(InvoiceService $invoice_service)
+    public function __construct(InvoiceService $invoice_service ,
+     InvoiceCalculationService $invoiceCalculationService ,
+      InvoicePersistenceService $invoicePersistenceService,
+      InvoicePdfService $invoicePdfService,
+      InvoiceResponseService $invoiceResponseService)
     {
         $this->invoice_service = $invoice_service;
+        $this->invoiceCalculationService = $invoiceCalculationService;
+        $this->invoicePersistenceService = $invoicePersistenceService;
+        $this->invoicePdfService = $invoicePdfService;
+        $this->invoiceResponseService = $invoiceResponseService;
 
         //$this->authorizeResource(Folder::class, "folder");
     }
@@ -73,161 +89,96 @@ class InvoiceController extends Controller
         return $this->invoice_service->update_reference($request->validated());
     }
 
-    public function old_generate(Request $request, InvoiceCalculator $calculator)
-    {
 
-         $action = $request->action;
-         
-         $data = $calculator->calculate(
-            $request->company,
-            Carbon::parse($request->date_debut),
-            Carbon::parse($request->date_fin),true,
-            $action != "final" ? true : false
+    public function regenerate(Request $request , string $code)
+{
+    $current_invoice = Invoice::
+    has('company')
+    ->with(['company'])
+    ->where('code', $code)->firstOrFail();
+    
+    $this->authorize('update', $current_invoice);
+    
+    // 👉 ta logique de régénération
+    // ex: recalcul montants, regénérer PDF, etc.
+    // $invoice->regenerate(); // méthode métier
+
+
+    $action = $request->action;
+    $invoice_number = $request->new_number == "0" ? $current_invoice->invoice_number : null;
+
+    // 1️⃣ Calcul
+    $data = $this->invoiceCalculationService->calculate(
+        $current_invoice->company->code,
+        $current_invoice->start_date,
+        $current_invoice->end_date,
+        $action === "final",
+        $invoice_number,
+        true
+    );
+
+    $new_invoice = null;
+
+    // 2️⃣ Persistance si final
+    if ($action === "final") {
+        $new_invoice = $this->invoicePersistenceService->create(
+            [
+    'date_debut' => $current_invoice->start_date,
+    'date_fin'   => $current_invoice->end_date
+],
+            $data, 
+    $current_invoice
         );
-        
-        $invoice_number = $data->number;
-        // dd($data->company->id);
-
-       
-
-        /* ===========================
-         |  MODE FINAL (PDF + DB)
-         =========================== */
-        // DB::transaction(function () use (&$invoice, $data) {
-
-        if ($action == "final") {
-            # code...
-        
-          try {
-            DB::beginTransaction();
-
-              $invoice = Invoice::create([
-                "code" => Str::random(10),
-                "company_id"=>$data->company->id,
-                "invoice_number" => $invoice_number,
-                     'start_date'=>Carbon::parse($request->date_debut),
-        'end_date'=>Carbon::parse($request->date_fin),
-                "created_by" => auth()->id(),
-            ]);
-
-            $invoice->invoice_lines()->createMany(
-                collect($data->items)
-                    ->map(
-                        fn($i) => [
-                            "designation" => $i["label"],
-                            "quantity" => $i["qty"],
-                            "unit_price" => $i["pu"],
-                            "amount" => $i["amount"],
-                        ]
-                    )
-                    ->toArray()
-            );
-
-             Assistance::whereIn('id', $data->allAssistanceIds)
-        ->update(['invoice_id' => $invoice->id,
-        //  'invoiced_at' => now(),
-    //     'start_date'=>Carbon::parse($request->date_debut),
-    //     'end_date'=>Carbon::parse($request->date_fin),
-    // 'invoiced_by' => auth()->id(),
-]);
-
-            DB::commit();
-          } catch (\Throwable $th) {
-            DB::rollBack();
-            throw $th;
-          }
-
-        }
-       
-
-        $pdf = Pdf::loadView("invoice.template", [
-            "invoice" => $data,
-            "watermark" => $action == "preview" ? true : false, // ❌ PAS DE FILIGRANE
-        ]);
-
-        $filename = $action == "preview"
-            ? "aperçu-facture-{$invoice_number}.pdf"
-            : "facture-{$invoice_number}.pdf";
-
-        return $pdf->download($filename);
     }
 
+    // 3️⃣ Génération PDF
+    $pdf = $this->invoicePdfService->generateAndStore($data, $action ,);
+
+    // 4️⃣ Réponse JSON
+    return response()->json(
+        $this->invoiceResponseService->success($pdf['url'], $new_invoice)
+    );
 
 
-    public function generate(Request $request, InvoiceCalculator $calculator)
+    return response()->json([
+        'success' => true,
+        'message' => 'Facture régénérée avec succès',
+    ]);
+}
+
+
+
+
+  public function generate(Request $request)
 {
     $action = $request->action;
 
-    $data = $calculator->calculate(
+    // 1️⃣ Calcul
+    $data = $this->invoiceCalculationService->calculate(
         $request->company,
-        Carbon::parse($request->date_debut),
-        Carbon::parse($request->date_fin),
-        true,
-        $action !== "final"
+        $request->date_debut,
+        $request->date_fin,
+        $action === "final"
     );
 
     $invoice = null;
 
+    // 2️⃣ Persistance si final
     if ($action === "final") {
-        DB::transaction(function () use ($request, $data, &$invoice) {
-            $invoice = Invoice::create([
-                "code"           => Str::random(10),
-                "company_id"     => $data->company->id,
-                "invoice_number" => $data->number,
-                "start_date"     => Carbon::parse($request->date_debut),
-                "end_date"       => Carbon::parse($request->date_fin),
-                "created_by"     => auth()->id(),
-            ]);
-
-            $invoice->invoice_lines()->createMany(
-                collect($data->items)->map(fn ($i) => [
-                    "designation" => $i["label"],
-                    "quantity"    => $i["qty"],
-                    "unit_price"  => $i["pu"],
-                    "amount"      => $i["amount"],
-                ])->toArray()
-            );
-
-            Assistance::whereIn('id', $data->allAssistanceIds)
-                ->update(['invoice_id' => $invoice->id]);
-        });
+        $invoice = $this->invoicePersistenceService->create(
+            $request->only(['date_debut', 'date_fin']),
+            $data,
+        );
     }
 
-    // Génération PDF
-    $pdf = Pdf::loadView("invoice.template", [
-        "invoice"   => $data,
-        "watermark"=> $action === "preview",
-    ]);
+    // 3️⃣ Génération PDF
+    $pdf = $this->invoicePdfService->generateAndStore($data, $action);
 
-    $filename = ($action === "preview"
-        ? "preview-invoice-{$data->number}.pdf"
-        : "invoice-{$data->number}.pdf"
+    // 4️⃣ Réponse JSON
+    return response()->json(
+        $this->invoiceResponseService->success($pdf['url'], $invoice)
     );
 
-    // Stockage
-    $path = "invoices/{$filename}";
-    // Storage::put($path, $pdf->output());
-    Storage::disk('public')->put($path, $pdf->output());
-
-    return response()->json([
-    "success" => true,
-    // "url"     => Storage::url($path),
-    "url" => Storage::disk('public')->url($path),
-
-    "invoice" => $invoice ? [
-        "id"           => $invoice->id,
-        "code"         => $invoice->code,
-        "company_name" => $invoice->company->name,
-
-        "generated_by" => optional(
-            optional($invoice->invoicer)->employee
-        )->full_name(),
-
-        "created_at"   => $invoice->created_at->toDateTimeString(),
-        "start_date"   => $invoice->start_date->toDateString(),
-        "end_date"     => $invoice->end_date->toDateString(),
-    ] : null
-]);
 }
 
 

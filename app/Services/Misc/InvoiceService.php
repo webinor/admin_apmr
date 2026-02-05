@@ -44,7 +44,7 @@ class InvoiceService
     {
 
         $companies = Company::orderBy("name")->get();
-          $invoices = Invoice::with(['company:id,name,city_id','invoicer'])->get();
+          $invoices = Invoice::with(['invoice_lines', 'company:id,name,city_id','invoicer'])->get();
 
         //   dd($invoices);
 

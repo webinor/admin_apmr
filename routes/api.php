@@ -161,6 +161,10 @@ Route::middleware(["auth:sanctum", "throttle_recaptcha:150"])->group(function ()
             "destroy",
         ]);
 
+        // routes/web.php
+Route::post('/invoice/{code}/regenerate', [InvoiceController::class, 'regenerate'])
+    ->name('invoice.regenerate');
+
         
 
        

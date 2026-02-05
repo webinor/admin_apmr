@@ -19,7 +19,9 @@ class InvoiceCalculator
         Carbon $startDate,
         Carbon $endDate,
         $is_generate = false,
-        $is_preview = true
+        $is_preview = true,
+        $invoice_number = null,
+        $is_regenerate = false
     ) {
         $company = Company::with("wheel_chairs")
             ->where("code", $companyCode)
@@ -46,14 +48,18 @@ class InvoiceCalculator
         DB::raw('GROUP_CONCAT(DISTINCT assistance_id) as assistance_ids')
     )
      
-    ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate) {
+    ->whereHas('assistance', function ($q) use ($company, $startDate, $endDate , $is_regenerate) {
           $q->has('signature')
         //   ->whereBetween('flight_date', [$startDate, $endDate])
         ->whereDate('flight_date', '>=', $startDate)
         ->whereDate('flight_date', '<=',  $endDate)
 
-          ->whereNull('invoice_id')
-          ->when($company->code ?? null, fn($q, $comp) => 
+          
+          ->when($is_regenerate == false, fn($q) => 
+        $q->whereNull('invoice_id')
+    )
+    
+    ->when($company->code ?? null, fn($q, $comp) => 
         $q->whereHas('ground_agent.company', fn($q2) => $q2->whereCode($comp))
     );
         //   ->whereCompanyId($company->id);
@@ -196,7 +202,7 @@ foreach ($company->wheel_chairs as $wc) {
             "logo_customer" => $company->image_path
                 ? asset("storage/company_images/" . $company->image_path)
                 : "",
-            "number" => $company->prefix."-".str_pad(nextInvoiceNumber("" , $is_preview), 4, '0', STR_PAD_LEFT),// $company->prefix . "-" . Carbon::now()->format("d/m/Y"),
+            "number" => $invoice_number ??  $company->prefix."-".str_pad(nextInvoiceNumber("" , $is_preview), 4, '0', STR_PAD_LEFT),// $company->prefix . "-" . Carbon::now()->format("d/m/Y"),
             "date" => Carbon::now()->format("d/m/Y"), //'19/08/2025',
             "reference" => Str::upper($company->billing_address),
             "date_of_day" => Str::title($todayFormatted),
@@ -225,137 +231,4 @@ foreach ($company->wheel_chairs as $wc) {
             "bic" => "SGCMCMCX",
         ];
     }
-    // public function calculate(
-    //     string $companyCode,
-    //     Carbon $startDate,
-    //     Carbon $endDate,
-    //     $is_generate = false
-    // ) {
-    //     $company = Company::with("wheel_chairs")
-    //         ->where("code", $companyCode)
-    //         ->firstOrFail();
-
-    //     $assistances = Assistance::select("id")
-    //         ->has("signature")
-    //         // ->whereHas('ground_agent.company', function ($q) use ($company) {
-    //         //     $q->whereCompanyId($company->id);
-    //         // })
-    //         ->whereBetween("flight_date", [$startDate, $endDate])
-    //         ->get();
-
-    //     //dd($assistances);
-
-    //     $lines = AssistanceLine::select(
-    //         "id",
-    //         "assistance_agent_id",
-    //         "assistance_id",
-    //         "wheel_chair_id"
-    //     )
-    //         ->whereIn("assistance_id", $assistances->pluck("id"))
-    //         ->get();
-
-    //     // 🧮 LIGNES FACTURABLES
-    //     $items = $company->wheel_chairs
-    //         ->map(function ($wc) use ($lines) {
-    //             $qty = $lines->where("wheel_chair_id", $wc->id)->count();
-    //             return [
-    //                 "is_mensual_fee" => false,
-    //                 "label" => $wc->name,
-    //                 "qty" => $qty,
-    //                 "pu" => $wc->pivot->price,
-    //                 "amount" => $qty * $wc->pivot->price,
-    //             ];
-    //         })
-    //         ->filter(fn($i) => $i["qty"] > 0)
-    //         ->values();
-
-    //     // dd($items);
-    //     // ➕ abonnement
-    //     $items->push([
-    //         "is_mensual_fee" => true,
-    //         "label" => "Abonnement Mensuel",
-    //         "qty" => 1,
-    //         "pu" => $company->mensual_fee,
-    //         "amount" => $company->mensual_fee,
-    //     ]);
-
-    //     // 🧮 Totaux
-    //     $totalHT = $items->sum("amount");
-    //     $tvaRate = 0.1925;
-    //     $tva = (int) round($totalHT * $tvaRate);
-    //     $ttc = $totalHT + $tva;
-
-    //     $base = [
-    //         "company" => $company,
-    //         "stats" => [
-    //             //'total'    => $assistances->count(),
-    //             //'signed'   => $assistances->count(), // car has('signature')
-    //             //'unsigned' => 0,
-    //         ],
-    //         "items" => $items,
-    //         "totals" => [
-    //             "ht" => $totalHT,
-    //             "tva" => $tva,
-    //             "ttc" => $ttc,
-    //         ],
-    //     ];
-
-    //     if ($is_generate == false) {
-    //         return $base;
-    //     }
-
-    //     $formatter = NumberFormatter::create(
-    //         "fr_FR",
-    //         NumberFormatter::SPELLOUT
-    //     );
-    //     $formatter->setAttribute(NumberFormatter::FRACTION_DIGITS, 0);
-    //     $formatter->setAttribute(
-    //         NumberFormatter::ROUNDING_MODE,
-    //         NumberFormatter::ROUND_HALFUP
-    //     );
-
-    //     $str_ttc = $formatter->format($ttc);
-
-    //     // Créer un objet date
-    //     //   $carbon = \Carbon\Carbon::parse($month);
-
-    //     $startFormatted = $startDate->translatedFormat("d F Y");
-    //     $endFormatted = $endDate->translatedFormat("d F Y");
-
-    //     // Formatter en "Mois Année"
-    //     //   $formatted = $carbon->translatedFormat("F Y");
-
-    //     //dd($company);
-    //     return (object) [
-    //         "logo_provider" => asset("images/LOGO_CAMEROUN_ASSIST.png"),
-    //         "logo_customer" => $company->image_path
-    //             ? asset("storage/company_images/" . $company->image_path)
-    //             : "",
-    //         "number" => $company->prefix . "-" . Carbon::now()->format("d/m/Y"),
-    //         "date" => Carbon::now()->format("d/m/Y"), //'19/08/2025',
-    //         "reference" => Str::upper($company->billing_address),
-    //         "airport" => Str::upper($company->city->name),
-    //         // "month" => $formatted,
-    //         "period" => "Du $startFormatted Au $endFormatted",
-    //         "items" => $items,
-    //         "total_ht" => $totalHT,
-    //         "tva" => $tva,
-    //         "ttc" => $ttc,
-
-    //         // 🔹 Nouvelles infos société
-    //         "po_box" => $company->post_box ?? "N/A",
-    //         "city_name" => $company->city->name ?? "N/A",
-    //         "unique_id" => $company->uni ?? "N/A",
-    //         "rc" => $company->rc ?? "N/A",
-
-    //         "amount_letters" => $str_ttc,
-    //         "bank_name" => "CAMEROUN ASSISTANCE SANITAIRE SA",
-    //         "bank" => "SOCIETE GENERALE CAMEROUN Douala - Joss",
-    //         "code_banque" => "10003",
-    //         "guichet" => "00100",
-    //         "compte" => "05 01 0224449-19",
-    //         "iban" => "CM21 10003 00100 05010224449-19",
-    //         "bic" => "SGCMCMCX",
-    //     ];
-    // }
 }

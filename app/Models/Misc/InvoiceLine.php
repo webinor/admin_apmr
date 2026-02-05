@@ -99,7 +99,7 @@ class InvoiceLine extends Model
      
 
     // foreach ($this->thiss as $this) {
-         $amount =(int)$this->quantity*(int)$this->price;
+         $amount =(int)$this->quantity*(int)$this->unit_price;
     // }
 
      return $amount;

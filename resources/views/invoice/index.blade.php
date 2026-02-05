@@ -171,6 +171,32 @@ tfoot .total-row td:not(:last-child) {
                                   
                               <a id="print_{{$invoice->code}}" class="me-3 print" href="{{url('invoice/'.$invoice->code.'/edit')}}" ><i class="menu-icon mdi mdi-eye"></i></a>
                               
+                                {{-- Régénérer la facture --}}
+    {{-- <button 
+        type="button"
+        class="btn btn-sm btn-outline-warning regenerate-invoice"
+        data-url="{{ url('api/invoice/'.$invoice->code.'/regenerate') }}"
+        title="Régénérer la facture"
+    >
+        <i class="mdi mdi-refresh"></i>
+    </button> --}}
+
+    <button 
+    type="button"
+    class="btn btn-sm btn-outline-warning regenerate-invoice"
+    data-url="{{ url('api/invoice/'.$invoice->code.'/regenerate') }}"
+    data-code="{{ $invoice->code }}"
+    data-company="{{ $invoice->company->name }}"
+    data-start="{{ $invoice->start_date }}"
+    data-end="{{ $invoice->end_date }}"
+    data-invoice-number="{{ $invoice->invoice_number }}"
+    data-total="{{ number_format($invoice->get_amount(), 0, ',', ' ') }}"
+    title="Régénérer la facture"
+>
+    <i class="mdi mdi-refresh"></i>
+</button>
+
+
                               @endcan
 
                               {{-- <a id="edit_{{$invoice->code}}" class="me-3 edit" href="{{url('invoice/'.$invoice->code.'/edit')}}"><i class="menu-icon mdi mdi-eye"></i></a> --}}
@@ -223,6 +249,9 @@ tfoot .total-row td:not(:last-child) {
 {{-- @include('layouts.partials._modal_invoice') --}}
 
 @include('layouts.partials._new_modal_invoice')
+
+@include('layouts.partials._modal_regenerate_invoice')
+
 
 {{-- @include('layouts.partials._modal_filter')  --}}
 
@@ -299,6 +328,124 @@ $(document).ready(function () {
   $(function () {
      
 
+$(document).on('click', '.regenerate-invoice', function() {
+    const button = $(this);
+
+    // Récupérer les infos de la facture depuis les data-attributes
+    const company   = button.data('company');
+    const start     = button.data('start');
+    const end       = button.data('end');
+    const total     = button.data('total');
+    const invoiceCode = button.data('code');
+    const apiUrl    = button.data('url');
+    const invoiceNumber    = button.data('invoice-number');
+
+    
+
+    // Remplir les champs du modal
+    $('.inv-number').text(invoiceNumber);
+    $('.regenerateDetails #compagny').text(company);
+    $('.regenerateDetails #invoice_period').text(start + ' → ' + end);
+    $('.regenerateDetails #total_invoice').text(total + ' FCFA');
+
+    // Reset checkbox
+    $('#invoiceOptionsForm #new_invoice_number').val("");
+
+    // Stocker l'URL et code dans les boutons
+    $('#final-invoice-button').data('url', apiUrl).data('code', invoiceCode);
+    $('#invoice-preview-button').data('url', apiUrl).data('code', invoiceCode);
+
+    // console.log($('#invoice-preview-button'));
+    
+    // Ouvrir le modal
+    const modal = new bootstrap.Modal(document.getElementById('regenerateInvoiceModal'));
+    modal.show();
+});
+
+$('#invoice-preview-button, #final-invoice-button').on('click', function(e){
+
+     e.preventDefault();
+    
+    const form = $('#invoiceOptionsForm')[0];
+
+    if ($("#new_invoice_number").val() == "") {
+        // $($("new_invoice_number")).addClass('was-validated');
+        alert('Indiquez si vous souaitez générer un nouveau numéro pour cette facture')
+        return; // stop
+    }
+
+    handleInvoiceAction($(this));
+});
+
+
+function handleInvoiceAction(button) {
+
+    // const url = $(this).data('url'),
+    // action = 'preview';
+      // const code = button.data('code');
+    const url  = button.data('url');
+    const action = button.data('action') ;
+    const newNumber = $('#new_invoice_number').val();
+
+
+    console.log(url);
+
+
+    if (action =="final" && !confirm('Voulez-vous vraiment régénérer cette facture ?')) {
+        return;
+    }
+
+     const payload = {
+        _token: '{{ csrf_token() }}',
+        new_number: newNumber,
+        action: action
+    };
+
+    // button.prop('disabled', true);
+    $(".reGenerateBtn").addClass("d-none");
+    $("#fullscreen-loader-neon").fadeIn();
+
+    $.ajax({
+        url: url,
+        type: 'POST',
+        headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${window.localStorage.getItem('token')}`,
+      },
+        data: payload,
+        beforeSend: function () {
+            // optionnel : loader
+        },
+        success: function (response) {
+            
+          if (!response.success) {
+      // button.prop('disabled', false);
+      $(".reGenerateBtn").removeClass("d-none");
+      $("#fullscreen-loader-neon").fadeOut();
+      alert("Erreur lors de la génération");
+      return;
+    }
+          // ✅ Ouvrir le PDF
+    window.open(response.url, "_blank");
+
+    // ✅ Mise à jour UI
+    if (action === "final") {
+      // addInvoiceRow(response.invoice); // ou reload()
+      location.reload();
+    }
+    else{
+      // button.prop('disabled', false);
+      $(".reGenerateBtn").removeClass("d-none");
+      $("#fullscreen-loader-neon").fadeOut();
+    }
+        },
+        error: function (xhr) {
+            alert('Erreur lors de la régénération de la facture');
+        }
+    });
+}
+
+
   
 //     document.querySelectorAll('.generateBtn').forEach(btn => {
 //   btn.addEventListener('click', function () {
@@ -337,7 +484,7 @@ document.querySelectorAll('.generateBtn').forEach(btn => {
     if (!company || !date_debut || !date_fin) {
       alert("Veuillez remplir tous les champs !");
       return;
-    }
+    } 
 
     $(".invoice-button").addClass("d-none");
     $("#fullscreen-loader-neon").fadeIn();
