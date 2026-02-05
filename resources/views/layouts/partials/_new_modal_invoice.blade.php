@@ -43,7 +43,7 @@
                 <select id="company" name="company" class="form-control filter">
                   <option value="" selected>-- Sélectionner une compagnie --</option>
                   @foreach($companies as $compagnie)
-                    <option value="{{ $compagnie->code }}">{{ $compagnie->name }}</option>
+                    <option value="{{ $compagnie->code }}">{{ Str::upper($compagnie->name) }}</option>
                   @endforeach
                 </select>
               </div>
