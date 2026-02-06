@@ -202,7 +202,7 @@ tfoot .total-row td:not(:last-child) {
     {{-- Vérifier / Régénérer --}}
     <button 
         type="button"
-        class="btn btn-outline-warning btn-icon me-2 regenerate-invoice"
+        class="btn btn-outline-warning btn-icon me-2 regenerate-invoice "
         data-url="{{ url('api/invoice/'.$invoice->code.'/regenerate') }}"
         data-code="{{ $invoice->code }}"
         data-company="{{ $invoice->company->name }}"
@@ -226,11 +226,11 @@ tfoot .total-row td:not(:last-child) {
     {{-- Supprimer --}}
     <a
         href="#"
-        class="btn btn-outline-danger btn-icon"
+        class="btn btn-outline-danger btn-icon delete"
         data-bs-toggle="modal"
         data-bs-target="#delete-modal"
         data-model-to-delete="{{ $invoice->company->name }} Du {{ \Carbon\Carbon::parse($invoice->start_date)->format('d/m/Y') }} - Au {{ \Carbon\Carbon::parse($invoice->end_date)->format('d/m/Y') }}"
-        data-delete-link="{{ '/api/invoice/'.$invoice->code }}"
+        data-delete-link="{{ ('/api/invoice/'.($invoice->code)) }}"
         title="Supprimer la facture"
     >
         <i class="mdi mdi-close-circle fs-6"></i>

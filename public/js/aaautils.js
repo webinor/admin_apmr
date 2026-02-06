@@ -208,6 +208,8 @@ $(".instances_lines").on('click', '.delete', function(e) {
 	let model_to_delete = $(this).data('model-to-delete');
 	let invoice_line = $(this).data('invoice-line');
 
+	// console.log(link);
+	
 	
 	$("#deleteModalLabel #model-to-delete").text(model_to_delete);
 	$('.invalid-feedback').text("");
@@ -220,7 +222,6 @@ $(".instances_lines").on('click', '.delete', function(e) {
 
 	
  
-	//console.log($("#confirm_delete"));
 	
 
 
@@ -231,18 +232,18 @@ $(".instances_lines").on('click', '.delete', function(e) {
 });
 
 
-$("#confirm_delete").on('click', function (e) { 
+$("#confirm_delete").on('click', function (e) {
 
-	//console.log($(this));
-
-
+	
+	
 	e.preventDefault();
-
+	
 	let link = $("#modal_delete_url").val() ,
 	folder = $("#model").val(),
 	invoice_line = $("#invoice_line").val();
 	
-
+	
+	console.log(link);
 
 	//console.log(invoice_line!=null && invoice_line!='');
 	
