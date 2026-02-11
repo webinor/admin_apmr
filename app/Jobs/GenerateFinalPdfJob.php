@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
 use App\Services\APMRExportPdfService;
+use DateTime;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -40,7 +41,7 @@ class GenerateFinalPdfJob implements ShouldQueue
         // Récupérer tous les caches des jobs enfants   
         //$finalCacheKey = "export_batch_" . $filtersHash;
         $cachePrefix = config('database.redis.options.prefix', '');
-$pattern =  '*'.$this->finalCacheKey.'*';
+        $pattern =  '*'.$this->finalCacheKey.'*';
         //$keys = cache()->get($batchKeyPrefix . '*');
         $keys = Redis::keys($pattern);
         $linesFinal = [];
@@ -48,6 +49,7 @@ $pattern =  '*'.$this->finalCacheKey.'*';
         $allAgents = collect();
         $perAssistanceFinal = [];
         $assistanceCodes = [];
+        // $data=[];
 
              echo "--------------------------".json_encode($pattern)."--------------------------\n\n";
              echo "--------------------------".json_encode($keys)."--------------------------\n\n";
@@ -96,12 +98,18 @@ $pattern =  '*'.$this->finalCacheKey.'*';
                     $totalsFinal[$type] += $val;
                 }
 
-            // echo "--------------------------".json_encode($data['lines'])."--------------------------\n\n";
-
+                
             }
         }
+        
+        // echo "----------lines----------------".json_encode($data['lines'])."--------------------------\n\n";
 
-
+//         
+usort($linesFinal, function($a, $b) {
+    $dateA = DateTime::createFromFormat('d/m/Y', $a['date']);
+    $dateB = DateTime::createFromFormat('d/m/Y', $b['date']);
+    return $dateA <=> $dateB; // tri croissant
+});
            //  echo "--------------------------".json_encode($data)."--------------------------\n\n";
 
 

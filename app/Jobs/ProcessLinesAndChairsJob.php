@@ -50,7 +50,7 @@ class ProcessLinesAndChairsJob implements ShouldQueue
         'wheel_chair:id,name,slug,code'
     ])
     ->whereIn('assistance_lines.id', $this->lineIds)
-    ->orderBy('assistances.created_at', 'asc') // tri par la date de l'assistance
+   // ->orderBy('assistances.created_at', 'asc') // tri par la date de l'assistance
     ->get();
 
 
