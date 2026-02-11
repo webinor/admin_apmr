@@ -96,12 +96,12 @@ class Assistance extends Model
  /**
      * Boot du modèle pour ajouter le scope global
      */
-    protected static function booted()
-    {
-        static::addGlobalScope('active', function (Builder $builder) {
-            $builder->where('is_active', true);
-        });
-    }
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope('active', function (Builder $builder) {
+    //         $builder->where('is_active', true);
+    //     });
+    // }
 
 
 

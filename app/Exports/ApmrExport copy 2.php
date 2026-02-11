@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadings
+class OLDApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadings
 {
     protected $filters;
     public $wheelChairTypes;
@@ -126,16 +126,15 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
 
         $filtered = AssistanceLine::select('id' , 'assistance_agent_id' ,'assistance_id', 'wheel_chair_id')->with([
         'wheel_chair:id,name,slug',
-        'assistance:id,ground_agent_id,company_id',
-        'assistance.assistance_lines:id,assistance_id,assistance_agent_id',
+        'assistance:id,ground_agent_id',
         'assistance_agent:id,city_id',
-        // 'assistance.ground_agent:id,company_id',
-        'assistance.company:id,city_id',
-        'assistance.company.wheel_chairs:id,name,slug'
+        'assistance.ground_agent:id,company_id',
+        'assistance.ground_agent.company:id,city_id',
+        'assistance.ground_agent.company.wheel_chairs:id,name,slug',
     ])
     ->whereHas('assistance.signature')
     ->when($this->filters['company'] ?? null, fn($q, $comp) => 
-        $q->whereHas('assistance.company', fn($q2) => $q2->whereCode($comp))
+        $q->whereHas('assistance.ground_agent.company', fn($q2) => $q2->whereCode($comp))
     )
     // ->when($this->filters['date_debut'] ?? null, fn($q, $start) => $q->whereDate('created_at', '>=', $start))
     // ->when($this->filters['date_fin'] ?? null, fn($q, $end) => $q->whereDate('created_at', '<=', $end))
@@ -192,7 +191,7 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
         // Récupérer tous les wheel_chairs de toutes les compagnies
         $wheelChairTypes = $filtered
             ->flatMap(function ($line) {
-                return $line->assistance->company->wheel_chairs->pluck(
+                return $line->assistance->ground_agent->company->wheel_chairs->pluck(
                     "slug"
                 );
             })
@@ -334,11 +333,10 @@ class ApmrExport implements FromArray //FromCollection//, WithMapping, WithHeadi
             }
 
             // colonne finale : nombre d'agents uniques pour cette assistance
-            $row[] = optional($line->assistance)
-        ->assistance_lines
-        ->pluck('assistance_agent_id')
-        ->unique()
-        ->count() ?? 0;
+            $row[] = $line->assistance->assistance_lines
+                ->pluck("assistance_agent_id")
+                ->unique()
+                ->count();
 
             $array[] = $row;
 

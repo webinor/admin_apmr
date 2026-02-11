@@ -355,8 +355,16 @@ $totalFichesNonSignees = $totalFiches - $totalFichesSignees;
     $assistanceIds = $filtered->pluck('assistance_id')->unique()->toArray();
 
     // 2) Récupérer les wheel_chairs (déjà calculé dans ton code)
-    $wheelChairTypes  = $filtered
-    ->flatMap(fn($line) => $line->assistance->ground_agent->company->wheel_chairs->pluck('slug'))
+    // $wheelChairTypes  = $filtered
+    // ->flatMap(fn($line) => $line->assistance->ground_agent->company->wheel_chairs->pluck('slug'))
+    // ->unique()
+    // ->values()
+    // ->toArray();
+
+    $wheelChairTypes = $filtered
+    ->pluck('assistance')              // récupère toutes les assistances
+    ->unique('company_id')             // 1 seule fois chaque company
+    ->flatMap(fn($assistance) => $assistance->company->wheel_chairs->pluck('slug'))
     ->unique()
     ->values()
     ->toArray();

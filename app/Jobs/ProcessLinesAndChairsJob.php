@@ -29,10 +29,30 @@ class ProcessLinesAndChairsJob implements ShouldQueue
         $linesOutput = [];
         $totals = array_fill_keys($this->wheelChairTypes, 0);
 
-        $lines = AssistanceLine::select('id','created_at' , 'assistance_agent_id' ,'assistance_id', 'code', 'wheel_chair_id' , 'beneficiary_name')->
-        with(['assistance:id,code,reference,ground_agent_id,flight_type,flight_number', 'wheel_chair:id,name,slug,code'])
-                               ->whereIn('id', $this->lineIds)
-                               ->get();
+        // $lines = AssistanceLine::select('id','created_at' , 'assistance_agent_id' ,'assistance_id', 'code', 'wheel_chair_id' , 'beneficiary_name')->
+        // with(['assistance:id,code,reference,ground_agent_id,flight_type,flight_number,created_at', 'wheel_chair:id,name,slug,code'])
+        //                        ->whereIn('id', $this->lineIds)
+        //                        ->orderBy('assistances.created_at', 'asc') // tri par la date de l'assistance
+        //                        ->get();
+
+    $lines = AssistanceLine::select(
+        'assistance_lines.id',
+        'assistance_lines.created_at',
+        'assistance_lines.assistance_agent_id',
+        'assistance_lines.assistance_id',
+        'assistance_lines.code',
+        'assistance_lines.wheel_chair_id',
+        'assistance_lines.beneficiary_name'
+    )
+    ->join('assistances', 'assistances.id', '=', 'assistance_lines.assistance_id')
+    ->with([
+        'assistance:id,code,reference,ground_agent_id,flight_type,flight_number,created_at',
+        'wheel_chair:id,name,slug,code'
+    ])
+    ->whereIn('assistance_lines.id', $this->lineIds)
+    ->orderBy('assistances.created_at', 'asc') // tri par la date de l'assistance
+    ->get();
+
 
         foreach ($lines as $index => $line) {
             $chairs = [];
@@ -45,7 +65,7 @@ class ProcessLinesAndChairsJob implements ShouldQueue
 
             $linesOutput[] = [
                 '#' => $index + 1,
-                'date' => $line->created_at->format('d/m/Y'),
+                'date' => $line->assistance->created_at->format('d/m/Y'),
                 'mission' => $line->assistance->reference,
                 'beneficiary' => $line->beneficiary_name,
                 'flight_type' => $line->assistance->flight_type === 'départ' ? 'E' : 'D',
