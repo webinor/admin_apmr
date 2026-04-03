@@ -175,6 +175,13 @@ foreach ($company->wheel_chairs as $wc) {
         $allAssistanceIds = array_merge(...array_map(fn($v) => array_values($v['assistance_ids']), $quantities->toArray()));
 
     //     $allAssistanceIds = $quantities
+    // ->pluck('assistance_ids')
+    // ->flatten()
+    // ->unique()
+    // ->values()
+    // ->all();
+
+    //     $allAssistanceIds = $quantities
     // ->pluck('assistance_ids')          // récupère les tableaux
     // ->flatten()                        // aplatit tous les sous-tableaux
     // ->values()                         // réindexe proprement

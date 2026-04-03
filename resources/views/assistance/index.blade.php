@@ -96,10 +96,10 @@
                   <div class=" mb-4 ">
                     <form id="form-results" class="row" action="" method="get">
         
-                      <div class="col-1">
+                      <div class="col-2">
                         <label for="results">Afficher</label>
                       </div>
-                      <div class="col-2">
+                      <div class="col-4">
               
                         <select name="results" class="form-control" id="results">
                          {{--  <option value="5" {{ Request::get("results") == 5 ? 'selected' : ''}} >5</option> --}}

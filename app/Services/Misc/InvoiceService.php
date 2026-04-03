@@ -44,7 +44,9 @@ class InvoiceService
     {
 
         $companies = Company::orderBy("name")->get();
-          $invoices = Invoice::with(['invoice_lines', 'company:id,name,city_id','invoicer'])->get();
+          $invoices = Invoice::with(['invoice_lines', 'company:id,name,city_id','invoicer'])
+          ->paginate(10)
+          ->withQueryString();
 
         //   dd($invoices);
 

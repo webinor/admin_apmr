@@ -106,7 +106,7 @@ class AssistanceController extends Controller
     ]);
 
 // Compagnie
-if (!empty($filters["company"])) {
+if (!empty($filters["company"])) {  
     $query->whereHas("ground_agent.company", function ($qry) use ($filters) {
         $qry->whereCode($filters["company"]);
     });

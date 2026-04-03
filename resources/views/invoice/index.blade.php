@@ -301,6 +301,25 @@ tfoot .total-row td:not(:last-child) {
               </div>
             </div>
           </div>
+
+                   @if ($invoices->count()>0)
+             
+          <div class="row align-items-center py-5">
+           
+            
+            <div class="col-12 text-center">
+               <div class="custom-pagination">
+               
+                
+                 {{ $invoices ->links('layouts.partials.pagination') }}
+               
+                
+               </div>
+             </div>
+           </div>
+          
+          @endif
+
         </div>
       </div>
     </div>
