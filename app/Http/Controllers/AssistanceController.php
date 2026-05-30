@@ -406,10 +406,10 @@ $totalFichesNonSignees = $totalFiches - $totalFichesSignees;
         ->name("export_batch_{$exportData->id}")
         ->finally(function ($batch) use ($finalCacheKey, $exportData, $wheelChairTypes,$action) {
             // Job final pour assembler les données et générer le PDF
-            GenerateFinalPdfJob::dispatch($finalCacheKey, $exportData->id, $wheelChairTypes , $action);
+            GenerateFinalPdfJob::dispatch($finalCacheKey, $exportData->id, $wheelChairTypes , $action)
+            ;//->delay(now()->addSeconds(rand(60, 120)));
         })
         ->dispatch();
-    
 
     // 4) Lancer le batch orchestrateur
     /*GenerateExportBatchJob::dispatch(
@@ -520,9 +520,9 @@ $chunkSize = 50; // ou 10, 50, selon le volume
 $chunks = $assistancesIds->chunk($chunkSize);
 
 foreach ($chunks as $index => $chunk) {
+
     $cacheKey = "unique_agents_batch_$index";
 
-  //  dispatch(new CalculateUniqueAgentsBatch($chunk->toArray(), $cacheKey));
 }
 
 
